@@ -1,0 +1,2 @@
+#! /usr/bin/env ruby
+Process.exec("ruby", File.expand_path("../../lib/server.rb", __FILE__), *ARGV)

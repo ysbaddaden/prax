@@ -5,7 +5,11 @@ server = TCPServer.new("localhost", 20559)
 
 loop {
   Thread.start(server.accept) do |input|
-    output = UNIXSocket.new("/tmp/rack.sock")
+    if ARGV[0] == "--tcp"
+      output = TCPSocket.new("localhost", 9292)
+    else
+      output = UNIXSocket.new("/tmp/rack.sock")
+    end
 
     # SOCKET > RACK SERVER
     content_length = 0
@@ -57,4 +61,3 @@ loop {
     output.close
   end
 }
-
