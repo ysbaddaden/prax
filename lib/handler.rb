@@ -30,9 +30,9 @@ module Row
 
       if Config.configured_app?(@app_name)
         @output = Spawner.new(@app_name).socket
-#      elsif Config.default_app_available?
-#        @app_name = :default
-#        @output = Spawner.new(:default).socket
+      elsif Config.configured_default_app?
+        @app_name = :default
+        @output = Spawner.new(:default).socket
       else
         raise NoSuchApp.new
       end
