@@ -12,10 +12,10 @@ module Row
       @app_name = app_name.to_s
 
       if start?
-        Row.logger.debug("Starting app #{@app_name}")
+        Row.logger.info("Starting app #{@app_name}")
         spawn
       elsif restart?
-        Row.logger.debug("Restarting app #{@app_name}")
+        Row.logger.info("Restarting app #{@app_name}")
         kill
         spawn
       end
@@ -29,7 +29,7 @@ module Row
       Dir.chdir(realpath) do
         Process.spawn(*args, File.join(ROOT, "bin", "racker"),
           config_path, socket_path, pid_path,
-          [ :err, :out ] => [ "/tmp/#{app_name}.log", "w" ]
+          [ :err, :out ] => [ "/tmp/#{app_name}.log", "a" ]
         )
         wait_for_socket
       end
