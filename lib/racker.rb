@@ -57,7 +57,7 @@ class Racker
 
       env = parse_env_from_socket(socket)
       code, headers, body = app.call(env)
-      logger.info("[#{Time.now}] #{env['REQUEST_URI']} #{code}")
+      logger.info("#{env['REQUEST_URI']} #{code}")
 
       socket.write("#{env["HTTP_VERSION"]} #{code} #{http_status(code)}\r\n")
       headers["Connection"] = "close"
@@ -65,7 +65,7 @@ class Racker
       socket.write("\r\n")
 
       body.each { |b| socket.write(b) }
-      body.close   # required to prevent deadlocks in Rack::Lock
+      body.close if body.respond_to?(:close)  # required to prevent deadlocks in Rack::Lock
  
       socket.flush
       socket.close
