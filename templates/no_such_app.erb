@@ -1,0 +1,13 @@
+<html>
+  <head>
+    <title>No such application <%= @app_name %></title>
+  </head>
+  <body>
+    <h1>No such application <q><%= @app_name %></q></h1>
+    <p>Please link <q><%= @app_name %></q> to <code><%= Row::Config.host_root %></code></p>
+
+    <h2>Example:</h2>
+
+<pre><code>$ ln -s ~/Work/<%= @app_name %> <%= Row::Config.host_root %></code></pre>
+  </body>
+</html>

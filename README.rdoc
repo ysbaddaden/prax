@@ -1,0 +1,10 @@
+= Row
+
+A pure ruby alternative to Pow!!
+
+== Why a pure-ruby alternative?
+
+Because my GNU/Linux fork of Pow!! just broke on me badly. Since I ain't smart
+enougth to understand, less write, any Coffee-Script, I decided to try building
+an alternative in Ruby, learning a lot about sockets, HTTP and Rack on the way.
+
