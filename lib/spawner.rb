@@ -2,7 +2,7 @@ require "socket"
 require "openssl"
 require File.expand_path("../config", __FILE__)
 
-module Row
+module Prax
   class Spawner
     attr_reader :app_name
 
@@ -12,10 +12,10 @@ module Row
       @app_name = app_name.to_s
 
       if start?
-        Row.logger.info("Starting app #{@app_name}")
+        Prax.logger.info("Starting app #{@app_name} (#{realpath})")
         spawn
       elsif restart?
-        Row.logger.info("Restarting app #{@app_name}")
+        Prax.logger.info("Restarting app #{@app_name} (#{realpath})")
         kill
         spawn
       end
@@ -79,12 +79,12 @@ module Row
     # Note that we use an MD5 on the realpath of the symlink, which permits
     # to share a single instance of the app on different domains.
     def socket_path
-      @socket_path ||= "/tmp/row_#{md5}.sock"
+      @socket_path ||= "/tmp/prax_#{md5}.sock"
     end
 
     # Path to the PID of the spawned Rack app.
     def pid_path
-      @pid_path ||= "/tmp/row_#{md5}.pid"
+      @pid_path ||= "/tmp/prax_#{md5}.pid"
     end
 
     # Real path to the app directory.

@@ -1,10 +1,48 @@
-= Row
+= Prax
 
-A pure ruby alternative to Pow!!
+A pure ruby alternative to Pow!!. Aka a Rack application spawner and proxy
+for simpler local development. Calling `myapp.dev` and `subdomain.myapp.dev`
+with no configuration is simpler than configuring your hosts file, starting
+your applications manually on port 3000, and so on.
 
 == Why a pure-ruby alternative?
 
-Because my GNU/Linux fork of Pow!! just broke on me badly. Since I ain't smart
-enougth to understand, less write, any Coffee-Script, I decided to try building
-an alternative in Ruby, learning a lot about sockets, HTTP and Rack on the way.
+Because my GNU/Linux fork of Pow!! just broke on me badly. I ain't smart
+enougth to understand, less write, any Coffee-Script, so I decided to try
+an alternative in Ruby, which I am capable to write, learning a lot about
+sockets, HTTP and Rack on the way.
+
+It also only requires Ruby & Rack, both you have already installed if you
+are a Ruby Web developer.
+
+== Features
+
+- HTTP Server
+- HTTP Proxy
+- Rack Handler
+- Rack application Spawn
+- Rack application Restart
+
+== TODO
+
+This is a work in progress, and Prax is missing a lot of features to be
+on par with Pow!!. Moslty on the configuration side of you development
+machine. Yet it's already capable to start the HTTP server, to spawn your
+apps and proxy requests to it.
+
+- xip.io compatibility
+
+- GNU/Linux:
+  - firewall rule
+  - dnsmasq, resolvconf & openresolv scripts
+  - install script
+
+- Mac OS X:
+  - DNS Server
+  - firewall rule
+  - install script
+
+== Credits
+
+- Julien Portalier <julien@portalier.com>
 

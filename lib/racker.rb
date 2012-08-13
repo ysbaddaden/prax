@@ -13,7 +13,11 @@ class Racker
   end
 
   def self.logger
-    @logger ||= Logger.new(STDOUT)
+    @logger ||= begin
+      logger = Logger.new(STDOUT)
+      logger.level = Logger::INFO unless ENV["PRAX_DEBUG"]
+      logger
+    end
   end
   def logger; self.class.logger; end
 
@@ -22,7 +26,7 @@ class Racker
       @pid_path = pid_path
       File.open(pid_path, "w") { |f| f.write(Process.pid) }
 
-      logger.info("Starting server on #{server}")
+      logger.debug("Starting server on #{server}")
       if server =~ %r{^/}
         @socket_path = server
         self.server = UNIXServer.new(server)
@@ -51,25 +55,29 @@ class Racker
     Signal.trap("QUIT") { exit }
     Signal.trap("EXIT") { finalize }
 
-    logger.debug("Server ready to receive connections")
+    logger.info("Server ready to receive connections")
     loop do
-      socket = server.accept
-
-      env = parse_env_from_socket(socket)
-      code, headers, body = app.call(env)
-      logger.info("#{env['REQUEST_URI']} #{code}")
-
-      socket.write("#{env["HTTP_VERSION"]} #{code} #{http_status(code)}\r\n")
-      headers["Connection"] = "close"
-      headers.each { |key, value| socket.write("#{key}: #{value}\r\n") }
-      socket.write("\r\n")
-
-      body.each { |b| socket.write(b) }
-      body.close if body.respond_to?(:close)  # required to prevent deadlocks in Rack::Lock
- 
-      socket.flush
-      socket.close
+      Thread.start(server.accept) { |socket| handle_connection(socket) }
+#      socket = server.accept
     end
+  end
+
+  def handle_connection(socket)
+    env = parse_env_from_socket(socket)
+
+    code, headers, body = app.call(env)
+    logger.info("#{env['REQUEST_URI']} #{code}")
+
+    socket.write("#{env["HTTP_VERSION"]} #{code} #{http_status(code)}\r\n")
+    headers["Connection"] = "close"
+    headers.each { |key, value| socket.write("#{key}: #{value}\r\n") }
+    socket.write("\r\n")
+
+    body.each { |b| socket.write(b) }
+    body.close if body.respond_to?(:close)
+
+    socket.flush
+    socket.close
   end
 
   def parse_env_from_socket(socket)

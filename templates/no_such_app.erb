@@ -4,10 +4,10 @@
   </head>
   <body>
     <h1>No such application <q><%= @app_name %></q></h1>
-    <p>Please link <q><%= @app_name %></q> to <code><%= Row::Config.host_root %></code></p>
+    <p>Please link <q><%= @app_name %></q> to <code><%= Prax::Config.host_root %></code></p>
 
     <h2>Example:</h2>
 
-<pre><code>$ ln -s ~/Work/<%= @app_name %> <%= Row::Config.host_root %></code></pre>
+<pre><code>$ ln -s ~/Work/<%= @app_name %> <%= Prax::Config.host_root %></code></pre>
   </body>
 </html>

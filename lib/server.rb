@@ -6,9 +6,13 @@ require File.expand_path("../handler", __FILE__)
 
 ROOT = File.expand_path("../..", __FILE__)
 
-module Row
+module Prax
   def self.logger
-    @logger ||= Logger.new(STDOUT)
+    @logger ||= begin
+      logger = Logger.new(STDOUT)
+      logger.level = Logger::INFO unless Config.debug?
+      logger
+    end
   end
 
   class Server
@@ -19,13 +23,13 @@ module Row
     end
 
     def initialize
+      Prax.logger.debug("Starting server on #{Config.http_host}:#{Config.http_port}")
       @server = TCPServer.new(Config.http_host, Config.http_port)
-      Row.logger.debug("Started server on #{Config.http_host}:#{Config.http_port}")
     end
 
     def finalize
       @server.close if @server
-      Row.logger.debug("Terminated server.")
+      Prax.logger.info("Server shutdown.")
     end
 
     def run
@@ -34,24 +38,37 @@ module Row
       Signal.trap("QUIT") { exit }
       Signal.trap("EXIT") { finalize }
 
-      Row.logger.debug("Server is now accepting connections.")
+      Prax.logger.info("Server ready on #{Config.http_host}:#{Config.http_port}")
 
       loop do
-        socket = server.accept
-
-        _, port, host = socket.peeraddr
-        Row.logger.debug("New connection from #{host}:#{port} (#{_}).")
-
-        Handler.new(socket).run
-        socket.close
-
-        Row.logger.debug("Closed connection from #{host}:#{port} (#{_}).")
+        if Config.thread?
+          Thread.start(server.accept) { |socket| handle_connection(socket) }
+        else
+          handle_connection(server.accept)
+        end
+#        socket = server.accept
+#        _, port, host = socket.peeraddr
+#        Prax.logger.debug("New connection from #{host}:#{port} (#{_}).")
+#        Handler.new(socket).run
+#        socket.close
+#        Prax.logger.debug("Closed connection from #{host}:#{port} (#{_}).")
 
 #        Thread.start(server.accept) do |socket|
+#          _, port, host = socket.peeraddr
+#          Prax.logger.debug("New connection from #{host}:#{port} (#{_}).")
 #          Handler.new(socket).run
 #          socket.close
+#          Prax.logger.debug("Closed connection from #{host}:#{port} (#{_}).")
 #        end
       end
+    end
+
+    def handle_connection(socket)
+      _, port, host = socket.peeraddr
+      Prax.logger.debug("New connection from #{host}:#{port} (#{_}).")
+      Handler.new(socket).run
+      socket.close
+      Prax.logger.debug("Closed connection from #{host}:#{port} (#{_}).")
     end
   end
 end

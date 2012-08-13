@@ -1,7 +1,7 @@
 require "erubis"
 require "timeout"
 
-module Row
+module Prax
   class Handler
     class NoSuchExt < StandardError; end
     class NoSuchApp < StandardError; end
@@ -14,12 +14,15 @@ module Row
     
     def run
       parse_request
-      spawn_app
-
-      if @output
-        pass_request
-        pass_response
+      if @request.any?
+        spawn_app
+        if @output
+          pass_request
+          pass_response
+        end
       end
+    rescue NoMethodError => e
+      Prax.logger.warn(e.message + "\n" + e.backtrace.join("\n"))
     ensure
       @output.close if @output
     end
@@ -37,10 +40,10 @@ module Row
         raise NoSuchApp.new
       end
     rescue NoSuchExt => e
-      Row.logger.debug("No such extension: #{@ext}")
+      Prax.logger.debug("No such extension: #{@ext}")
       render(:no_such_ext)
     rescue NoSuchApp => e
-      Row.logger.debug("No such application: #{@app_name}")
+      Prax.logger.debug("No such application: #{@app_name}")
       render(:no_such_app)
 #    rescue => exception
 #      @exception = exception
@@ -53,19 +56,20 @@ module Row
 
       line = @input.gets
 #      line.force_encoding("ASCII-8BIT") if line.respond_to?(:force_encoding)
-      @request << line
 
-      if line.strip =~ %r{^([A-Z]+) (.+) (HTTP/\d\.\d)$}
+      if line and line.strip =~ %r{^([A-Z]+) (.+) (HTTP/\d\.\d)$}
+        @request << line
+
         @http_method  = $1
         @request_uri  = $2
         @http_version = $3
-      end
 
-      while line = input.gets
-#        line.force_encoding("ASCII-8BIT") if line.respond_to?(:force_encoding)
-        @request_headers[$1.downcase] = $2 if line.strip =~ /^([^:]+):\s*(.*)$/
-        @request << line
-        break if line.strip.empty?
+        while line = input.gets
+#          line.force_encoding("ASCII-8BIT") if line.respond_to?(:force_encoding)
+          @request_headers[$1.downcase] = $2 if line.strip =~ /^([^:]+):\s*(.*)$/
+          @request << line
+          break if line.strip.empty?
+        end
       end
     end
 
