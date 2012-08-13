@@ -1,6 +1,7 @@
 require "logger"
 require "socket"
-require "net/http"
+require "stringio"
+require "tempfile"
 require "rack"
 require "rack/builder"
 require "rack/utils"
@@ -21,44 +22,44 @@ class Racker
   end
   def logger; self.class.logger; end
 
-  def initialize(config_path, server, pid_path)
-    begin
-      @pid_path = pid_path
-      File.open(pid_path, "w") { |f| f.write(Process.pid) }
-
-      logger.debug("Starting server on #{server}")
-      if server =~ %r{^/}
-        @socket_path = server
-        self.server = UNIXServer.new(server)
-      else
-        host, port = server.split(':', 2)
-        self.server = TCPServer.new(host, port || 9292)
-      end
-
-      logger.debug("Building Rack app at #{config_path}")
-      self.app, self.options = Rack::Builder.parse_file(config_path)
-    rescue => e
-      finalize
-      raise e
-    end
-  end
-
-  def finalize
-    File.unlink(@pid_path) if File.exists?(@pid_path)
-    server.close if server
-    File.unlink(@socket_path) if File.exists?(@socket_path)
-  end
-
-  def run
+  def initialize(options = {})
     Signal.trap("INT")  { exit }
     Signal.trap("TERM") { exit }
     Signal.trap("QUIT") { exit }
     Signal.trap("EXIT") { finalize }
 
+    server, @pid_path = options[:server], options[:pid]
+    config_path = Dir.getwd + "/config.ru"
+
+    File.open(@pid_path, "w") { |f| f.write(Process.pid) }
+
+    logger.debug("Starting server on #{server}")
+    if server =~ %r{^/}
+      @socket_path = server
+      self.server = UNIXServer.new(server)
+    else
+      host, port = server.split(':', 2)
+      self.server = TCPServer.new(host, port || 9292)
+    end
+
+    logger.debug("Building Rack app at #{config_path}")
+    self.app, self.options = Rack::Builder.parse_file(config_path)
+  rescue
+    finalize
+    raise
+  end
+
+  def finalize
+    server.close if server
+    File.unlink(@pid_path) if File.exists?(@pid_path)
+    File.unlink(@socket_path) if @socket_path and File.exists?(@socket_path)
+  end
+
+  def run
     logger.info("Server ready to receive connections")
     loop do
-      Thread.start(server.accept) { |socket| handle_connection(socket) }
-#      socket = server.accept
+#      Thread.start(server.accept) { |socket| handle_connection(socket) }
+      handle_connection(server.accept)
     end
   end
 
@@ -66,8 +67,9 @@ class Racker
     env = parse_env_from_socket(socket)
 
     code, headers, body = app.call(env)
-    logger.info("#{env['REQUEST_URI']} #{code}")
+    logger.info("#{env['REQUEST_URI']} #{code} #{http_status(code)}")
 
+    socket.flush
     socket.write("#{env["HTTP_VERSION"]} #{code} #{http_status(code)}\r\n")
     headers["Connection"] = "close"
     headers.each { |key, value| socket.write("#{key}: #{value}\r\n") }
@@ -78,6 +80,8 @@ class Racker
 
     socket.flush
     socket.close
+  ensure
+    env["rack.input"].close if env and env["rack.input"]
   end
 
   def parse_env_from_socket(socket)
@@ -128,13 +132,27 @@ class Racker
     env["SERVER_PORT"] = server_port
 
     env["rack.url_scheme"] = "http"
-    if env["CONTENT_LENGTH"] and env["CONTENT_LENGTH"] > 0
-      env["rack.input"] = Net::BufferedIO.new(socket.read(env["CONTENT_LENGTH"]))
-    else
-      env["rack.input"] = Net::BufferedIO.new("")
-    end
+    env["rack.input"] = read_body_as_rewindable_input(socket, env["CONTENT_LENGTH"] || 0)
 
     env
+  end
+
+  def read_body_as_rewindable_input(socket, content_length)
+    if content_length > (1024 * (80 + 32))
+      tempfile = Tempfile.new("RackerInputBody")
+      tempfile.chmod(000)
+      tempfile.set_encoding("ASCII-8BIT") if tempfile.respond_to?(:set_encoding)
+      tempfile.binmode
+      ::File.unlink(tempfile.path)
+#      IO.copy_stream(socket, tempfile, content_length)
+      tempfile.write(socket.read(content_length))
+      tempfile.rewind
+      tempfile
+    elsif content_length > 0
+      StringIO.new(socket.read(content_length))
+    else
+      StringIO.new("")
+    end
   end
 
   def http_status(code)

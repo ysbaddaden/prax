@@ -28,7 +28,7 @@ module Prax
 
       Dir.chdir(realpath) do
         Process.spawn(*args, File.join(ROOT, "bin", "racker"),
-          config_path, socket_path, pid_path,
+          "--server", socket_path, "--pid", pid_path,
           [ :err, :out ] => [ "/tmp/#{app_name}.log", "a" ]
         )
         wait_for_socket
