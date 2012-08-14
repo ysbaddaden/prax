@@ -9,12 +9,17 @@ module Prax
     # The host to run the HTTP server on. Defaults to `0.0.0.0` (ie. all available
     # interfaces).
     def self.http_host
-      @http_host ||= ENV["PRAX_HTTP_HOST"] || "0.0.0.0"
+      @http_host ||= ENV["PRAX_HTTP_HOST"] || nil
     end
 
     # The port to run the HTTP server on. Defaults to 20559.
     def self.http_port
       @http_port ||= (ENV["PRAX_HTTP_PORT"] || 20559).to_i
+    end
+
+    # The port to run the HTTPS server on. Defaults to 20558.
+    def self.https_port
+      @https_port ||= (ENV["PRAX_HTTPS_PORT"] || 20558).to_i
     end
 
     # An array of top level extensions to serve. Any other extension

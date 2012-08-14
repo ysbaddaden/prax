@@ -15,20 +15,41 @@ module Prax
     end
   end
 
+  module SSL
+    def ssl_crt; File.join(ROOT, "ssl", "server.crt"); end
+    def ssl_key; File.join(ROOT, "ssl", "server.key"); end
+
+    def ssl_configured?
+      File.exists?(ssl_crt) and File.exists?(ssl_key)
+    end
+  end
+
   class Server
-    attr_reader :server
+    include SSL
+    attr_reader :servers
 
     def self.run
       new.run
     end
 
     def initialize
-      Prax.logger.debug("Starting server on #{Config.http_host}:#{Config.http_port}")
-      @server = TCPServer.new(Config.http_host, Config.http_port)
+      Prax.logger.debug("Starting HTTP server on port #{Config.http_port}")
+      @servers = []
+      @servers << TCPServer.new(Config.http_port)
+      Prax.logger.debug(@servers.first.addr.inspect)
+
+      if ssl_configured?
+        Prax.logger.debug("Starting HTTPS server on port #{Config.https_port}")
+        ctx      = OpenSSL::SSL::SSLContext.new
+        ctx.cert = OpenSSL::X509::Certificate.new(File.open(ssl_crt))
+        ctx.key  = OpenSSL::PKey::RSA.new(File.open(ssl_key))
+        @servers << OpenSSL::SSL::SSLServer.new(TCPServer.new(Config.https_port), ctx)
+        Prax.logger.debug(@servers.last.addr.inspect)
+      end
     end
 
     def finalize
-      @server.close if @server
+      @servers.each { |server| server.close if server }
       Prax.logger.info("Server shutdown.")
     end
 
@@ -38,35 +59,31 @@ module Prax
       Signal.trap("QUIT") { exit }
       Signal.trap("EXIT") { finalize }
 
-      Prax.logger.info("Server ready on #{Config.http_host}:#{Config.http_port}")
+      Prax.logger.info("HTTP server ready on port #{Config.http_port}")
+      if @servers.size == 2
+        Prax.logger.info("HTTPS server ready on port #{Config.https_port}")
+      end
 
       loop do
-        if Config.thread?
-          Thread.start(server.accept) { |socket| handle_connection(socket) }
-        else
-          handle_connection(server.accept)
+        begin
+          IO.select(@servers).first.each do |server|
+            if Config.thread?
+              Thread.start(server.accept) do |socket|
+                handle_connection(socket, server.is_a?(OpenSSL::SSL::SSLServer))
+              end
+            else
+              handle_connection(server.accept)
+            end
+          end
+        rescue OpenSSL::SSL::SSLError
         end
-#        socket = server.accept
-#        _, port, host = socket.peeraddr
-#        Prax.logger.debug("New connection from #{host}:#{port} (#{_}).")
-#        Handler.new(socket).run
-#        socket.close
-#        Prax.logger.debug("Closed connection from #{host}:#{port} (#{_}).")
-
-#        Thread.start(server.accept) do |socket|
-#          _, port, host = socket.peeraddr
-#          Prax.logger.debug("New connection from #{host}:#{port} (#{_}).")
-#          Handler.new(socket).run
-#          socket.close
-#          Prax.logger.debug("Closed connection from #{host}:#{port} (#{_}).")
-#        end
       end
     end
 
-    def handle_connection(socket)
+    def handle_connection(socket, ssl = nil)
       _, port, host = socket.peeraddr
       Prax.logger.debug("New connection from #{host}:#{port} (#{_}).")
-      Handler.new(socket).run
+      Handler.new(socket, ssl).run
       socket.close
       Prax.logger.debug("Closed connection from #{host}:#{port} (#{_}).")
     end

@@ -6,10 +6,11 @@ module Prax
     class NoSuchExt < StandardError; end
     class NoSuchApp < StandardError; end
 
-    attr_reader :input
+    attr_reader :input, :ssl
 
-    def initialize(input)
+    def initialize(input, ssl = nil)
       @input = input
+      @ssl = ssl
     end
     
     def run
@@ -74,7 +75,10 @@ module Prax
     end
 
     def pass_request
-      @request.each { |line| @output.write(line) }
+      @request.each do |line|
+        @output.write("X-Forwarded-Proto: https\r\n") if line.strip.empty? and @ssl
+        @output.write(line)
+      end
       content_length = @request_headers["content-length"].to_i
       @output.write(@input.read(content_length)) if content_length > 0
       @output.flush

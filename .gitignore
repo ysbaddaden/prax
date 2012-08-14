@@ -1,2 +1,5 @@
 bak
 *.swp
+ssl/*.crt
+ssl/*.csr
+ssl/*.key
