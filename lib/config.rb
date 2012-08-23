@@ -1,3 +1,5 @@
+require "ipaddr"
+
 module Prax
   module Config
     # Directory where links to apps are stored. Defaults to `$HOME/.pow` in
@@ -54,6 +56,11 @@ module Prax
 
     def self.thread?
       !debug?
+    end
+
+    def self.ip?(str)
+      host = str.split(":").first
+      !(IPAddr.new(host) rescue nil).nil?
     end
   end
 end

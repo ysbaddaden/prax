@@ -30,11 +30,15 @@ module Prax
 
     def spawn_app
       @ext, @app_name = parse_host
-      raise NoSuchExt.new unless Config.supported_ext?(@ext)
+      unless Config.ip?(@request_headers["host"])
+        raise NoSuchExt.new unless Config.supported_ext?(@ext)
 
-      if Config.configured_app?(@app_name)
-        @output = Spawner.new(@app_name).socket
-      elsif Config.configured_default_app?
+        if Config.configured_app?(@app_name)
+          @output = Spawner.new(@app_name).socket
+          return
+        end
+      end
+      if Config.configured_default_app?
         @app_name = :default
         @output = Spawner.new(:default).socket
       else
