@@ -67,7 +67,7 @@ class Racker
     env = parse_env_from_socket(socket)
 
     code, headers, body = app.call(env)
-    logger.info("#{env['REQUEST_URI']} #{code} #{http_status(code)}")
+    logger.info("#{code} - #{env['REQUEST_URI']}")
 
     socket.flush
     socket.write("#{env["HTTP_VERSION"]} #{code} #{http_status(code)}\r\n")
