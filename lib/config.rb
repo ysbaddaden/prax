@@ -62,5 +62,18 @@ module Prax
       host = str.split(":").first
       !(IPAddr.new(host) rescue nil).nil?
     end
+
+    def self.xip?(str)
+      !xip_host(str).nil?
+    end
+
+    def self.xip_host(str)
+      host = str.split(":").first
+      $1 if host =~ /^(.*?)\.?\d+.\d+\.\d+\.\d+\.xip\.io$/
+    end
+
+    def self.xip_app_name(str)
+      xip_host(str).split(".").last
+    end
   end
 end

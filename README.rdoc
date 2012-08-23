@@ -18,28 +18,30 @@ are a Ruby Web developer.
 == Features
 
 - HTTP Server
+- SSL support (if certs and keys are generated)
 - HTTP Proxy
-- Rack Handler
-- Rack application Spawn
-- Rack application Restart
+- Rack Handler (Racker)
+- Rack Application spawn / restart / always restart
+- xip.io support
 
 == TODO
 
-This is a work in progress, and Prax is missing a lot of features to be
-on par with Pow!!. Moslty on the configuration side of you development
+This is a work in progress, and Prax is missing some features to be
+on par with Pow. Moslty on the configuration side of your development
 machine. Yet it's already capable to start the HTTP server, to spawn your
 apps and proxy requests to it.
 
-- xip.io compatibility
+- app spawn failure notice (with backtrace)
 
 - GNU/Linux:
   - firewall rule
   - dnsmasq, resolvconf & openresolv scripts
+    - better alternative: DNS resolver for NSSwitch
   - install script
 
 - Mac OS X:
-  - DNS Server
   - firewall rule
+  - DNS resolver
   - install script
 
 == Credits
