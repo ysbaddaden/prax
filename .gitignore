@@ -1,5 +1,9 @@
 bak
 *.swp
+ext/*.so.*
+ext/*.o
+ext/test.c
 ssl/*.crt
 ssl/*.csr
 ssl/*.key
+

@@ -1,0 +1,29 @@
+= NSSwitch hosts resolver plugin
+
+Allows software that rely on NSSwitch to resolve domains for Prax (like
+myapp.dev). Command line software like host and dig won't resolve the
+address, but getent will.
+
+== Install
+
+Compile, copy or link the shared object to <tt>/lib</tt> and add +prax+ to
+the +hosts+ line of <tt>/etc/nsswitch.conf</tt>, and eventually restart your
+browser (this is required).
+
+  $ cd ext/
+  $ make
+  $ sudo make install
+  $ sudo vi /etc/nsswitch.conf
+
+  hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4 prax
+
+Note: do not change the whole line to look like this, just add prax at
+the end of it. The above line should be the default on 
+
+== Credits
+
+Code is from hoof by pyromaniac at https://github.com/poyromaniac/hoof
+
+Tweaked by Julien Portalier to parse the +PRAX_DOMAINS+ environment variable
+for extensions to serve.
+
