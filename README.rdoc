@@ -1,42 +1,95 @@
 = Prax
 
-A pure ruby alternative to Pow!!. Aka a Rack application spawner and proxy
-for simpler local development. Calling `myapp.dev` and `subdomain.myapp.dev`
-with no configuration is simpler than configuring your hosts file, starting
-your applications manually on port 3000, and so on.
+A pure ruby alternative to Pow!!
+
+Aka a Rack application spawner and proxy for simpler local development.
+Calling `myapp.dev` and `subdomain.myapp.dev` with no configuration is
+simpler than editing your hosts file, starting your applications
+manually on port 3000, etc.
 
 == Why a pure-ruby alternative?
 
-Because my GNU/Linux fork of Pow!! just broke on me badly. I ain't smart
-enougth to understand, less write, any Coffee-Script, so I decided to try
-an alternative in Ruby, which I am capable to write, learning a lot about
+My GNU/Linux fork of Pow just broke on me badly. I ain't smart enought
+to understand, less write, any Coffee-Script, so I decided to try an
+alternative in Ruby, which I am capable to write, learning a lot about
 sockets, HTTP and Rack on the way.
 
-It also only requires Ruby & Rack, both you have already installed if you
-are a Ruby Web developer.
+It also only requires Ruby and the Rack gem, both you should have already
+installed if you are a Ruby Web developer.
+
+== Install
+
+There ain't no install script yet. So you must install things manually for
+now.
+
+=== GNU/Linux
+
+First clone the repository, install the port forwaring script and NSSwitch
+extension.
+
+$ git clone git://github.com/ysbaddaden/prax.git
+
+$ cd prax/
+$ sudo cp data/initd /etc/initd/prax
+$ sudo chmod +x /etc/initd/prax
+$ sudo update-rc.d prax defaults
+
+$ cd prax/ext/
+$ make
+$ sudo make install
+
+Edit the <tt>/etc/nsswitch.conf</tt> and add +prax+ to the +hosts+ line,
+and restart your browser, otherwise it won't use the newly configured prax
+resolver.
+
+Then create the <tt>~/.prax</tt> directory and link your apps to it. You may
+link the same folder multiple times as different names to serve it from
+different domains.
+
+$ mkdir ~/.prax
+$ ln -sf ~/Work/myapp ~/.prax/
+
+Eventually start <tt>bin/prax</tt> to run Prax.
+
+=== Mac OS X
+
+Mac OS X isn't supported yet. Feel free to contribute!
+
 
 == Features
+
+This is a work in progress, and Prax is missing some features to be on par
+with Pow. Mostly on the configuration side of your development machine. Yet
+it's already capable to start the HTTP server, spawn your apps, proxy
+requests, and more.
 
 - HTTP Server
 - SSL support (if certs and keys are generated)
 - HTTP Proxy
 - Rack Handler (Racker)
 - Rack Application spawn / restart / always restart
-- xip.io support
-
-== TODO
-
-This is a work in progress, and Prax is missing some features to be
-on par with Pow. Moslty on the configuration side of your development
-machine. Yet it's already capable to start the HTTP server, to spawn your
-apps and proxy requests to it.
-
-- app spawn failure notice (with backtrace)
 
 - GNU/Linux:
-  - firewall rule
-  - dnsmasq, resolvconf & openresolv scripts
-    - better alternative: DNS resolver for NSSwitch
+  - NSSwitch DNS resolver
+  - firewall rule (initd)
+
+=== TODO
+
+- app spawn failure notice (with backtrace)
+- put logs somewhere else than /tmp (~/.prax/.logs ?)
+- full xip.io support
+- commands for the prax script:
+  - prax install
+  - prax default
+  - prax list
+  - prax link [name]
+  - prax unlink [name]
+  - prax log
+  - prax restart
+  - prax always_restart
+  - prax cleanup
+
+- GNU/Linux:
   - install script
 
 - Mac OS X:
@@ -47,4 +100,5 @@ apps and proxy requests to it.
 == Credits
 
 - Julien Portalier <julien@portalier.com>
+- pyromaniac for the initial NSSwitch extension.
 
