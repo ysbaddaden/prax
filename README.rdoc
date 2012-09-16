@@ -3,9 +3,9 @@
 A pure ruby alternative to Pow!!
 
 Aka a Rack application spawner and proxy for simpler local development.
-Calling `myapp.dev` and `subdomain.myapp.dev` with no configuration is
-simpler than editing your hosts file, starting your applications
-manually on port 3000, etc.
+Calling <tt>myapp.dev</tt> and <tt>subdomain.myapp.dev</tt> with no
+configuration is simpler than editing your hosts file, starting your
+applications manually on port 3000, etc.
 
 == Why a pure-ruby alternative?
 
@@ -22,39 +22,42 @@ installed if you are a Ruby Web developer.
 There ain't no install script yet. So you must install things manually for
 now.
 
+Please note it has only been tested on Ruby MRI 1.9.3 and that it may not work
+correctly on another or older Ruby engine.
+
 === GNU/Linux
 
 First clone the repository, install the port forwaring script and NSSwitch
 extension.
 
-$ git clone git://github.com/ysbaddaden/prax.git
+  $ git clone git://github.com/ysbaddaden/prax.git
 
-$ cd prax/
-$ sudo cp data/initd /etc/initd/prax
-$ sudo chmod +x /etc/initd/prax
-$ sudo update-rc.d prax defaults
+  $ cd prax/
+  $ sudo cp data/initd /etc/initd/prax
+  $ sudo chmod +x /etc/initd/prax
+  $ sudo update-rc.d prax defaults
+  $ sudo /etc/init.d/prax start
 
-$ cd prax/ext/
-$ make
-$ sudo make install
+  $ cd prax/ext/
+  $ make
+  $ sudo make install
 
-Edit the <tt>/etc/nsswitch.conf</tt> and add +prax+ to the +hosts+ line,
-and restart your browser, otherwise it won't use the newly configured prax
+Edit <tt>/etc/nsswitch.conf</tt> and add +prax+ to the +hosts+ line, then
+restart your browser, otherwise it won't use the newly configured prax
 resolver.
 
-Then create the <tt>~/.prax</tt> directory and link your apps to it. You may
+Create the <tt>~/.prax</tt> directory and link your apps to it. You may
 link the same folder multiple times as different names to serve it from
 different domains.
 
-$ mkdir ~/.prax
-$ ln -sf ~/Work/myapp ~/.prax/
+  $ mkdir ~/.prax
+  $ ln -sf ~/Work/myapp ~/.prax/
 
 Eventually start <tt>bin/prax</tt> to run Prax.
 
 === Mac OS X
 
 Mac OS X isn't supported yet. Feel free to contribute!
-
 
 == Features
 
@@ -64,20 +67,20 @@ it's already capable to start the HTTP server, spawn your apps, proxy
 requests, and more.
 
 - HTTP Server
-- SSL support (if certs and keys are generated)
 - HTTP Proxy
 - Rack Handler (Racker)
 - Rack Application spawn / restart / always restart
+- SSL support (if certs and keys are generated)
+- {xip.io}[http://xip.io/] support
 
 - GNU/Linux:
-  - NSSwitch DNS resolver
-  - firewall rule (initd)
+  - NSSwitch DNS resolver (resolves <tt>*.dev</tt> domains to <tt>127.0.0.1</tt>)
+  - firewall rule (redirects root ports 80/443 to user ports 20559/20558)
 
 === TODO
 
 - app spawn failure notice (with backtrace)
 - put logs somewhere else than /tmp (~/.prax/.logs ?)
-- full xip.io support
 - commands for the prax script:
   - prax install
   - prax default
