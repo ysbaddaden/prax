@@ -1,0 +1,27 @@
+#! /usr/bin/env bash
+
+# follows symlinks to real root
+cd `dirname $(readlink -f $0)`
+PRAX_ROOT=`dirname $(pwd -P)`
+
+# Loads either rbenv or RVM (if present)
+if [ -x $HOME/.rbenv/bin/rbenv ] ; then
+  export PATH="$HOME/.rbenv/bin:$PATH"
+  eval "$(rbenv init -)"
+elif [ -x $HOME/.rvm/scripts/rvm ] ; then
+  . $HOME/.rvm/scripts/rvm
+fi
+
+# Loads user config (if present)
+if [ -f ~/.praxconfig ] ; then
+  source ~/.praxconfig
+fi
+
+# kills any running instance
+PID=`ps x | awk -F " " "{ if ( \\$5 == \\"ruby\\" && \\$6 == \\"$PRAX_ROOT/lib/command.rb\\" ) print \\$1 }"`
+[ "$PID" == "" ] || kill $PID
+
+# starts instance
+cd $PRAX_ROOT
+exec "ruby" "$PRAX_ROOT/lib/command.rb" $*
+
