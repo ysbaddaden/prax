@@ -69,9 +69,9 @@ _nss_prax_gethostbyname2_r(const char *name,
 {
   enum nss_status status = NSS_STATUS_NOTFOUND;
 
-  FILE *log = fopen("/tmp/nss_prax.log","a+");
-  fprintf(log, "%s (%d)\n", name, af);
-  fclose(log);
+  //FILE *log = fopen("/tmp/nss_prax.log","a+");
+  //fprintf(log, "%s (%d)\n", name, af);
+  //fclose(log);
 
   if (prax_domains_len == 0) {
     prax_domains_len = str_split(prax_get_domains(), ",", prax_domains);
