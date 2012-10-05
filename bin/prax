@@ -13,8 +13,8 @@ elif [ -x $HOME/.rvm/scripts/rvm ] ; then
 fi
 
 # Loads user config (if present)
-if [ -f ~/.praxconfig ] ; then
-  source ~/.praxconfig
+if [ -f $HOME/.praxconfig ] ; then
+  . $HOME/.praxconfig
 fi
 
 # kills any running instance
