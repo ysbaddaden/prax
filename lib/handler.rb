@@ -5,6 +5,7 @@ module Prax
   class Handler
     class NoSuchExt < StandardError; end
     class NoSuchApp < StandardError; end
+    class CantStartApp < StandardError; end
 
     attr_reader :input, :ssl
 
@@ -39,23 +40,30 @@ module Prax
         end
 
         if Config.configured_app?(@app_name)
-          @output = Spawner.new(@app_name).socket
-          return
+          spawner = Spawner.new(@app_name)
         end
       end
 
-      if Config.configured_default_app?
-        @app_name = :default
-        @output = Spawner.new(:default).socket
-      else
-        raise NoSuchApp.new
+      unless spawner
+        if Config.configured_default_app?
+          @app_name = :default
+          spawner = Spawner.new(:default)
+        else
+          raise NoSuchApp.new
+        end
       end
+
+      @output = spawner.socket or raise CantStartApp.new
+
     rescue NoSuchExt => e
       Prax.logger.debug("No such extension: #{@ext}")
       render(:no_such_ext)
     rescue NoSuchApp => e
       Prax.logger.debug("No such application: #{@app_name}")
       render(:no_such_app)
+    rescue CantStartApp => e
+      Prax.logger.debug("Can't start application: #{@app_name}")
+      render(:cant_start_app)
 #    rescue => exception
 #      @exception = exception
 #      render(:spawn_error)
