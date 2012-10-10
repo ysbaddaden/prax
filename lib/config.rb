@@ -7,8 +7,8 @@ module Prax
       @host_root ||= ENV["PRAX_HOST_ROOT"] || File.join(ENV["HOME"], ".prax")
     end
 
-    # The host to run the HTTP server on. Defaults to `0.0.0.0` (ie. all available
-    # interfaces).
+    # The host to run the HTTP server on. Defaults to `0.0.0.0` (ie. all
+    # available interfaces).
     def self.http_host
       @http_host ||= ENV["PRAX_HTTP_HOST"] || nil
     end

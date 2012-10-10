@@ -43,7 +43,10 @@ module Prax
         ctx      = OpenSSL::SSL::SSLContext.new
         ctx.cert = OpenSSL::X509::Certificate.new(File.open(ssl_crt))
         ctx.key  = OpenSSL::PKey::RSA.new(File.open(ssl_key))
-        @servers << OpenSSL::SSL::SSLServer.new(TCPServer.new(Config.https_port), ctx)
+        @servers << OpenSSL::SSL::SSLServer.new(
+          TCPServer.new(Config.https_port),
+          ctx
+        )
         Prax.logger.debug(@servers.last.addr.inspect)
       end
     end
