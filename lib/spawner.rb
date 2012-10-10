@@ -23,7 +23,7 @@ module Prax
 
     # Spawns the app, then blocks until the socket is ready.
     def spawn
-      args = [] 
+      args = []
       args = [ "bundle", "exec" ] if gemfile?
 
       Dir.chdir(realpath) do
@@ -53,7 +53,7 @@ module Prax
     # Gracefully stops a spawned Rack app.
     def kill
       if File.exists?(pid_path)
-        pid = File.read(pid_path).strip.to_i 
+        pid = File.read(pid_path).strip.to_i
         Process.kill("TERM", pid)
         Process.wait
       end
