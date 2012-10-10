@@ -32,7 +32,7 @@ module Prax
           [ :err, :out ] => [ "/tmp/#{app_name}.log", "a" ]
         )
         Process.detach(pid)
-        wait_for_socket
+        wait_for_process(pid)
       end
     end
 
@@ -62,6 +62,7 @@ module Prax
 
     # Returns the UNIXSocket to the spawned app.
     def socket
+      return nil unless File.exists?(socket_path)
       @socket ||= UNIXSocket.new(socket_path)
     end
 
@@ -98,9 +99,18 @@ module Prax
         @md5 ||= OpenSSL::Digest::MD5.new(realpath).to_s
       end
 
-      def wait_for_socket
+      def wait_for_process(pid)
         Timeout.timeout(60) do
-          sleep 0.1 until File.exists?(socket_path)
+          sleep 0.1 while process_exists?(pid) && !File.exists?(socket_path)
+        end
+      end
+
+      def process_exists?(pid)
+        begin
+          Process.getpgid(pid)
+          true
+        rescue Errno::ESRCH
+          false
         end
       end
   end
