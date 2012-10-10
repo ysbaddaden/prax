@@ -27,10 +27,11 @@ module Prax
       args = [ "bundle", "exec" ] if gemfile?
 
       Dir.chdir(realpath) do
-        Process.spawn(*args, File.join(ROOT, "bin", "racker"),
+        pid = Process.spawn(*args, File.join(ROOT, "bin", "racker"),
           "--server", socket_path, "--pid", pid_path,
           [ :err, :out ] => [ "/tmp/#{app_name}.log", "a" ]
         )
+        Process.detach(pid)
         wait_for_socket
       end
     end
