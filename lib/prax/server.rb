@@ -1,8 +1,8 @@
 require "socket"
 require "logger"
-require File.expand_path("../config",  __FILE__)
-require File.expand_path("../spawner", __FILE__)
-require File.expand_path("../handler", __FILE__)
+require_relative 'config'
+require_relative 'spawner'
+require_relative 'handler'
 
 ROOT = File.expand_path("../..", __FILE__)
 

@@ -1,7 +1,7 @@
 #! /usr/bin/env ruby
 
 require "optparse"
-require File.expand_path("../../lib/racker", __FILE__)
+require File.expand_path("../../lib/prax/racker", __FILE__)
 
 options = {}
 
