@@ -1,4 +1,4 @@
-require "ipaddr"
+require 'ipaddr'
 
 module Prax
   module Config

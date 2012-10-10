@@ -1,5 +1,5 @@
-require "socket"
-require "logger"
+require 'socket'
+require 'logger'
 require_relative 'config'
 require_relative 'spawner'
 require_relative 'handler'

@@ -1,5 +1,5 @@
-require "erubis"
-require "timeout"
+require 'erubis'
+require 'timeout'
 
 module Prax
   class Handler

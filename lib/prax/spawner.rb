@@ -1,6 +1,6 @@
-require "socket"
-require "openssl"
-require File.expand_path("../config", __FILE__)
+require 'socket'
+require 'openssl'
+require_relative 'config'
 
 module Prax
   class Spawner

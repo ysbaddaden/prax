@@ -1,10 +1,10 @@
-require "logger"
-require "socket"
-require "stringio"
-require "tempfile"
-require "rack"
-require "rack/builder"
-require "rack/utils"
+require 'logger'
+require 'socket'
+require 'stringio'
+require 'tempfile'
+require 'rack'
+require 'rack/builder'
+require 'rack/utils'
 
 class Racker
   attr_accessor :server, :app, :options
