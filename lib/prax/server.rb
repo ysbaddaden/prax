@@ -1,20 +1,12 @@
 require 'socket'
-require 'logger'
 require_relative 'config'
 require_relative 'spawner'
 require_relative 'handler'
+require_relative 'logger'
 
 ROOT = File.expand_path("../..", __FILE__)
 
 module Prax
-  def self.logger
-    @logger ||= begin
-      logger = Logger.new(STDOUT)
-      logger.level = Logger::INFO unless Config.debug?
-      logger
-    end
-  end
-
   module SSL
     def ssl_crt; File.join(ROOT, "ssl", "server.crt"); end
     def ssl_key; File.join(ROOT, "ssl", "server.key"); end

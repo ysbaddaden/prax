@@ -1,10 +1,10 @@
-require 'logger'
 require 'socket'
 require 'stringio'
 require 'tempfile'
 require 'rack'
 require 'rack/builder'
 require 'rack/utils'
+require_relative 'logger'
 
 class Racker
   attr_accessor :server, :app, :options
@@ -12,15 +12,6 @@ class Racker
   def self.run(*args)
     new(*args).run
   end
-
-  def self.logger
-    @logger ||= begin
-      logger = Logger.new(STDOUT)
-      logger.level = Logger::INFO unless ENV["PRAX_DEBUG"]
-      logger
-    end
-  end
-  def logger; self.class.logger; end
 
   def initialize(options = {})
     Signal.trap("INT")  { exit }
@@ -33,7 +24,7 @@ class Racker
 
     File.open(@pid_path, "w") { |f| f.write(Process.pid) }
 
-    logger.debug("Starting server on #{server}")
+    Prax.logger.debug("Starting server on #{server}")
     if server =~ %r{^/}
       @socket_path = server
       self.server = UNIXServer.new(server)
@@ -42,7 +33,7 @@ class Racker
       self.server = TCPServer.new(host, port || 9292)
     end
 
-    logger.debug("Building Rack app at #{config_path}")
+    Prax.logger.debug("Building Rack app at #{config_path}")
     self.app, self.options = Rack::Builder.parse_file(config_path)
   rescue
     finalize
@@ -56,7 +47,7 @@ class Racker
   end
 
   def run
-    logger.info("Server ready to receive connections")
+    Prax.logger.info("Server ready to receive connections")
     loop do
 #      Thread.start(server.accept) { |socket| handle_connection(socket) }
       handle_connection(server.accept)
@@ -67,7 +58,7 @@ class Racker
     env = parse_env_from_socket(socket)
 
     code, headers, body = app.call(env)
-    logger.info("#{code} - #{env['REQUEST_URI']}")
+    Prax.logger.info("#{code} - #{env['REQUEST_URI']}")
 
     socket.flush
     socket.write("#{env["HTTP_VERSION"]} #{code} #{http_status(code)}\r\n")
@@ -93,7 +84,7 @@ class Racker
       "SERVER_SOFTWARE"   => "racker 0.0.1",
     }
     env["rack.errors"] = STDERR
-    env["rack.logger"] = logger
+    env["rack.logger"] = Prax.logger
 
     _, port, host = socket.peeraddr
     env["REMOTE_ADDR"] = host
