@@ -14,8 +14,10 @@ module Prax
     include SSL
     attr_reader :servers
 
-    def self.run
-      new.run
+    class << self
+      def run
+        new.run
+      end
     end
 
     def initialize

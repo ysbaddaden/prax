@@ -9,8 +9,10 @@ require_relative 'logger'
 class Racker
   attr_accessor :server, :app, :options
 
-  def self.run(*args)
-    new(*args).run
+  class << self
+    def run(*args)
+      new(*args).run
+    end
   end
 
   def initialize(options = {})
