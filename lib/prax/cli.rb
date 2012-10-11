@@ -4,7 +4,7 @@ require 'docopt'
 module Prax
   class CLI
     USAGE = <<-USAGE
-Prax is a proxy server for Ruby and Rack development.
+Rack proxy server for development.
 
 Usage:
   #{$0} run [-d | --debug]
