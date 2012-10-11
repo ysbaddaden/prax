@@ -1,10 +1,18 @@
 #! /usr/bin/env bash
+#
+# Usage: prax [subcommand]
+#
+# This file is a wrapper script intended for GNU/Linux systems. It loads the
+# proper environment for Prax to run in, kills any instances running, and
+# invokes Prax's CLI.
 
-# follows symlinks to real root
+
+# Locate the real root:
 cd `dirname $(readlink -f $0)`
 PRAX_ROOT=`dirname $(pwd -P)`
+cd $PRAX_ROOT
 
-# Loads either rbenv or RVM (if present)
+# Load either rbenv or RVM (if present):
 if [ -x $HOME/.rbenv/bin/rbenv ] ; then
   export PATH="$HOME/.rbenv/bin:$PATH"
   eval "$(rbenv init -)"
@@ -12,16 +20,22 @@ elif [ -x $HOME/.rvm/scripts/rvm ] ; then
   . $HOME/.rvm/scripts/rvm
 fi
 
-# Loads user config (if present)
+# Load user config (if present):
 if [ -f $HOME/.praxconfig ] ; then
   . $HOME/.praxconfig
 fi
 
-# kills any running instance
-PID=`ps x | awk -F " " "{ if ( \\$5 == \\"ruby\\" && \\$6 == \\"$PRAX_ROOT/lib/command.rb\\" ) print \\$1 }"`
-[ "$PID" == "" ] || kill $PID
+# Kill any existing copies:
+old_pid=`ps x|grep praxd|grep -v grep|awk "{print \\$1}"`
+[[ $old_pid != "" ]] && kill $old_pid
 
-# starts instance
-cd $PRAX_ROOT
-exec "ruby" "$PRAX_ROOT/lib/prax/command.rb" $*
+
+# Run our Ruby:
+/usr/bin/env ruby <<-RUBY
+args = "$*".split
+
+require '$PRAX_ROOT/lib/prax'
+
+Prax::CLI.new(args).run
+RUBY
 

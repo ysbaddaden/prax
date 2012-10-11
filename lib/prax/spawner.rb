@@ -1,6 +1,5 @@
 require 'socket'
 require 'openssl'
-require_relative 'config'
 
 module Prax
   class Spawner

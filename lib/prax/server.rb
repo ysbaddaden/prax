@@ -1,10 +1,4 @@
 require 'socket'
-require_relative 'config'
-require_relative 'spawner'
-require_relative 'handler'
-require_relative 'logger'
-
-ROOT = File.expand_path("../..", __FILE__)
 
 module Prax
   module SSL

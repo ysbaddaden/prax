@@ -1,5 +1,4 @@
 require 'logger'
-require_relative 'config'
 
 module Prax
   class Logger < ::Logger
