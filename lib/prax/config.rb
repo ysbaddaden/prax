@@ -67,13 +67,16 @@ module Prax
         !xip_host(str).nil?
       end
 
-      def xip_host(str)
-        host = str.split(":").first
-        $1 if host =~ /^(.*?)\.?\d+.\d+\.\d+\.\d+\.xip\.io$/
-      end
 
       def xip_app_name(str)
         xip_host(str).split(".").last
+      end
+
+
+      private
+      def xip_host(str)
+        host = str.split(":").first
+        $1 if host =~ /^(.*?)\.?\d+.\d+\.\d+\.\d+\.xip\.io$/
       end
     end
   end
