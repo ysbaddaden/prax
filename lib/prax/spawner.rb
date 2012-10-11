@@ -27,7 +27,7 @@ module Prax
       args = [ "bundle", "exec" ] if gemfile?
 
       Dir.chdir(realpath) do
-        Process.spawn(*args, File.join(ROOT, "bin", "racker"),
+        Process.spawn(*args, File.join(ROOT, "bin", "prax"), "racker",
           "--server", socket_path, "--pid", pid_path,
           [ :err, :out ] => [ "/tmp/#{app_name}.log", "a" ]
         )
@@ -54,7 +54,7 @@ module Prax
     def kill
       if File.exists?(pid_path)
         pid = File.read(pid_path).strip.to_i
-        Process.kill("TERM", pid)
+        Process.kill(:TERM, pid)
         Process.wait
       end
     end
