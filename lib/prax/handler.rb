@@ -1,5 +1,6 @@
-require "erubis"
-require "timeout"
+require 'erubis'
+require 'timeout'
+
 
 module Prax
   class Handler
@@ -12,7 +13,7 @@ module Prax
       @input = input
       @ssl = ssl
     end
-    
+
     def run
       parse_request
       if @request.any?
@@ -106,7 +107,7 @@ module Prax
 
       content_length = @response_headers["content-length"].to_i
       if content_length > 0
-        @input.write(@output.read(content_length)) 
+        @input.write(@output.read(content_length))
       elsif @response_headers["connection"] == "close"
         begin
           @input.write(@output.read)

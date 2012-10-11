@@ -1,6 +1,6 @@
-require "socket"
-require "openssl"
-require File.expand_path("../config", __FILE__)
+require 'socket'
+require 'openssl'
+
 
 module Prax
   class Spawner
@@ -23,11 +23,11 @@ module Prax
 
     # Spawns the app, then blocks until the socket is ready.
     def spawn
-      args = [] 
+      args = []
       args = [ "bundle", "exec" ] if gemfile?
 
       Dir.chdir(realpath) do
-        Process.spawn(*args, File.join(ROOT, "bin", "racker"),
+        Process.spawn(*args, File.join(ROOT, "bin", "prax"), "racker",
           "--server", socket_path, "--pid", pid_path,
           [ :err, :out ] => [ "/tmp/#{app_name}.log", "a" ]
         )
@@ -53,8 +53,8 @@ module Prax
     # Gracefully stops a spawned Rack app.
     def kill
       if File.exists?(pid_path)
-        pid = File.read(pid_path).strip.to_i 
-        Process.kill("TERM", pid)
+        pid = File.read(pid_path).strip.to_i
+        Process.kill(:TERM, pid)
         Process.wait
       end
     end

@@ -1,20 +1,7 @@
-require "socket"
-require "logger"
-require File.expand_path("../config",  __FILE__)
-require File.expand_path("../spawner", __FILE__)
-require File.expand_path("../handler", __FILE__)
+require 'socket'
 
-ROOT = File.expand_path("../..", __FILE__)
 
 module Prax
-  def self.logger
-    @logger ||= begin
-      logger = Logger.new(STDOUT)
-      logger.level = Logger::INFO unless Config.debug?
-      logger
-    end
-  end
-
   module SSL
     def ssl_crt; File.join(ROOT, "ssl", "server.crt"); end
     def ssl_key; File.join(ROOT, "ssl", "server.key"); end
@@ -28,8 +15,10 @@ module Prax
     include SSL
     attr_reader :servers
 
-    def self.run
-      new.run
+    class << self
+      def run
+        new.run
+      end
     end
 
     def initialize
@@ -43,7 +32,10 @@ module Prax
         ctx      = OpenSSL::SSL::SSLContext.new
         ctx.cert = OpenSSL::X509::Certificate.new(File.open(ssl_crt))
         ctx.key  = OpenSSL::PKey::RSA.new(File.open(ssl_key))
-        @servers << OpenSSL::SSL::SSLServer.new(TCPServer.new(Config.https_port), ctx)
+        @servers << OpenSSL::SSL::SSLServer.new(
+          TCPServer.new(Config.https_port),
+          ctx
+        )
         Prax.logger.debug(@servers.last.addr.inspect)
       end
     end
