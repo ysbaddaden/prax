@@ -4,7 +4,7 @@ require 'tempfile'
 require 'rack'
 require 'rack/builder'
 require 'rack/utils'
-require_relative 'logger'
+
 
 class Racker
   attr_accessor :server, :app, :options

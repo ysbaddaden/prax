@@ -1,6 +1,7 @@
 require 'socket'
 require 'openssl'
 
+
 module Prax
   class Spawner
     attr_reader :app_name

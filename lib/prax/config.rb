@@ -1,5 +1,6 @@
 require 'ipaddr'
 
+
 module Prax
   module Config
     class << self
@@ -67,11 +68,9 @@ module Prax
         !xip_host(str).nil?
       end
 
-
       def xip_app_name(str)
         xip_host(str).split(".").last
       end
-
 
       private
       def xip_host(str)

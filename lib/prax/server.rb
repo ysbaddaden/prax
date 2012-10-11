@@ -1,5 +1,6 @@
 require 'socket'
 
+
 module Prax
   module SSL
     def ssl_crt; File.join(ROOT, "ssl", "server.crt"); end

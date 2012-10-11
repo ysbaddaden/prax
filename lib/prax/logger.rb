@@ -1,5 +1,6 @@
 require 'logger'
 
+
 module Prax
   class Logger < ::Logger
     def initialize(*args)
