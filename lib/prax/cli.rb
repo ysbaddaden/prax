@@ -8,7 +8,7 @@ Rack proxy server for development.
 
 Usage:
   #{$0} run [-d | --debug]
-  #{$0} racker --server=<server> --pid=<pid> [--log=<log>]
+  #{$0} racker (--server=<server>) (--pid=<pid>) [--log=<log>] [-d | --debug]
   #{$0} --version
   #{$0} -h | --help
 
