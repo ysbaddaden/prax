@@ -1,7 +1,8 @@
 #! /usr/bin/env ruby
+$:.unshift File.expand_path("../../lib", File.realpath(__FILE__))
 
 require "optparse"
-require File.expand_path("../../lib/racker", __FILE__)
+require "prax/racker"
 
 options = {}
 

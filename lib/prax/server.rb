@@ -1,10 +1,10 @@
 require "socket"
 require "logger"
-require File.expand_path("../config",  __FILE__)
-require File.expand_path("../spawner", __FILE__)
-require File.expand_path("../handler", __FILE__)
+require "prax/config"
+require "prax/spawner"
+require "prax/handler"
 
-ROOT = File.expand_path("../..", __FILE__)
+ROOT = File.expand_path("../../..", File.realpath(__FILE__))
 
 module Prax
   def self.logger
