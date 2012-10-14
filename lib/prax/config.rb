@@ -82,23 +82,21 @@ module Prax
         !xip_host(str).nil?
       end
 
-
       def xip_app_name(str)
         xip_host(str).split(".").last
       end
 
-
       private
-      def xip_host(str)
-        host = str.split(":").first
-        $1 if host =~ /^(.*?)\.?\d+.\d+\.\d+\.\d+\.xip\.io$/
-      end
+        def xip_host(str)
+          host = str.split(":").first
+          $1 if host =~ /^(.*?)\.?\d+.\d+\.\d+\.\d+\.xip\.io$/
+        end
 
-      def root(dirname)
-        path = File.join(host_root, dirname)
-        Dir.mkdir(path) unless File.exists?(path)
-        path
-      end
+        def root(dirname)
+          path = File.join(host_root, dirname)
+          Dir.mkdir(path) unless File.exists?(path)
+          path
+        end
     end
   end
 end
