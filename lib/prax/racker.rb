@@ -95,7 +95,7 @@ class Racker
     env["rack.errors"] = STDERR
     env["rack.logger"] = logger
 
-    _, port, host = socket.peeraddr
+    _, _, host = socket.peeraddr
     env["REMOTE_ADDR"] = host
 
     line = socket.gets
