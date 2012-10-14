@@ -40,20 +40,20 @@ module Prax
         end
 
         if Config.configured_app?(@app_name)
-          spawner = Spawner.new(@app_name)
+          @spawner = Spawner.new(@app_name)
         end
       end
 
-      unless spawner
+      unless @spawner
         if Config.configured_default_app?
           @app_name = :default
-          spawner = Spawner.new(:default)
+          @spawner = Spawner.new(:default)
         else
           raise NoSuchApp.new
         end
       end
 
-      @output = spawner.socket or raise CantStartApp.new
+      @output = @spawner.socket or raise CantStartApp.new
 
     rescue NoSuchExt => e
       Prax.logger.debug("No such extension: #{@ext}")
