@@ -10,9 +10,17 @@ module Prax
 
       # Directory where logs are stored. Defaults to `$HOME/.prax/_logs`
       def log_root
-        @log_root ||= ENV["PRAX_LOG_ROOT"] || File.join(host_root, "_logs")
-        Dir.mkdir(@log_root) unless File.exists?(@log_root)
-        @log_root
+        @log_root ||= ENV["PRAX_LOG_ROOT"] || root("_logs")
+      end
+
+      # Directory where pids are stored. Defaults to `$HOME/.prax/_pids`
+      def pid_root
+        @pid_root ||= ENV["PRAX_PID_ROOT"] || root("_pids")
+      end
+
+      # Directory where sockets are stored. Defaults to `$HOME/.prax/_sockets`
+      def socket_root
+        @socket_root ||= ENV["PRAX_SOCKET_ROOT"] || root("_sockets")
       end
 
       # The host to run the HTTP server on. Defaults to `0.0.0.0` (ie. all
@@ -84,6 +92,12 @@ module Prax
       def xip_host(str)
         host = str.split(":").first
         $1 if host =~ /^(.*?)\.?\d+.\d+\.\d+\.\d+\.xip\.io$/
+      end
+
+      def root(dirname)
+        path = File.join(host_root, dirname)
+        Dir.mkdir(path) unless File.exists?(path)
+        path
       end
     end
   end

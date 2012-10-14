@@ -1,4 +1,5 @@
 require "socket"
+require "openssl"
 require "prax/config"
 require "prax/logger"
 require "prax/spawner"

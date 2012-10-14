@@ -1,5 +1,4 @@
 require "socket"
-require "openssl"
 require "prax/config"
 
 module Prax
@@ -78,20 +77,21 @@ module Prax
 
     # Path to the Rack socket.
     #
-    # Note that we use an MD5 on the realpath of the symlink, which permits
-    # to share a single instance of the app on different domains.
+    # Note that we use the basename from the realpath of the symlink, which
+    # permits to share a single instance of the app while serving it on
+    # multiple domains.
     def socket_path
-      @socket_path ||= "/tmp/prax_#{md5}.sock"
+      @socket_path ||= File.join(Config.socket_root, "#{basename}.sock")
     end
 
     # Path to the PID of the spawned Rack app.
     def pid_path
-      @pid_path ||= "/tmp/prax_#{md5}.pid"
+      @pid_path ||= File.join(Config.pid_root, "#{basename}.sock")
     end
 
     # Path to the log of the spawned Rack app.
     def log_path
-      @log_path ||= File.join(Config.log_root, "#{md5}.log")
+      @log_path ||= File.join(Config.log_root, "#{basename}.log")
     end
 
     # Real path to the app directory.
@@ -100,8 +100,8 @@ module Prax
     end
 
     private
-      def md5
-        @md5 ||= OpenSSL::Digest::MD5.new(realpath).to_s
+      def basename
+        File.basename(realpath)
       end
 
       def wait_for_process(pid)
