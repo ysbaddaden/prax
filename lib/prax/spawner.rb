@@ -24,15 +24,17 @@ module Prax
     def spawn
       args = []
       args = [ "bundle", "exec" ] if gemfile?
+      pid = nil
 
       Dir.chdir(realpath) do
         pid = Process.spawn(*args, File.join(ROOT, "bin", "racker"),
           "--server", socket_path, "--pid", pid_path,
           [ :err, :out ] => [ log_path, "a" ]
         )
-        Process.detach(pid)
-        wait_for_process(pid)
       end
+
+      Process.detach(pid)
+      wait_for_process(pid)
     end
 
     # Returns true if the Rack app hasn't been spawned yet.
