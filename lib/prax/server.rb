@@ -1,20 +1,12 @@
 require "socket"
-require "logger"
 require "prax/config"
+require "prax/logger"
 require "prax/spawner"
 require "prax/handler"
 
 ROOT = File.expand_path("../../..", File.realpath(__FILE__))
 
 module Prax
-  def self.logger
-    @logger ||= begin
-      logger = Logger.new(STDOUT)
-      logger.level = Logger::INFO unless Config.debug?
-      logger
-    end
-  end
-
   module SSL
     def ssl_crt; File.join(ROOT, "ssl", "server.crt"); end
     def ssl_key; File.join(ROOT, "ssl", "server.key"); end
@@ -61,6 +53,8 @@ module Prax
       Signal.trap("TERM") { exit }
       Signal.trap("QUIT") { exit }
       Signal.trap("EXIT") { finalize }
+
+      Prax.logger = Prax::Logger.new(STDOUT)
 
       Prax.logger.info("HTTP server ready on port #{Config.http_port}")
       if @servers.size == 2
