@@ -28,7 +28,7 @@ module Prax
 
       Dir.chdir(realpath) do
         pid = Process.spawn(*args, File.join(ROOT, "bin", "racker"),
-          "--server", socket_path, "--pid", pid_path,
+          "--server", socket_path, "--pid", pid_path, "--log", log_path,
           [ :err, :out ] => [ "/tmp/#{app_name}.log", "a" ]
         )
         Process.detach(pid)
@@ -87,6 +87,11 @@ module Prax
     # Path to the PID of the spawned Rack app.
     def pid_path
       @pid_path ||= "/tmp/prax_#{md5}.pid"
+    end
+
+    # Path to the log of the spawned Rack app.
+    def log_path
+      @log_path ||= File.join(Config.log_root, "#{md5}.log")
     end
 
     # Real path to the app directory.

@@ -8,6 +8,13 @@ module Prax
         @host_root ||= ENV["PRAX_HOST_ROOT"] || File.join(ENV["HOME"], ".prax")
       end
 
+      # Directory where logs are stored. Defaults to `$HOME/.prax/_logs`
+      def log_root
+        @log_root ||= ENV["PRAX_LOG_ROOT"] || File.join(host_root, "_logs")
+        Dir.mkdir(@log_root) unless File.exists?(@log_root)
+        @log_root
+      end
+
       # The host to run the HTTP server on. Defaults to `0.0.0.0` (ie. all
       # available interfaces).
       def http_host
