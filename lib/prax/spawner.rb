@@ -28,8 +28,8 @@ module Prax
 
       Dir.chdir(realpath) do
         pid = Process.spawn(*args, File.join(ROOT, "bin", "racker"),
-          "--server", socket_path, "--pid", pid_path, "--log", log_path,
-          [ :err, :out ] => [ "/tmp/#{app_name}.log", "a" ]
+          "--server", socket_path, "--pid", pid_path,
+          [ :err, :out ] => [ log_path, "a" ]
         )
         Process.detach(pid)
         wait_for_process(pid)
