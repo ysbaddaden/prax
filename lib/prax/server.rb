@@ -74,7 +74,7 @@ module Prax
                 handle_connection(socket, server.is_a?(OpenSSL::SSL::SSLServer))
               end
             else
-              handle_connection(server.accept)
+              handle_connection(server.accept, server.is_a?(OpenSSL::SSL::SSLServer))
             end
           end
         rescue OpenSSL::SSL::SSLError
