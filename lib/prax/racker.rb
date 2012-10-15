@@ -78,9 +78,12 @@ class Racker
     socket.write("\r\n")
 
     body.each { |b| socket.write(b) }
+  rescue Errno::EPIPE, Errno::EIO
   ensure
-    socket.flush
-    socket.close
+    unless socket.closed?
+      socket.flush
+      socket.close
+    end
     body.close if body.respond_to?(:close)
     env["rack.input"].close if env and env["rack.input"]
   end
