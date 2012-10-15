@@ -79,8 +79,6 @@ requests, and more.
 
 === TODO
 
-- app spawn failure notice (with backtrace)
-- put logs somewhere else than /tmp (~/.prax/.logs ?)
 - commands for the prax script:
   - prax install
   - prax default
