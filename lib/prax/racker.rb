@@ -7,7 +7,7 @@ require "rack/utils"
 require "prax/logger"
 
 class Racker
-  attr_accessor :server, :app, :options
+  attr_accessor :server
 
   def self.run(*args)
     new(*args).run
@@ -19,23 +19,18 @@ class Racker
     Signal.trap("QUIT") { exit }
     Signal.trap("EXIT") { finalize }
 
-    server, @pid_path = options[:server], options[:pid]
-    config_path = Dir.getwd + "/config.ru"
-
+    @pid_path = options[:pid]
     File.open(@pid_path, "w") { |f| f.write(Process.pid) }
     Prax.logger = Prax::Logger.new(options[:log]) if options[:log]
 
     Prax.logger.debug("Starting server on #{server}")
-    if server =~ %r{^/}
-      @socket_path = server
-      self.server = UNIXServer.new(server)
+    if options[:server] =~ %r{^/}
+      @socket_path = options[:server]
+      self.server = UNIXServer.new(@socket_path)
     else
-      host, port = server.split(':', 2)
+      host, port = options[:server].split(':', 2)
       self.server = TCPServer.new(host, port || 9292)
     end
-
-    Prax.logger.debug("Building Rack app at #{config_path}")
-    self.app, self.options = Rack::Builder.parse_file(config_path)
   rescue
     finalize
     raise
@@ -45,6 +40,15 @@ class Racker
     server.close if server
     File.unlink(@pid_path) if File.exists?(@pid_path)
     File.unlink(@socket_path) if @socket_path and File.exists?(@socket_path)
+  end
+
+  def app
+    unless @app
+      config_path = Dir.getwd + "/config.ru"
+      Prax.logger.debug("Building Rack app at #{config_path}")
+      @app, _ = Rack::Builder.parse_file(config_path)
+    end
+    @app
   end
 
   def run
@@ -57,8 +61,14 @@ class Racker
 
   def handle_connection(socket)
     env = parse_env_from_socket(socket)
+    code = headers = body = nil
 
-    code, headers, body = app.call(env)
+    begin
+      code, headers, body = app.call(env)
+    rescue => exception
+      render_exception(socket, env, exception)
+      raise
+    end
     Prax.logger.info("#{code} - #{env['REQUEST_URI']}")
 
     socket.flush
@@ -68,11 +78,10 @@ class Racker
     socket.write("\r\n")
 
     body.each { |b| socket.write(b) }
-    body.close if body.respond_to?(:close)
-
+  ensure
     socket.flush
     socket.close
-  ensure
+    body.close if body.respond_to?(:close)
     env["rack.input"].close if env and env["rack.input"]
   end
 
@@ -147,7 +156,21 @@ class Racker
     end
   end
 
-  def http_status(code)
-    Rack::Utils::HTTP_STATUS_CODES[code]
-  end
+  private
+    def http_status(code)
+      Rack::Utils::HTTP_STATUS_CODES[code]
+    end
+
+    def render_exception(socket, env, exception)
+      socket.flush
+      socket.write([
+        "#{env["HTTP_VERSION"]} 500 #{http_status(500)}",
+        "Connection: close",
+        "Content-Type: text/plain",
+        "X-Racker-Exception: 1"
+      ].join("\r\n"))
+      socket.write("\r\n\r\n")
+      socket.write(exception.class.name + ": " + exception.message + "\n\n")
+      exception.backtrace.each { |line| socket.write(line + "\n") }
+    end
 end
