@@ -19,8 +19,11 @@ class Racker
     Signal.trap("QUIT") { exit }
     Signal.trap("EXIT") { finalize }
 
-    @pid_path = options[:pid]
-    File.open(@pid_path, "w") { |f| f.write(Process.pid) }
+    if options[:pid]
+      @pid_path = options[:pid]
+      File.open(@pid_path, "w") { |f| f.write(Process.pid) }
+    end
+
     Prax.logger = Prax::Logger.new(options[:log]) if options[:log]
 
     Prax.logger.debug("Starting server on #{server}")
@@ -38,7 +41,7 @@ class Racker
 
   def finalize
     server.close if server
-    File.unlink(@pid_path) if File.exists?(@pid_path)
+    File.unlink(@pid_path)    if @pid_path    and File.exists?(@pid_path)
     File.unlink(@socket_path) if @socket_path and File.exists?(@socket_path)
   end
 

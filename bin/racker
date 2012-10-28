@@ -4,7 +4,9 @@ $:.unshift File.expand_path("../../lib", File.realpath(__FILE__))
 require "optparse"
 require "prax/racker"
 
-options = {}
+options = {
+  server: "0.0.0.0:9292"
+}
 
 cli_parser = OptionParser.new do |opt|
   opt.banner = "Usage: racker [OPTIONS]"
