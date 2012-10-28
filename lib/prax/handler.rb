@@ -1,4 +1,4 @@
-require "erubis"
+require "erb"
 require "timeout"
 
 module Prax
@@ -138,8 +138,8 @@ module Prax
       @input.write("Connection: close\r\n")
       @input.write("\r\n")
 
-      tpl = Erubis::Eruby.new(File.read(template_path(template)))
-      @input.write(tpl.evaluate(self))
+      tpl = ERB.new(File.read(template_path(template)))
+      @input.write(tpl.result(binding))
 
       @input.flush
     end
