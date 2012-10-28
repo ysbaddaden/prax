@@ -1,4 +1,5 @@
 bak
+.rbx
 *.swp
 ext/*.so.*
 ext/*.o

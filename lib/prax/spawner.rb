@@ -23,16 +23,15 @@ module Prax
     # Spawns the app, then blocks until the socket is ready.
     def spawn
       args = []
-      args = [ "bundle", "exec" ] if gemfile?
+      args += [ "bundle", "exec" ] if gemfile?
+      args += [
+        File.join(ROOT, "bin", "racker"),
+        "--server", socket_path,
+        "--pid", pid_path,
+        { :out => [ log_path, "a" ], :err => :out }
+      ]
       pid = nil
-
-      Dir.chdir(realpath) do
-        pid = Process.spawn(*args, File.join(ROOT, "bin", "racker"),
-          "--server", socket_path, "--pid", pid_path,
-          [ :err, :out ] => [ log_path, "a" ]
-        )
-      end
-
+      Dir.chdir(realpath) { pid = Process.spawn(*args) }
       Process.detach(pid)
       wait_for_process(pid)
     end

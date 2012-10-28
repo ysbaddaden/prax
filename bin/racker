@@ -1,11 +1,12 @@
 #! /usr/bin/env ruby
+require File.expand_path("../../lib/prax/ruby18", __FILE__) if RUBY_VERSION < "1.9"
 $:.unshift File.expand_path("../../lib", File.realpath(__FILE__))
 
 require "optparse"
 require "prax/racker"
 
 options = {
-  server: "0.0.0.0:9292"
+  :server => "0.0.0.0:9292"
 }
 
 cli_parser = OptionParser.new do |opt|

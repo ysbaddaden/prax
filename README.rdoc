@@ -22,12 +22,27 @@ installed if you are a Ruby Web developer.
 There ain't no install script yet. So you must install things manually for
 now.
 
-Please note it has only been tested on Ruby MRI 1.9.3 and that it may not work
-correctly on another or older Ruby engine.
+=== Rubies
+
+Prax has been developed with MRI Ruby 1.9.3, but should be compatible with most
+ruby engines. It has been tested on:
+
+  - Ruby 1.8.7
+  - Ruby 1.9.3
+  - Rubinius 2.0.0 (HEAD)
+  - JRuby 1.7.0 (1.9 mode)
+
+Please note that Ruby 1.8.7 and Rubinius in 1.8 mode also require the `sfl`
+(spawn for legacy) gem, because Ruby 1.8 doesn't support `Process.spawn` which
+was introduced in Ruby 1.9.
+
+Jruby in 1.8 mode isn't supported. It requires `fork` which isn't available on
+all platforms (not even GNU/Linux). Also, Jruby 1.6.8 just doesn't work with
+Prax, neither in 1.8 nor 1.9 modes.
 
 === GNU/Linux
 
-First clone the repository, install the port forwaring script and NSSwitch
+First clone the repository, install the port forwarding script and NSSwitch
 extension.
 
   $ git clone git://github.com/ysbaddaden/prax.git
