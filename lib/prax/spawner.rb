@@ -28,7 +28,7 @@ module Prax
         File.join(ROOT, "bin", "racker"),
         "--server", socket_path,
         "--pid", pid_path,
-        { :out => [ log_path, "a" ], :err => :out }
+        { :out => [ log_path, "a" ], :err => [ :child, :out ] }
       ]
       pid = nil
       Dir.chdir(realpath) { pid = Process.spawn(*args) }
