@@ -106,6 +106,7 @@ module Prax
         end
       end
       @input.flush
+    rescue Errno::EPIPE
     end
 
     def parse_host
