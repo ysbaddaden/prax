@@ -39,20 +39,6 @@ module Prax
         @https_port ||= (ENV["PRAX_HTTPS_PORT"] || 20558).to_i
       end
 
-      # An array of top level extensions to serve. Any other extension
-      # will raise an error. Please configure the `PRAX_DOMAINS` environment
-      # variable to configure the domains the serve.
-      #
-      # Defaults to `.dev`.
-      def domains
-        @domains ||= (ENV["PRAX_DOMAINS"] || "dev").split(",").collect(&:strip)
-      end
-
-      # Returns true if the extention is known to Prax.
-      def supported_ext?(ext)
-        domains.include?(ext.to_s)
-      end
-
       # Returns true if a given app is available (a link in host_root that leads
       # to a real directory.
       def configured_app?(app_name)

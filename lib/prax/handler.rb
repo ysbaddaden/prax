@@ -3,11 +3,8 @@ require "timeout"
 
 module Prax
   class Handler
-    class NoSuchExt < StandardError; end
     class NoSuchApp < StandardError; end
     class CantStartApp < StandardError; end
-
-    attr_reader :input, :ssl
 
     def initialize(input, ssl = nil)
       @input = input
@@ -31,39 +28,27 @@ module Prax
 
     def spawn_app
       @ext, @app_name = parse_host
+      host = @request_headers["host"]
 
-      unless Config.ip?(@request_headers["host"])
-        if Config.xip?(@request_headers["host"])
-          @app_name = Config.xip_app_name(@request_headers["host"])
-        else
-          raise NoSuchExt.new unless Config.supported_ext?(@ext)
-        end
-
-        if Config.configured_app?(@app_name)
-          @spawner = Spawner.new(@app_name)
-        end
+      unless Config.ip?(host)
+        @app_name = Config.xip_app_name(host) if Config.xip?(host)
+        @spawner = Spawner.new(@app_name) if Config.configured_app?(@app_name)
       end
-
       unless @spawner
-        if Config.configured_default_app?
-          @app_name = :default
-          @spawner = Spawner.new(:default)
-        else
-          raise NoSuchApp.new
-        end
+        raise NoSuchApp.new unless Config.configured_default_app?
+        @app_name = :default
+        @spawner = Spawner.new(:default)
       end
-
       @output = @spawner.socket or raise CantStartApp.new
 
-    rescue NoSuchExt => e
-      Prax.logger.debug("No such extension: #{@ext}")
-      render(:no_such_ext)
     rescue NoSuchApp => e
       Prax.logger.debug("No such application: #{@app_name}")
       render(:no_such_app)
+
     rescue CantStartApp => e
       Prax.logger.debug("Can't start application: #{@app_name}")
       render(:cant_start_app)
+
 #    rescue => exception
 #      @exception = exception
 #      render(:spawn_error)
@@ -78,12 +63,11 @@ module Prax
 
       if line and line.strip =~ %r{^([A-Z]+) (.+) (HTTP/\d\.\d)$}
         @request << line
-
         @http_method  = $1
         @request_uri  = $2
         @http_version = $3
 
-        while line = input.gets
+        while line = @input.gets
 #          line.force_encoding("ASCII-8BIT") if line.respond_to?(:force_encoding)
           @request_headers[$1.downcase] = $2 if line.strip =~ /^([^:]+):\s*(.*)$/
           @request << line
