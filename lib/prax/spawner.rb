@@ -63,7 +63,13 @@ module Prax
     # Returns the UNIXSocket to the spawned app.
     def socket
       return nil unless File.exists?(socket_path)
-      @socket ||= UNIXSocket.new(socket_path)
+      begin
+        @socket ||= UNIXSocket.new(socket_path)
+      rescue Errno::ECONNREFUSED => e
+        Prax.logger.warn(e.to_s)
+        File.unlink(socket_path)
+        nil
+      end
     end
 
     # Returns true if the app uses Bundler.
