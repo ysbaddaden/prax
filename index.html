@@ -1,0 +1,185 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Prax by ysbaddaden</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/ysbaddaden/prax">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/ysbaddaden/prax/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/ysbaddaden/prax/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>Prax</h1>
+          <p>Rack proxy server for development</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/ysbaddaden">ysbaddaden</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1>Prax</h1>
+
+<p>A pure ruby alternative to Pow!!</p>
+
+<p>Aka a Rack application spawner and proxy for simpler local development.
+Calling <code>myapp.dev</code> and <code>subdomain.myapp.dev</code> with no
+configuration is simpler than editing your hosts file, starting your
+applications manually on port 3000, etc.</p>
+
+<h2>Why a pure-ruby alternative?</h2>
+
+<p>My GNU/Linux fork of Pow just broke on me badly. I ain't smart enought
+to understand, less write, any Coffee-Script, so I decided to try an
+alternative in Ruby, which I am capable to write, learning a lot about
+sockets, HTTP and Rack on the way.</p>
+
+<p>It also only requires Ruby and the Rack gem, both you should have already
+installed if you are a Ruby Web developer.</p>
+
+<h2>Install</h2>
+
+<p>There ain't no install script yet. You must install things manually.</p>
+
+<h3>Rubies</h3>
+
+<p>Prax has been developed with MRI Ruby 1.9.3, but should be compatible with most
+ruby engines. It has been tested on:</p>
+
+<ul>
+<li>Ruby 1.8.7</li>
+<li>Ruby 1.9.3</li>
+<li>Rubinius 2.0.0 (HEAD)</li>
+<li>JRuby 1.7.0 (1.9 mode)</li>
+</ul><p>Please note that Ruby 1.8.7 and Rubinius in 1.8 mode also require the <code>sfl</code>
+(spawn for legacy) gem, because Ruby 1.8 doesn't support <code>Process.spawn</code> which
+was introduced in Ruby 1.9.</p>
+
+<p>Jruby in 1.8 mode isn't supported. It requires <code>fork</code> which isn't available on
+all platforms (not even GNU/Linux). Also, Jruby 1.6.8 just doesn't work with
+Prax, neither in 1.8 nor 1.9 modes.</p>
+
+<h3>GNU/Linux</h3>
+
+<p>First clone the repository, install the port forwarding script and NSSwitch
+extension.</p>
+
+<pre><code>$ git clone git://github.com/ysbaddaden/prax.git
+
+$ cd prax/
+$ sudo cp install/initd /etc/init.d/prax
+$ sudo chmod +x /etc/init.d/prax
+$ sudo update-rc.d prax defaults
+$ sudo /etc/init.d/prax start
+
+$ cd prax/ext/
+$ make
+$ sudo make install
+</code></pre>
+
+<p>Edit <code>/etc/nsswitch.conf</code> and add <code>prax</code> to the <code>hosts</code> line, then
+restart your browser (otherwise it won't use the newly configured prax
+résolver).</p>
+
+<p>Create the ̀~/.prax` directory and link your apps to it. You may
+link the same folder multiple times as different names to serve it from
+different domains.</p>
+
+<pre><code>$ mkdir ~/.prax
+$ ln -sf ~/Work/myapp ~/.prax/
+</code></pre>
+
+<p>Eventually start <code>bin/prax</code> to run Prax, point your browser to
+<a href="http://myapp.dev/">http://myapp.dev/</a> and wait for your Rack app to spawn.</p>
+
+<h3>Mac OS X</h3>
+
+<p>Mac OS X isn't supported yet. Feel free to contribute!</p>
+
+<h2>Features</h2>
+
+<p>This is a work in progress, and Prax is missing some features to be on par
+with Pow. Mostly on the configuration side of your development machine. Yet
+it's already capable to start the HTTP server, spawn your apps, proxy
+requests, and more.</p>
+
+<ul>
+<li>HTTP Server</li>
+<li>HTTP Proxy</li>
+<li>Rack Handler (Racker)</li>
+<li>Rack Application spawn / restart / always restart</li>
+<li>SSL support (if certs and keys are generated)</li>
+<li>
+<a href="http://xip.io/">xip.io</a> support</li>
+<li>GNU/Linux:
+
+<ul>
+<li>NSSwitch DNS resolver (resolves *.dev domains to 127.0.0.1)</li>
+<li>iptables rule (redirects root ports 80/443 to user ports 20559/20558)</li>
+</ul>
+</li>
+</ul><h3>TODO</h3>
+
+<ul>
+<li>commands for the prax script:
+
+<ul>
+<li>prax install</li>
+<li>prax default</li>
+<li>prax list</li>
+<li>prax link [name]</li>
+<li>prax unlink [name]</li>
+<li>prax log</li>
+<li>prax restart</li>
+<li>prax always_restart</li>
+<li>prax cleanup</li>
+</ul>
+</li>
+<li>GNU/Linux:
+
+<ul>
+<li>install script</li>
+</ul>
+</li>
+<li>Mac OS X:
+
+<ul>
+<li>firewall rule</li>
+<li>DNS resolver</li>
+<li>install script</li>
+</ul>
+</li>
+</ul><h2>Credits</h2>
+
+<ul>
+<li>Julien Portalier <a href="mailto:julien@portalier.com">julien@portalier.com</a>
+</li>
+<li>pyromaniac for the initial NSSwitch extension.</li>
+</ul>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
