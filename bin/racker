@@ -3,7 +3,7 @@ require File.expand_path("../../lib/prax/ruby18", __FILE__) if RUBY_VERSION < "1
 $:.unshift File.expand_path("../../lib", File.realpath(__FILE__))
 
 require "optparse"
-require "prax/racker"
+require "racker"
 
 options = {
   :server => "0.0.0.0:9292"
