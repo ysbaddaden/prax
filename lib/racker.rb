@@ -13,6 +13,17 @@ class Racker
     new(*args).run
   end
 
+  def self.logger
+    @logger ||= begin
+      $stdout.sync = true
+      ::Logger.new($stdout)
+    end
+  end
+
+  def self.logger=(logger)
+    @logger = logger
+  end
+
   def initialize(options = {})
     Signal.trap("INT")  { exit }
     Signal.trap("TERM") { exit }
@@ -24,9 +35,9 @@ class Racker
       File.open(@pid_path, "w") { |f| f.write(Process.pid) }
     end
 
-    Prax.logger = Prax::Logger.new(options[:log]) if options[:log]
+    Racker.logger = ::Logger.new(options[:log]) if options[:log]
+    Racker.logger.debug("Starting server on #{server}")
 
-    Prax.logger.debug("Starting server on #{server}")
     if options[:server] =~ %r{^/}
       @socket_path = options[:server]
       self.server = UNIXServer.new(@socket_path)
@@ -48,14 +59,14 @@ class Racker
   def app
     unless @app
       config_path = Dir.getwd + "/config.ru"
-      Prax.logger.debug("Building Rack app at #{config_path}")
+      Racker.logger.debug("Building Rack app at #{config_path}")
       @app, _ = Rack::Builder.parse_file(config_path)
     end
     @app
   end
 
   def run
-    Prax.logger.info("Server ready to receive connections")
+    Racker.logger.info("Server ready to receive connections")
     loop do
 #      Thread.start(server.accept) { |socket| handle_connection(socket) }
       handle_connection(server.accept)
@@ -72,7 +83,7 @@ class Racker
       render_exception(socket, env, exception)
       raise
     end
-    Prax.logger.info("#{code} - #{env['REQUEST_URI']}")
+    Racker.logger.info("#{code} - #{env['REQUEST_URI']}")
 
     socket.flush
     socket.write("#{env["HTTP_VERSION"]} #{code} #{http_status(code)}\r\n")
@@ -100,7 +111,7 @@ class Racker
       "SERVER_SOFTWARE"   => "racker 0.0.1",
     }
     env["rack.errors"] = STDERR
-    env["rack.logger"] = Prax.logger
+    env["rack.logger"] = Racker.logger
 
     _, _, host = socket.peeraddr
     env["REMOTE_ADDR"] = host

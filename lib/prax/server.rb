@@ -55,12 +55,6 @@ module Prax
       Signal.trap("QUIT") { exit }
       Signal.trap("EXIT") { finalize }
 
-      if Config.debug?
-        Prax.logger = Prax::Logger.new(STDOUT)
-      else
-        Prax.logger = Prax::Logger.new(File.join(Config.log_root, "prax.log"))
-      end
-
       Prax.logger.info("HTTP server ready on port #{Config.http_port}")
       if @servers.size == 2
         Prax.logger.info("HTTPS server ready on port #{Config.https_port}")
