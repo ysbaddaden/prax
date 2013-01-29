@@ -58,9 +58,12 @@ _nss_prax_gethostbyname2_r(const char *name,
 //    fprintf(log, "%s (%d)\n", name, af);
 //    fclose(log);
 
-    char *domains = getenv("PRAX_DOMAINS");
-    if (domains == NULL) {
+    char *env = getenv("PRAX_DOMAINS");
+    char *domains;
+    if (env == NULL) {
         domains = strdup("dev");
+    } else {
+        domains = strdup(env);
     }
 
     char *domain = strtok(domains, ",");
