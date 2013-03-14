@@ -26,7 +26,8 @@ module Prax
   def self.logger
     @logger ||= begin
       $stdout.sync = true
-      Prax::Logger.new(MultiIO.new($stdout, File.join(Config.log_root, "prax.log")))
+      log = File.open(File.join(Config.log_root, "prax.log"), "a")
+      Prax::Logger.new(MultiIO.new($stdout, log))
     end
   end
 
