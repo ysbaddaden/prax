@@ -92,7 +92,7 @@ class Racker
     socket.write("\r\n")
 
     body.each { |b| socket.write(b) }
-  rescue Errno::EPIPE, Errno::EIO
+  rescue Errno::EPIPE, Errno::EIO, Errno::ECONNRESET
   ensure
     unless socket.closed?
       socket.flush

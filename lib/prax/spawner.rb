@@ -62,6 +62,8 @@ module Prax
         Process.kill("TERM", pid)
         Process.wait
       end
+    rescue Errno::ECHILD
+      File.unlink(pid_path) if File.exists?(pid_path)
     end
 
     # Returns the UNIXSocket to the spawned app.
