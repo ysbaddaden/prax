@@ -22,7 +22,11 @@ module Prax
 
     # Spawns the app, then blocks until the socket is ready.
     def spawn
-      args = []
+      args, env = [], { 'PATH' => ENV['ORIG_PATH'] }
+      if rbenv?
+        env['RBENV_VERSION'] = nil
+        args += [ "rbenv", "exec" ]
+      end
       args += [ "bundle", "exec" ] if gemfile?
       args += [
         File.join(ROOT, "bin", "racker"),
@@ -31,7 +35,7 @@ module Prax
         { :out => [ log_path, "a" ], :err => [ :child, :out ] }
       ]
       pid = nil
-      Dir.chdir(realpath) { pid = Process.spawn(*args) }
+      Dir.chdir(realpath) { pid = Process.spawn(env, *args) }
       Process.detach(pid)
       wait_for_process(pid)
     end
@@ -75,6 +79,11 @@ module Prax
     # Returns true if the app uses Bundler.
     def gemfile?
       File.exists?(File.join(realpath, "Gemfile"))
+    end
+
+    # Returns true if rbenv is found.
+    def rbenv?
+      `which rbenv` != ''
     end
 
     # Path to the Rack config file.
