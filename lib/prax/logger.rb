@@ -9,10 +9,12 @@ module Prax
 
     def write(*args)
       @targets.each { |target| target.write(*args) }
+    rescue
     end
 
     def close
       @target.each(&:close)
+    rescue
     end
   end
 
