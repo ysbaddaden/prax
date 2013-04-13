@@ -55,7 +55,7 @@ class Racker
   end
 
   def spawn_server(options)
-    Racker.logger.debug("Starting server on #{server}")
+    Racker.logger.debug("Starting server on #{options[:server]}")
     if options[:server] =~ %r{^/}
       @socket_path = options[:server]
       self.server = UNIXServer.new(@socket_path)
