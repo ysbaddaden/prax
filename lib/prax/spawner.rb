@@ -3,6 +3,8 @@ require "prax/config"
 
 module Prax
   class Spawner
+    @@mutext = Mutex.new
+
     attr_reader :app_name
 
     # Either spawns the Rack app (if properly configured) or permits to
@@ -10,24 +12,35 @@ module Prax
     def initialize(app_name)
       @app_name = app_name.to_s
 
-      if start?
-        Prax.logger.info("Starting app #{@app_name} (#{realpath})")
-        spawn
-      elsif restart?
-        Prax.logger.info("Restarting app #{@app_name} (#{realpath})")
-        kill
-        spawn
+      @@mutext.synchronize do # prevents threads to (re)spawn an app at the same time.
+        if start?
+          Prax.logger.info("Starting app #{@app_name} (#{realpath})")
+          spawn
+        elsif restart?
+          Prax.logger.info("Restarting app #{@app_name} (#{realpath})")
+          kill
+          spawn
+        end
       end
     end
 
     # Spawns the app, then blocks until the socket is ready.
+    #
+    # TODO: notify an object in the main thread about the spawning app (that
+    # object could kill all apps when prax is terminated, as well as killing
+    # apps after some timeout).
     def spawn
+      # rbenv
       args, env = [], { 'PATH' => ENV['ORIG_PATH'] }
       if rbenv?
         env['RBENV_VERSION'] = nil
         args += [ "rbenv", "exec" ]
       end
+
+      # bundler
       args += [ "bundle", "exec" ] if gemfile?
+
+      # racker
       args += [
         File.join(ROOT, "bin", "racker"),
         "--server", socket_path,
@@ -35,7 +48,10 @@ module Prax
         { :out => [ log_path, "a" ], :err => [ :child, :out ] }
       ]
       pid = nil
+
+      # FIXME: chdir should happen in racker!
       Dir.chdir(realpath) { pid = Process.spawn(env, *args) }
+
       Process.detach(pid)
       wait_for_process(pid)
     end
