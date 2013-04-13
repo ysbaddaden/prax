@@ -137,15 +137,15 @@ class Racker
     env["HTTP_VERSION"]    = $3
     env["SERVER_PROTOCOL"] = $3
 
-    if env["REQUEST_URI"] =~ /\?/
-      ary = env["REQUEST_URI"].split("?")
-      env["QUERY_STRING"] = ary.pop
-      env["PATH_INFO"] = env["REQUEST_PATH"] = ary.join("?")
+    idx = env["REQUEST_URI"].rindex('?')
+    if idx
+      env["PATH_INFO"] = env["REQUEST_PATH"] = env["REQUEST_URI"][0...idx]
+      env["QUERY_STRING"] = env["REQUEST_URI"][(idx + 1)..-1]
     else
-      env["QUERY_STRING"] = ""
       env["PATH_INFO"] = env["REQUEST_PATH"] = env["REQUEST_URI"]
+      env["QUERY_STRING"] = ""
     end
-    env["SCRIPT_NAME"]  = ""
+    env["SCRIPT_NAME"] = ""
 
     while line = socket.gets
       if line.strip =~ /^([^:]*):\s*(.*)$/
