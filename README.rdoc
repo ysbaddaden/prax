@@ -9,18 +9,18 @@ applications manually on port 3000, etc.
 
 == Why a pure-ruby alternative?
 
-My GNU/Linux fork of Pow just broke on me badly. I ain't smart enought
-to understand, less write, any Coffee-Script, so I decided to try an
-alternative in Ruby, which I am capable to write, learning a lot about
-sockets, HTTP and Rack on the way.
+My GNU/Linux fork of [Pow](http://pow.cx/) just broke on me badly, and I
+couldn't read, less write the coffeescript it's written in. I thus decided to
+try writing an alternative in Ruby. Good for me, because I now have a viable
+alternative, and learned a lot about TCP and UNIX sockets, the HTTP protocol,
+Rack and Ruby Threads.
 
-It also only requires Ruby and the Rack gem, both you should have already
+Also, Prax only requires Ruby and the Rack gem, both you should have already
 installed if you are a Ruby Web developer.
 
 == Install
 
-There ain't no install script yet. So you must install things manually for
-now.
+There ain't no install script yet. So you must install things manually.
 
 === Rubies
 
@@ -36,9 +36,9 @@ Please note that Ruby 1.8.7 and Rubinius in 1.8 mode also require the `sfl`
 (spawn for legacy) gem, because Ruby 1.8 doesn't support `Process.spawn` which
 was introduced in Ruby 1.9.
 
-Jruby in 1.8 mode isn't supported. It requires `fork` which isn't available on
-all platforms (not even GNU/Linux). Also, Jruby 1.6.8 just doesn't work with
-Prax, neither in 1.8 nor 1.9 modes.
+Jruby in 1.8 mode isn't supported, because `sfl` requires `fork` which isn't
+available on all platforms (not even GNU/Linux). Also, Jruby 1.6.8 just doesn't
+work with Prax, neither in 1.8 nor 1.9 modes.
 
 === GNU/Linux
 
