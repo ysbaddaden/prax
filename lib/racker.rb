@@ -7,7 +7,7 @@ require "rack/utils"
 require "prax/logger"
 
 class Racker
-  attr_accessor :server
+  attr_accessor :server, :threads, :queue
 
   def self.run(*args)
     new(*args).run
@@ -34,10 +34,28 @@ class Racker
       @pid_path = options[:pid]
       File.open(@pid_path, "w") { |f| f.write(Process.pid) }
     end
-
     Racker.logger = ::Logger.new(options[:log]) if options[:log]
-    Racker.logger.debug("Starting server on #{server}")
 
+    @mutex = Mutex.new
+    @queue = Queue.new
+
+    spawn_server(options)
+    spawn_threads
+  rescue
+    finalize
+    raise
+  end
+
+  def spawn_threads
+    @threads = 16.times.map do
+      Thread.new do
+        loop { handle_connection(queue.pop) }
+      end
+    end
+  end
+
+  def spawn_server(options)
+    Racker.logger.debug("Starting server on #{server}")
     if options[:server] =~ %r{^/}
       @socket_path = options[:server]
       self.server = UNIXServer.new(@socket_path)
@@ -45,9 +63,6 @@ class Racker
       host, port = options[:server].split(':', 2)
       self.server = TCPServer.new(host, port || 9292)
     end
-  rescue
-    finalize
-    raise
   end
 
   def finalize
@@ -57,20 +72,19 @@ class Racker
   end
 
   def app
-    unless @app
-      config_path = Dir.getwd + "/config.ru"
-      Racker.logger.debug("Building Rack app at #{config_path}")
-      @app, _ = Rack::Builder.parse_file(config_path)
+    @mutex.synchronize do
+      @app ||= begin
+        config_path = Dir.getwd + "/config.ru"
+        Racker.logger.debug("Building Rack app at #{config_path}")
+        app, _ = Rack::Builder.parse_file(config_path)
+        app
+      end
     end
-    @app
   end
 
   def run
     Racker.logger.info("Server ready to receive connections")
-    loop do
-#      Thread.start(server.accept) { |socket| handle_connection(socket) }
-      handle_connection(server.accept)
-    end
+    loop { queue << server.accept }
   end
 
   def handle_connection(socket)
