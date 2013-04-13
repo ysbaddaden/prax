@@ -39,6 +39,10 @@ module Prax
         @https_port ||= (ENV["PRAX_HTTPS_PORT"] || 20558).to_i
       end
 
+      def threads_count
+        @threads_count ||= (ENV["PRAX_THREADS"] || 16).to_i
+      end
+
       # Returns true if a given app is available (a link in host_root that leads
       # to a real directory.
       def configured_app?(app_name)

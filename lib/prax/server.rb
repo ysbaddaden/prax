@@ -19,29 +19,55 @@ module Prax
 
   class Server
     include SSL
-    attr_reader :servers
+
+    attr_reader :servers, :threads, :queue
 
     def self.run
       new.run
     end
 
     def initialize
-      Prax.logger.debug("Starting HTTP server on port #{Config.http_port}")
       @servers = []
-      @servers << TCPServer.new(Config.http_port)
-      Prax.logger.debug(@servers.first.addr.inspect)
+      @queue = Queue.new
+      spawn_servers
+      spawn_thread_workers
+    end
 
-      if ssl_configured?
-        Prax.logger.debug("Starting HTTPS server on port #{Config.https_port}")
-        ctx      = OpenSSL::SSL::SSLContext.new
-        ctx.cert = OpenSSL::X509::Certificate.new(File.read(ssl_crt))
-        ctx.key  = OpenSSL::PKey::RSA.new(File.read(ssl_key))
-        @servers << OpenSSL::SSL::SSLServer.new(
-          TCPServer.new(Config.https_port),
-          ctx
-        )
-        Prax.logger.debug(@servers.last.addr.inspect)
+    def spawn_servers
+      Prax.logger.debug("Starting HTTP server on port #{Config.http_port}")
+      @servers << TCPServer.new(Config.http_port)
+      spawn_ssl_server if ssl_configured?
+      @servers.each { |server| Prax.logger.debug(server.addr.inspect) }
+    end
+
+    def spawn_ssl_server
+      Prax.logger.debug("Starting HTTPS server on port #{Config.https_port}")
+      ctx      = OpenSSL::SSL::SSLContext.new
+      ctx.cert = OpenSSL::X509::Certificate.new(File.read(ssl_crt))
+      ctx.key  = OpenSSL::PKey::RSA.new(File.read(ssl_key))
+      @servers << OpenSSL::SSL::SSLServer.new(TCPServer.new(Config.https_port), ctx)
+    end
+
+    def spawn_thread_workers
+      @threads = Config.threads_count.times.map do |i|
+        Thread.new do
+          loop do
+            socket, ssl = queue.pop
+            #inet, port, host = socket.peeraddr
+            #Prax.logger.debug("Thread ##{i} received request from #{host}:#{port} (#{inet}).")
+            handle_connection(socket, ssl)
+            #Prax.logger.debug("Thread ##{i} finished request from #{host}:#{port} (#{inet}).")
+          end
+        end
       end
+    end
+
+    def handle_connection(socket, ssl = nil)
+      #inet, port, host = socket.peeraddr
+      #Prax.logger.debug("New connection from #{host}:#{port} (#{inet}).")
+      Handler.new(socket, ssl).run
+      socket.close
+      #Prax.logger.debug("Closed connection from #{host}:#{port} (#{inet}).")
     end
 
     def finalize
@@ -63,25 +89,12 @@ module Prax
       loop do
         begin
           IO.select(@servers).first.each do |server|
-            if Config.thread?
-              Thread.start(server.accept) do |socket|
-                handle_connection(socket, server.is_a?(OpenSSL::SSL::SSLServer))
-              end
-            else
-              handle_connection(server.accept, server.is_a?(OpenSSL::SSL::SSLServer))
-            end
+            ssl = server.is_a?(OpenSSL::SSL::SSLServer)
+            queue << [server.accept, ssl]
           end
         rescue OpenSSL::SSL::SSLError
         end
       end
-    end
-
-    def handle_connection(socket, ssl = nil)
-      _, port, host = socket.peeraddr
-      Prax.logger.debug("New connection from #{host}:#{port} (#{_}).")
-      Handler.new(socket, ssl).run
-      socket.close
-      Prax.logger.debug("Closed connection from #{host}:#{port} (#{_}).")
     end
   end
 end
