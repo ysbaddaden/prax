@@ -54,9 +54,8 @@ _nss_prax_gethostbyname2_r(const char *name,
     char *ext;
     int len = 0;
 
-//    FILE *log = fopen("/tmp/nss_prax.log","a+");
-//    fprintf(log, "%s (%d)\n", name, af);
-//    fclose(log);
+    //FILE *log = fopen("/tmp/nss_prax.log","a+");
+    //fprintf(log, "%s (%d)...", name, af);
 
     char *env = getenv("PRAX_DOMAINS");
     char *domains;
@@ -85,6 +84,9 @@ _nss_prax_gethostbyname2_r(const char *name,
         domain = strtok(NULL, ",");
         len++;
     }
+
+    //fprintf(log, " done.\n");
+    //fclose(log);
 
     free(domains);
     return status;

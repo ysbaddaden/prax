@@ -12,7 +12,7 @@ libnss_prax.so.2: $(OBJ)
 clean:
 	rm -f *.o *~ libnss_prax.so.2
 
-install:
+install: libnss_prax.so.2
 	ln -sf $(CURDIR)/libnss_prax.so.2 /lib
 
 uninstall:
