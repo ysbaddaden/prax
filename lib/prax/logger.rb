@@ -8,12 +8,12 @@ module Prax
     end
 
     def write(*args)
-      @targets.each { |target| target.write(*args) }
+      @targets.each { |target| target.write(*args) unless target.closed? }
     rescue
     end
 
     def close
-      @target.each(&:close)
+      @target.each(&:close) unless target.closed?
     rescue
     end
   end
@@ -27,7 +27,7 @@ module Prax
 
   def self.logger
     @logger ||= begin
-      $stdout.sync = true
+      #$stdout.sync = true
       log = File.open(File.join(Config.log_root, "prax.log"), "a")
       Prax::Logger.new(MultiIO.new($stdout, log))
     end
