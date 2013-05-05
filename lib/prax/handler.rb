@@ -6,28 +6,47 @@ module Prax
     class NoSuchApp < StandardError; end
     class CantStartApp < StandardError; end
 
-    def initialize(input, ssl = nil)
+    def initialize(input, path, ssl = nil)
       @input = input
       @ssl = ssl
     end
 
     def run
       parse_request
-      if @request.any?
-        spawn_app
-        if @output
-          pass_request
-          pass_response
-        end
-      end
+      handle_request if @request.any?
     rescue NoMethodError => e
       Prax.logger.warn(e.message + "\n" + e.backtrace.join("\n"))
     ensure
       @output.close if @output
     end
 
-    def spawn_app
+    def handle_request
       @ext, @app_name = parse_host
+
+      if public_file_exists?
+        stream_public_file
+      else
+        spawn_app
+        proxy_request if @output
+      end
+    end
+
+    def public_file_path
+      @public_file_path ||=
+        File.join(Config.host_root, @app_name, "public", @request_uri)
+    end
+
+    def public_file_exists?
+      return File.exists?(public_file_path) && !File.directory?(public_file_path)
+    end
+
+    def stream_public_file
+      @input.write "#{@http_version} 200 OK\r\n"
+      @input.write "Connection: close\r\n\r\n"
+      @input.write File.read(public_file_path, mode: "rb")
+    end
+
+    def spawn_app
       host = @request_headers["host"]
 
       unless Config.ip?(host)
@@ -74,6 +93,11 @@ module Prax
           break if line.strip.empty?
         end
       end
+    end
+
+    def proxy_request
+      pass_request
+      pass_response
     end
 
     def pass_request
