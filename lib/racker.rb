@@ -47,7 +47,7 @@ class Racker
   end
 
   def spawn_threads
-    @threads = 16.times.map do
+    @threads = 4.times.map do
       Thread.new do
         loop { handle_connection(queue.pop) }
       end
