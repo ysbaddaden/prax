@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Usage: prax install
+# Summary: Installs Prax proxy server (requires sudo privilege)
+set -e
+
+EXT="$PRAX_ROOT/ext"
+INSTALL="$PRAX_ROOT/install"
+HOSTS="$HOME/.prax"
+
+cd $EXT
+echo "Installing NSSwitch extension (to resolve .dev domains)"
+make
+sudo make install
+
+echo 'TODO: add "prax" to the hosts line of /etc/nsswitch.conf'
+
+cd $PRAX_ROOT
+echo "Installing Prax firewall rule"
+sudo cp "$INSTALL/initd" "/etc/init.d/prax"
+sudo chmod +x "/etc/init.d/prax"
+sudo update-rc.d prax defaults
+sudo /etc/init.d/prax start
+
+echo "Creating ~/.prax directory"
+if [ ! -d $HOSTS ]; then
+    mkdir $HOSTS
+fi
+
+# prax start --background
+
+echo "Prax is now ready. First restart your browser (for the NSSwitch extension"
+echo "to be used). Then link your apps to it:"
+echo
+echo "  $ ln -sf ~/Work/myapp ~/.prax/"
+echo
+echo "Eventually point your browser to http://myapp.dev/"
+

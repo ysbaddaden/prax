@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Usage: prax unlink [name]
+# Summary: Unlinks a Rack application from ~/.prax
+# Help: This command will unlink a Rack application from ~/.prax
+#
+# By default it will remove the application in the current directory, but you
+# may specify an application name to remove.
+set -e
+
+if [ -z "$1" ]; then
+    name=`basename $PWD`
+else
+    name=$1
+fi
+
+echo "rm -f $PRAX_HOSTS/$name"
+rm -f $PRAX_HOSTS/$name
+
