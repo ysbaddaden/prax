@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Usage: prax start
+# Summary: Start Prax proxy server
+set -e
+
+# Loads either rbenv or RVM (if present)
+if [ -x $HOME/.rbenv/bin/rbenv ] ; then
+  export PATH="$HOME/.rbenv/bin:$PATH"
+  eval "$(rbenv init -)"
+elif [ -x $HOME/.rvm/scripts/rvm ] ; then
+  . $HOME/.rvm/scripts/rvm
+fi
+
+# Loads user config (if present)
+if [ -f $HOME/.praxconfig ] ; then
+  . $HOME/.praxconfig
+fi
+
+prax stop
+
+## kills any running instance
+#PID=`ps x | awk -F " " "{ if ( \\$5 == \\"ruby\\" && \\$6 == \\"$PRAX_ROOT/lib/prax/command.rb\\" ) print \\$1 }"`
+#[ "$PID" == "" ] || kill $PID
+
+# keeps a copy of original path
+export ORIG_PATH=$PATH
+
+# starts instance
+cd $PRAX_ROOT
+exec "ruby" "$PRAX_ROOT/lib/prax/command.rb" $*
+

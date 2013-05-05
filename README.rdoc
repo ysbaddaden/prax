@@ -107,21 +107,19 @@ requests, and more.
 - GNU/Linux:
   - NSSwitch DNS resolver (resolves <tt>*.dev</tt> domains to <tt>127.0.0.1</tt>)
   - firewall rule (redirects root ports 80/443 to user ports 20559/20558)
+  - install script
 
 === TODO
 
 - commands for the prax script:
   - prax install
-  - prax default
   - prax list
   - prax link [name]
   - prax unlink [name]
   - prax log
-  - prax restart
+  - prax restart [always]
   - prax always_restart
   - prax cleanup
-- GNU/Linux:
-  - install script
 - Mac OS X:
   - firewall rule
   - DNS resolver
@@ -130,5 +128,6 @@ requests, and more.
 == Credits
 
 - Julien Portalier <julien@portalier.com>
-- pyromaniac for the initial NSSwitch extension.
+- Sam Stephenson, Nick Quaranto, 37signals for the sub comamnd
+- pyromaniac for the initial NSSwitch extension
 
