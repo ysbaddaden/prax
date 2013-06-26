@@ -22,12 +22,18 @@ case "$1" in
     if [ `iptables -t nat -L -n | egrep "($HTTP_PORT|$HTTPS_PORT)" | wc -l` -eq 0 ] ; then
       iptables -t nat -A OUTPUT -p tcp -d 127.0.0.1 --dport 80  -j REDIRECT --to-ports $HTTP_PORT
       iptables -t nat -A OUTPUT -p tcp -d 127.0.0.1 --dport 443 -j REDIRECT --to-ports $HTTPS_PORT
+      iptables -t nat -A PREROUTING -p tcp  --dport 80 -j REDIRECT --to-port $HTTP_PORT
+      iptables -t nat -A PREROUTING -p tcp  --dport 443 -j REDIRECT --to-port $HTTPS_PORT
     fi
     ;;
   stop)
-    RULE_NUMS=`iptables -t nat -L --line-numbers -n | egrep "($HTTP_PORT|$HTTPS_PORT)" | awk '{a[i++]=$0} END { for (j=i-1; j>=0;) print a[j--] }' | awk -F " " '{ print $1 }'`
+    RULE_NUMS=`iptables -t nat -L OUTPUT --line-numbers -n | egrep "($HTTP_PORT|$HTTPS_PORT)" | awk '{a[i++]=$0} END { for (j=i-1; j>=0;) print a[j--] }' | awk -F " " '{ print $1 }'`
     for RULE_NUM in $RULE_NUMS ; do
       iptables -t nat -D OUTPUT $RULE_NUM
+    done
+    RULE_NUMS=`iptables -t nat -L PREROUTING --line-numbers -n | egrep "($HTTP_PORT|$HTTPS_PORT)" | awk '{a[i++]=$0} END { for (j=i-1; j>=0;) print a[j--] }' | awk -F " " '{ print $1 }'`
+    for RULE_NUM in $RULE_NUMS ; do
+      iptables -t nat -D PREROUTING $RULE_NUM
     done
     ;;
   restart)
