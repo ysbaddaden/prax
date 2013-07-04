@@ -72,6 +72,7 @@ module Prax
 
     def finalize
       @servers.each { |server| server.close if server }
+      Process.kill 'INT', -Process.getpgrp # Kill all children
       Prax.logger.info("Server shutdown.")
     end
 
