@@ -12,7 +12,8 @@ echo "Installing NSSwitch extension (to resolve .dev domains)"
 make
 sudo make install
 
-echo 'TODO: add "prax" to the hosts line of /etc/nsswitch.conf'
+echo 'Adding "prax" to the hosts line of /etc/nsswitch.conf'
+sudo sed -i -e '/\bprax\b/ !s/^hosts:.*/& prax/' /etc/nsswitch.conf
 
 cd $PRAX_ROOT
 echo "Installing Prax firewall rule"
