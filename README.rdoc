@@ -18,10 +18,6 @@ Rack and Ruby Threads.
 Also, Prax only requires Ruby and the Rack gem, both you should have already
 installed if you are a Ruby Web developer.
 
-== Install
-
-There ain't no install script yet. So you must install things manually.
-
 === Rubies
 
 Prax has been developed with MRI Ruby 1.9.3, but should be compatible with most
@@ -40,7 +36,7 @@ Jruby in 1.8 mode isn't supported, because `sfl` requires `fork` which isn't
 available on all platforms (not even GNU/Linux). Also, Jruby 1.6.8 just doesn't
 work with Prax, neither in 1.8 nor 1.9 modes.
 
-=== GNU/Linux
+== Installing on GNU/Linux
 
 First clone the repository, install the port forwarding script and NSSwitch
 extension.
@@ -48,6 +44,14 @@ extension.
   $ git clone git://github.com/ysbaddaden/prax.git
 
   $ cd prax/
+  $ ./bin/prax install
+
+And you're done! You only need to link your apps using:
+
+  $ ./bin/prax link ~/Work/myapp
+
+Or install manually:
+
   $ sudo cp install/initd /etc/init.d/prax
   $ sudo chmod +x /etc/init.d/prax
   $ sudo update-rc.d prax defaults
@@ -112,14 +116,7 @@ requests, and more.
 === TODO
 
 - commands for the prax script:
-  - prax install
-  - prax list
-  - prax link [name]
-  - prax unlink [name]
-  - prax log
-  - prax restart [always]
   - prax always_restart
-  - prax cleanup
 - Mac OS X:
   - firewall rule
   - DNS resolver
