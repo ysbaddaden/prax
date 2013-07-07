@@ -1,0 +1,65 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:800|Vollkorn:400italic,400,700)
+@import normalize
+@import foundation/variables
+@import foundation/global
+@import foundation/grid
+@import foundation/type
+
+$white: #f0e7d5
+$anthracite: #2a2a29
+$yellow: #e6b800
+
+em
+  color: $primary-color
+code
+  font-style: normal
+pre
+  background: $anthracite
+  padding: 1em
+  margin-bottom: 1.5em
+  code
+    font-size: emCalc(14px)
+    color: $white
+
+#header
+  padding: 1.5em
+  margin-bottom: 1.5em
+  background: $anthracite
+  color: $white
+
+  .row
+    position: relative
+  nav
+    position: absolute
+    bottom: 0
+    right: 0
+
+  h1, ul, p
+    margin: 0
+  h1
+    font-size: 3em
+    color: $white
+
+  ul
+    list-style: none
+    text-align: right
+    font-size: emCalc(16px)
+
+  a
+    font-family: "Open Sans", sans-serif
+    font-style: normal
+    font-weight: bold
+    text-transform: uppercase
+
+#facts
+  margin-bottom: 1.5em
+  p
+    background: $yellow
+    text-shadow: 0 1px $white
+    border-radius: $global-radius
+    margin: 0
+    padding: 1.25em 0.25em
+    font-size: 1.5em
+    line-height: 1.25em
+    text-align: center
+
