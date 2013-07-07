@@ -2,11 +2,12 @@ require 'socket'
 require 'rack'
 require 'rack/builder'
 require 'racker/logger'
+require 'prax/workers'
 require 'racker/handler'
 
 module Racker
   class Server
-    attr_accessor :server, :threads, :queue, :handler
+    attr_reader :queue, :server, :workers
 
     def self.run(*args)
       new(*args).run
@@ -28,6 +29,7 @@ module Racker
     end
 
     def finalize
+      workers.exiting = true
       server.close if server
       File.unlink(@pid_path)    if @pid_path    and File.exists?(@pid_path)
       File.unlink(@socket_path) if @socket_path and File.exists?(@socket_path)
@@ -38,23 +40,22 @@ module Racker
     end
 
     private
-      def spawn_workers
-        @mutex, @queue = Mutex.new, Queue.new
-        @threads = 4.times.map do
-          Thread.new do
-            loop { Racker::Handler.new(app, queue.pop).handle_connection }
-          end
+      def spawn_server(options)
+        Racker.logger.debug("Starting server on #{options[:server]}")
+
+        if options[:server] =~ %r{^/}
+          @socket_path = options[:server]
+          @server = UNIXServer.new(@socket_path)
+        else
+          host, port = options[:server].split(':', 2)
+          @server = TCPServer.new(host, port || 9292)
         end
       end
 
-      def spawn_server(options)
-        Racker.logger.debug("Starting server on #{options[:server]}")
-        if options[:server] =~ %r{^/}
-          @socket_path = options[:server]
-          self.server = UNIXServer.new(@socket_path)
-        else
-          host, port = options[:server].split(':', 2)
-          self.server = TCPServer.new(host, port || 9292)
+      def spawn_workers
+        @mutex, @queue = Mutex.new, Queue.new
+        @workers = Prax::Workers.new(4) do
+          loop { Handler.new(app, queue.pop).handle_connection }
         end
       end
 
