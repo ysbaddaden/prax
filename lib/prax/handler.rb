@@ -6,7 +6,7 @@ module Prax
     class NoSuchApp < StandardError; end
     class CantStartApp < StandardError; end
 
-    def initialize(input, path, ssl = nil)
+    def initialize(input, ssl = nil)
       @input = input
       @ssl = ssl
     end
