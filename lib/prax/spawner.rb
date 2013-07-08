@@ -90,7 +90,7 @@ module Prax
       rescue Errno::ECONNREFUSED => e
         Prax.logger.warn(e.to_s)
         File.unlink(socket_path)
-        nil
+        raise
       end
     end
 

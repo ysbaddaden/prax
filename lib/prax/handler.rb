@@ -21,8 +21,6 @@ module Prax
     end
 
     def handle_request
-      @ext, @app_name = parse_host
-
       if public_file_exists?
         stream_public_file
       else
@@ -33,7 +31,7 @@ module Prax
 
     def public_file_path
       @public_file_path ||=
-        File.join(Config.host_root, @app_name, "public", @request_uri)
+        File.join(Config.host_root, app_name, "public", @request_uri)
     end
 
     def public_file_exists?
@@ -46,31 +44,35 @@ module Prax
       @input.write File.read(public_file_path, mode: "rb")
     end
 
-    def spawn_app
-      host = @request_headers["host"]
+    def app_name
+      @app_name ||= lambda {
+        host, app_name = @request_headers["host"], parse_host
 
-      unless Config.ip?(host)
-        @app_name = Config.xip_app_name(host) if Config.xip?(host)
-        @spawner = Spawner.new(@app_name) if Config.configured_app?(@app_name)
-      end
-      unless @spawner
-        raise NoSuchApp.new unless Config.configured_default_app?
-        @app_name = :default
-        @spawner = Spawner.new(:default)
-      end
-      @output = @spawner.socket or raise CantStartApp.new
+        unless Config.ip?(host)
+          return Config.xip_app_name(host) if Config.xip?(host)
+          return app_name if Config.configured_app?(app_name)
+        end
+
+        return :default if Config.configured_default_app?
+        raise NoSuchApp.new
+      }.call
+    end
+
+    def spawn_app(try = 0)
+      @app = Spawner.new(app_name) or raise CantStartApp.new
+      @output = @app.socket
+
+    rescue Errno::ECONNREFUSED => e
+      Prax.logger.debug("Stalled socket: #{app_name}")
+      spawn_app(try += 1) unless try == 1
 
     rescue NoSuchApp => e
-      Prax.logger.debug("No such application: #{@app_name}")
+      Prax.logger.debug("No such application: #{app_name}")
       render(:no_such_app)
 
     rescue CantStartApp => e
-      Prax.logger.debug("Can't start application: #{@app_name}")
+      Prax.logger.debug("Can't start application: #{app_name}")
       render(:cant_start_app)
-
-#    rescue => exception
-#      @exception = exception
-#      render(:spawn_error)
     end
 
     def parse_request
@@ -135,7 +137,8 @@ module Prax
 
     def parse_host
       ary = @request_headers["host"].split(".")
-      [ ary.pop.split(":").first, ary.pop ]
+      ary.pop # extension + eventual :port
+      ary.pop # app_name
     end
 
     def render(template, options = {})
