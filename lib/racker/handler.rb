@@ -21,13 +21,10 @@ module Racker
     end
 
     def call
-      begin
-        @code, @headers, @body = app.call(env)
-      rescue => exception
-        render_exception(exception)
-        raise
-      end
-      #Racker.logger.info("#{code} - #{env['REQUEST_URI']}")
+      @code, @headers, @body = app.call(env)
+    rescue => exception
+      render_exception(exception)
+      raise
     end
 
     def reply
