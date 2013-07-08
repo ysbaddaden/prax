@@ -73,10 +73,17 @@ module Prax
       Prax.logger.info("Server shutdown.")
     end
 
+    def finalize_int
+      Dir.glob(Config.socket_root + '/*.sock') do |socket_path|
+        File.unlink socket_path
+      end
+      exit
+    end
+
     def run
-      Signal.trap("INT")  { exit }
-      Signal.trap("TERM") { exit }
-      Signal.trap("QUIT") { exit }
+      Signal.trap("INT")  { finalize_int }
+      Signal.trap("TERM") { finalize_int }
+      Signal.trap("QUIT") { finalize_int }
       Signal.trap("EXIT") { finalize }
 
       Prax.logger.info("HTTP server ready on port #{Config.http_port}")
