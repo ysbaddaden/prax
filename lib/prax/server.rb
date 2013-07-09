@@ -30,15 +30,21 @@ module Prax
     def initialize
       @servers = []
       @queue = Queue.new
+      trap_signals
       spawn_servers
       spawn_workers
     end
 
     def spawn_servers
       Prax.logger.debug("Starting HTTP server on port #{Config.http_port}")
+
       servers << TCPServer.new(Config.http_port)
+      Prax.logger.info("HTTP server ready on port #{Config.http_port}")
+
       spawn_ssl_server if ssl_configured?
-      servers.each { |server| Prax.logger.debug(server.addr.inspect) }
+      Prax.logger.info("HTTPS server ready on port #{Config.https_port}")
+
+      #servers.each { |server| Prax.logger.debug(server.addr.inspect) }
     end
 
     def spawn_ssl_server
@@ -73,24 +79,7 @@ module Prax
       Prax.logger.info("Server shutdown.")
     end
 
-    def finalize_int
-      Dir.glob(Config.socket_root + '/*.sock') do |socket_path|
-        File.unlink socket_path
-      end
-      exit
-    end
-
     def run
-      Signal.trap("INT")  { finalize_int }
-      Signal.trap("TERM") { finalize_int }
-      Signal.trap("QUIT") { finalize_int }
-      Signal.trap("EXIT") { finalize }
-
-      Prax.logger.info("HTTP server ready on port #{Config.http_port}")
-      if servers.size == 2
-        Prax.logger.info("HTTPS server ready on port #{Config.https_port}")
-      end
-
       loop do
         begin
           IO.select(servers).first.each do |server|
@@ -101,5 +90,13 @@ module Prax
         end
       end
     end
+
+    private
+      def trap_signals
+        Signal.trap("INT")  { exit }
+        Signal.trap("TERM") { exit }
+        Signal.trap("QUIT") { exit }
+        Signal.trap("EXIT") { finalize }
+      end
   end
 end

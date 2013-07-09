@@ -3,16 +3,17 @@ require "prax/config"
 
 module Prax
   class Spawner
-    @@mutext = Mutex.new
-
     attr_reader :app_name
+
+    @@mutex = Mutex.new
 
     # Either spawns the Rack app (if properly configured) or permits to
     # connect to it via the socket if previously spawned.
     def initialize(app_name)
       @app_name = app_name.to_s
 
-      @@mutext.synchronize do # prevents threads to (re)spawn an app at the same time.
+      # prevents threads to (re)spawn an app at the same time.
+      @@mutex.synchronize do
         if start?
           Prax.logger.info("Starting app #{@app_name} (#{realpath})")
           spawn
@@ -90,7 +91,7 @@ module Prax
       rescue Errno::ECONNREFUSED => e
         Prax.logger.warn(e.to_s)
         File.unlink(socket_path)
-        nil
+        raise
       end
     end
 
