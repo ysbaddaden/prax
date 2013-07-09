@@ -43,11 +43,15 @@ module Prax
         @threads_count ||= (ENV["PRAX_THREADS"] || 4).to_i
       end
 
-      # Returns true if a given app is available (a link in host_root that leads
-      # to a real directory.
+      # Returns app_name if a given app is available (a link in host_root that leads
+      # to a real directory or returns false
       def configured_app?(app_name)
-        path = File.join(host_root, app_name.to_s)
-        File.exists?(path) and File.directory?(File.realpath(path))
+        while app_name do
+          path = File.join(host_root, app_name)
+          return app_name if File.exists?(path) and File.directory?(File.realpath(path))
+          return false if app_name.count('.') == 0
+          app_name = app_name.gsub /(^.+?\.)(.+$)/, '\2'
+        end
       end
 
       # Returns true if a default app is available.

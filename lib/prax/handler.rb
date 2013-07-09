@@ -46,11 +46,12 @@ module Prax
 
     def app_name
       @app_name ||= lambda {
-        host, app_name = @request_headers["host"], parse_host
+        host, full_app_name = @request_headers["host"], parse_host
 
         unless Config.ip?(host)
           return Config.xip_app_name(host) if Config.xip?(host)
-          return app_name if Config.configured_app?(app_name)
+          app_name = Config.configured_app?(full_app_name)
+          return app_name if app_name != false
         end
 
         return :default if Config.configured_default_app?
@@ -136,9 +137,7 @@ module Prax
     end
 
     def parse_host
-      ary = @request_headers["host"].split(".")
-      ary.pop # extension + eventual :port
-      ary.pop # app_name
+      @request_headers["host"].gsub /(.+)(\..+$)/, '\1'
     end
 
     def render(template, options = {})
