@@ -35,11 +35,14 @@ module Prax
       args, env = [], { 'PATH' => ENV['ORIG_PATH'] }
       if rbenv?
         env['RBENV_VERSION'] = nil
-        args += [ "rbenv", "exec" ]
+        args += [ "rbenv", "exec", "ruby"]
       end
 
       # bundler
-      args += [ "bundle", "exec" ] if gemfile?
+      if gemfile?
+        args.pop
+        args += [ "bundle", "exec" ]
+      end
 
       # racker
       args += [
