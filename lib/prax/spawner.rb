@@ -10,8 +10,7 @@ module Prax
     # Either spawns the Rack app (if properly configured) or permits to
     # connect to it via the socket if previously spawned.
     def initialize(app_name)
-      @app_name = app_name.to_s
-
+      @app_name = app_name
       # prevents threads to (re)spawn an app at the same time.
       @@mutex.synchronize do
         if start?
