@@ -28,15 +28,10 @@ module Prax
     # Spawns the app, then blocks until the socket is ready.
     #
     # TODO: notify an object in the main thread about the spawning app (that
-    # object could kill all apps when prax is terminated, as well as killing
-    # apps after some timeout).
+    # object could kill apps after some timeout).
     def spawn
       # rbenv
       args, env = [], { 'PATH' => ENV['ORIG_PATH'] }
-      if rbenv?
-        env['RBENV_VERSION'] = nil
-        args += [ "rbenv", "exec" ]
-      end
 
       # bundler
       args += [ "bundle", "exec" ] if gemfile?
@@ -98,11 +93,6 @@ module Prax
     # Returns true if the app uses Bundler.
     def gemfile?
       File.exists?(File.join(realpath, "Gemfile"))
-    end
-
-    # Returns true if rbenv is found.
-    def rbenv?
-      `which rbenv` != ''
     end
 
     # Path to the Rack config file.
