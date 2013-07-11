@@ -7,6 +7,7 @@ require "prax/spawner"
 require "prax/handler"
 
 ROOT = File.expand_path("../../..", File.realpath(__FILE__))
+Thread.abort_on_exception = Prax::Config.debug?
 
 module Prax
   module SSL
