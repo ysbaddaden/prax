@@ -1,10 +1,14 @@
 require "erb"
 require "timeout"
+require "prax/public_file"
 
 module Prax
   class Handler
     class NoSuchApp < StandardError; end
     class CantStartApp < StandardError; end
+
+    include Prax::ContentType
+    include Prax::PublicFile
 
     def initialize(input, ssl = nil)
       @input = input
@@ -27,21 +31,6 @@ module Prax
         spawn_app
         proxy_request if @output
       end
-    end
-
-    def public_file_path
-      @public_file_path ||=
-        File.join(Config.host_root, app_name, "public", @request_uri)
-    end
-
-    def public_file_exists?
-      return File.exists?(public_file_path) && !File.directory?(public_file_path)
-    end
-
-    def stream_public_file
-      @input.write "#{@http_version} 200 OK\r\n"
-      @input.write "Connection: close\r\n\r\n"
-      @input.write File.read(public_file_path, mode: "rb")
     end
 
     def app_name
