@@ -31,15 +31,16 @@ module Prax
     # object could kill all apps when prax is terminated, as well as killing
     # apps after some timeout).
     def spawn
-      # rbenv
       args, env = [], { 'PATH' => ENV['ORIG_PATH'] }
+
+      # rbenv
       if rbenv?
-        env['RBENV_VERSION'] = nil
-        args += [ "rbenv", "exec" ]
+        args = ['rbenv', 'exec']
+        args << 'ruby' unless gemfile?
       end
 
       # bundler
-      args += [ "bundle", "exec" ] if gemfile?
+      args += ['bundle', 'exec' ] if gemfile?
 
       # racker
       args += [
