@@ -40,7 +40,7 @@ module Prax
       end
 
       def threads_count
-        @threads_count ||= (ENV["PRAX_THREADS"] || 4).to_i
+        @threads_count ||= (ENV["PRAX_THREADS"] || 16).to_i
       end
 
       # Returns true if a given app is available (a link in host_root that leads

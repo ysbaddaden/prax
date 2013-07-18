@@ -7,4 +7,7 @@ ext/test.c
 ssl/*.crt
 ssl/*.csr
 ssl/*.key
+test/ssl/*.crt
+test/ssl/*.csr
+test/ssl/*.key
 
