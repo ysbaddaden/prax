@@ -43,6 +43,10 @@ module Prax
         @threads_count ||= (ENV["PRAX_THREADS"] || 4).to_i
       end
 
+      def x_forward_for
+        @x_forward_for ||= (ENV["PRAX_IP"] || '127.0.0.1')
+      end
+
       # Returns true if a given app is available (a link in host_root that leads
       # to a real directory.
       def configured_app?(app_name)

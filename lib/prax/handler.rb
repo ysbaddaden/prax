@@ -94,6 +94,7 @@ module Prax
     def pass_request
       @request.each do |line|
         @output.write("X-Forwarded-Proto: https\r\n") if line.strip.empty? and @ssl
+        @output.write("X-Forwarded-For: \"#{Config.x_forward_for}\"\r\n") if line.strip.empty?
         @output.write(line)
       end
       content_length = @request_headers["content-length"].to_i
