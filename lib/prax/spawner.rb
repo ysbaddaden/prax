@@ -35,6 +35,7 @@ module Prax
 
       # rbenv
       if rbenv?
+        env['RBENV_VERSION'] = ''
         args = ['rbenv', 'exec']
         args << 'ruby' unless gemfile?
       end
