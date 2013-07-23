@@ -38,6 +38,10 @@ module Prax
         env['RBENV_VERSION'] = ''
         args = ['rbenv', 'exec']
         args << 'ruby' unless gemfile?
+      elsif rvm?
+        ruby_version = File.exists?(File.join(realpath, ".ruby-version")) ? File.read(File.join(realpath, ".ruby-version")) : 'default'
+        args = ['rvm', ruby_version, 'do']
+        args << 'ruby' unless gemfile?
       end
 
       # bundler
@@ -105,6 +109,11 @@ module Prax
     # Returns true if rbenv is found.
     def rbenv?
       `which rbenv` != ''
+    end
+
+    # Returns true if rvm is found.
+    def rvm?
+      `which rvm` != ''
     end
 
     # Path to the Rack config file.
