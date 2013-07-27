@@ -51,16 +51,22 @@ module Prax
       args += [
         File.join(ROOT, "bin", "racker"),
         "--server", socket_path,
-        "--pid", pid_path,
-        { :out => [ log_path, "a" ], :err => [ :child, :out ] }
+        "--pid", pid_path
       ]
+      opts = { :out => [ log_path, "a" ], :err => [ :child, :out ] }
       pid = nil
 
       # FIXME: chdir should happen in racker!
-      Dir.chdir(realpath) { pid = Process.spawn(env, *args) }
+      Dir.chdir(realpath) { pid = Process.spawn(env, *args, opts) }
 
-      Process.detach(pid)
-      wait_for_process(pid)
+      Prax.logger.debug("Spawned (#{pid}) #{args.join(' ')}")
+
+      # if status is non-nil, the child exited
+      if !(status = wait_for_process(pid))
+        Process.detach(pid)
+      else
+        Prax.logger.error("Racker (#{pid}) exited with code: #{status}")
+      end
     end
 
     # Returns true if the Rack app hasn't been spawned yet.
@@ -151,9 +157,18 @@ module Prax
       end
 
       def wait_for_process(pid)
+        status = nil
+
         Timeout.timeout(60) do
-          sleep 0.1 while process_exists?(pid) && !File.exists?(socket_path)
+          while true
+            _pid, status = Process.wait2(pid, Process::WNOHANG)
+            # socket file has been created or the child exited
+            break if _pid || File.exists?(socket_path)
+            sleep 0.1
+          end
         end
+
+        status ? status.exitstatus : nil
       end
 
       def process_exists?(pid)
