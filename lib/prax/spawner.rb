@@ -7,11 +7,13 @@ module Prax
 
     @@mutex = Mutex.new
 
-    # Either spawns the Rack app (if properly configured) or permits to
-    # connect to it via the socket if previously spawned.
     def initialize(app_name)
       @app_name = app_name.to_s
+    end
 
+    # Either spawns the Rack app (if properly configured) or permits to
+    # connect to it via the socket if previously spawned.
+    def run
       # prevents threads to (re)spawn an app at the same time.
       @@mutex.synchronize do
         if start?
@@ -66,6 +68,7 @@ module Prax
         Process.detach(pid)
       else
         Prax.logger.error("Racker (#{pid}) exited with code: #{status}")
+        raise StandardError.new("Racker exited with code: #{status}")
       end
     end
 

@@ -54,7 +54,13 @@ module Prax
     end
 
     def spawn_app(try = 0)
-      @app = Spawner.new(app_name) or raise CantStartApp.new
+      @app = Spawner.new(app_name)
+      begin
+        @app.run
+      rescue => err
+        raise CantStartApp.new(err.message)
+      end
+
       @output = @app.socket
 
     rescue Errno::ECONNREFUSED => e
@@ -67,7 +73,7 @@ module Prax
 
     rescue CantStartApp => e
       Prax.logger.debug("Can't start application: #{app_name}")
-      render(:cant_start_app)
+      render(:cant_start_app, error: e)
     end
 
     def parse_request
@@ -142,6 +148,7 @@ module Prax
     end
 
     def render(template, options = {})
+      error = options[:error]
       case options[:code] || 404
       when 404 then @input.write("HTTP/1.1 404 NOT FOUND\r\n")
       when 500 then @input.write("HTTP/1.1 500 SERVER ERROR\r\n")
