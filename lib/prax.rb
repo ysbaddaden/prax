@@ -1,9 +1,16 @@
+require 'socket'
+require 'thread'
+require 'prax/config'
 require 'prax/microserver'
 require 'prax/worker'
-require 'prax/config'
+require 'prax/spawner'
 require 'prax/handler'
 
 module Prax
+  class Error < StandardError; end
+  class NoSuchApp < Error; end
+  class CantStartApp < Error; end
+
   class Pool < MicroWorker
     def perform(socket, ssl)
       Handler.new(socket, ssl)
