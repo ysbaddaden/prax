@@ -31,36 +31,29 @@ module Prax
     # object could kill all apps when prax is terminated, as well as killing
     # apps after some timeout).
     def spawn
-      args, env = [], { 'PATH' => ENV['ORIG_PATH'] }
+      env = { 'PATH' => ENV['ORIG_PATH'] }
 
-      # rbenv
-      if rbenv?
-        env['RBENV_VERSION'] = ''
-        args = ['rbenv', 'exec']
-        args << 'ruby' unless gemfile?
-      elsif rvm?
-        ruby_version = File.exists?(File.join(realpath, ".ruby-version")) ? File.read(File.join(realpath, ".ruby-version")) : 'default'
-        args = ['rvm', ruby_version, 'do']
-        args << 'ruby' unless gemfile?
-      end
+      cmd = if gemfile?
+              "bundle exec"
+            else
+              "ruby"
+            end
 
-      # bundler
-      args += ['bundle', 'exec' ] if gemfile?
-
-      # racker
-      args += [
-        File.join(ROOT, "bin", "racker"),
-        "--server", socket_path,
-        "--pid", pid_path,
-        { :out => [ log_path, "a" ], :err => [ :child, :out ] }
-      ]
-      pid = nil
-
-      # FIXME: chdir should happen in racker!
-      Dir.chdir(realpath) { pid = Process.spawn(env, *args) }
+      pid = Process.spawn(env,
+        "exec #{cmd} #{racker_path} --server #{socket_path} --pid #{pid_path}",
+        :chdir => realpath,
+        :out => [log_path, 'a'],
+        :err => [:child, :out],
+        :unsetenv_others => true,
+        :close_others => true
+      )
 
       Process.detach(pid)
       wait_for_process(pid)
+    end
+
+    def racker_path
+      File.join(ROOT, 'bin', 'racker')
     end
 
     # Returns true if the Rack app hasn't been spawned yet.
@@ -104,16 +97,6 @@ module Prax
     # Returns true if the app uses Bundler.
     def gemfile?
       File.exists?(File.join(realpath, "Gemfile"))
-    end
-
-    # Returns true if rbenv is found.
-    def rbenv?
-      `which rbenv` != ''
-    end
-
-    # Returns true if rvm is found.
-    def rvm?
-      `which rvm` != ''
     end
 
     # Path to the Rack config file.
