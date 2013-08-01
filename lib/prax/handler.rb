@@ -6,7 +6,6 @@ require "prax/public_file"
 module Prax
   class Handler
     include Render
-    include PublicFile
 
     attr_reader :request, :socket, :ssl
 
@@ -46,9 +45,9 @@ module Prax
       @app_name ||= if request.host.ip?
         :default
       elsif request.host.xip?
-        request.xip_host.split('.').last
+        request.xip_host.split('.').last || :default
       else
-        request.host.split('.').slice(-2)
+        request.host.split('.').slice(-2) || :default
       end
     end
   end

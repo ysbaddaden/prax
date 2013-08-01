@@ -30,7 +30,7 @@ module Prax
     end
 
     def stream_to(io)
-      File.open(public_file_path, 'rb') do |file|
+      File.open(file_path, 'rb') do |file|
         io.write "#{request.http_version} 200 OK\r\n" +
                  "Content-Type: #{content_type(file)}\r\n" +
                  "Content-Length: #{file.size}\r\n" +

@@ -24,6 +24,7 @@ module Prax
       @socket = @pid = nil
     end
 
+    # FIXME: don't choke on a stalled socket (Errno::ECONNREFUSED)!
     def socket
       UNIXSocket.new(socket_path)
     end

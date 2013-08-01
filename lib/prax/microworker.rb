@@ -1,18 +1,20 @@
 require 'thread'
 
 module Prax
-  class IOQueue < Queue
+  class IOQueue #< Queue
     def initialize
       super
       @check, @notify = IO.pipe
+      @queue = Queue.new
     end
 
-    def push
-      super.tap { @notify.write_nonblock('.') }
+    def push(msg)
+      @queue.push(msg).tap { @notify.write_nonblock('.') }
     end
+    alias << push
 
     def pop(nonblock = false)
-      super.tap { @check.read_nonblock(1) }
+      @queue.pop(nonblock).tap { @check.read_nonblock(1) }
     end
 
     def to_io
@@ -71,7 +73,12 @@ module Prax
         until @_stopping
           IO.select(ios).first.each do |io|
             break if io == check
-            perform(*queue.pop(true)) rescue ThreadError nil
+            args = begin
+                     queue.pop(true)
+                   rescue ThreadError
+                     nil
+                   end
+            perform(*args) unless args.nil?
           end
         end
       end

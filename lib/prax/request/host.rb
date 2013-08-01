@@ -7,7 +7,7 @@ module Prax
     end
 
     def xip?
-      !!(host =~ Prax::XIP_RE)
+      !!(self =~ Prax::XIP_RE)
     end
   end
 end

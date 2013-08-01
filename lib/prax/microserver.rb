@@ -26,7 +26,11 @@ module Prax
     end
 
     def run
-      @thread = Thread.new { select until @_stopping }
+      @thread = Thread.new do
+        started
+        select until @_stopping
+      end
+      loop { sleep 0.1; break if @_stopping }
     end
 
     def serve(socket, ssl)
@@ -41,6 +45,8 @@ module Prax
       else
         finalize
       end
+
+      stopped
     end
 
     def finalize
@@ -57,6 +63,9 @@ module Prax
     def started?
       listeners.any? and !@_stopping
     end
+
+    def started; end
+    def stopped; end
 
     protected
       def select

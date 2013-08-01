@@ -2,11 +2,14 @@ require 'prax/microworker'
 
 module Prax
   module Worker
-    attr_accessor :worker_class
-    attr_accessor :worker_size
 
-    def self.included do |klass|
-      klass.eval { @@mutex = Mutex.new }
+    module ClassMethods
+      attr_accessor :worker_class, :worker_size
+    end
+
+    def self.included(klass)
+      klass.extend ClassMethods
+      klass.class_eval { @@mutex = Mutex.new }
     end
 
     def pool
