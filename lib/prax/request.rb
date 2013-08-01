@@ -6,10 +6,10 @@ module Prax
 
   class Request
     include HTTP
-    attr_reader :socket, :method, :http_version, :uri
+    attr_reader :socket, :ssl, :method, :http_version, :uri
 
-    def initialize(socket)
-      @socket = socket
+    def initialize(socket, ssl = nil)
+      @socket, @ssl = socket, ssl
       parse_request
     end
 
@@ -25,7 +25,7 @@ module Prax
       io.write "#{method} #{uri} #{http_version}\r\n"
       proxy_headers.each { |header, value| io.write "#{header}: #{value}\r\n" }
       io.write "\r\n"
-      io.write socket.read(content_length) if content_length > 0
+      IO.copy_stream(socket, io, content_length)
       io.flush
     end
 

@@ -12,11 +12,12 @@ module Prax
     end
 
     def start
-      stop if restart?
+      kill if restart?
       spawn unless started?
     end
 
     def kill(type = :TERM)
+      return unless @pid
       Process.kill(type.to_s, @pid)
       Process.wait(@pid)
     rescue Errno::ECHILD
@@ -34,8 +35,9 @@ module Prax
     end
 
     def restart?
-      !File.exists?(socket_path) and
-        File.stat(socket_path).mtime < File.stat(File.join(realpath, 'tmp', 'restart.txt')).mtime
+      return true unless started?
+      restart = File.join(realpath, 'tmp', 'restart.txt')
+      File.exists?(restart) and File.stat(socket_path).mtime < File.stat(restart).mtime
     end
 
     def configured?
@@ -56,16 +58,10 @@ module Prax
 
     private
       def spawn
-        env = {
-          'PATH' => ENV['ORIG_PATH']
-        }
-        cmd = if gemfile?
-                'bundle exec'
-              else
-                'ruby'
-              end
-        @pid = Process.spawn(env,
-          "exec #{cmd} #{racker_path} --server #{socket_path}",
+        Prax.logger.info "Spawning application '#{app_name}' [#{realpath}]"
+        Prax.logger.debug command
+
+        @pid = Process.spawn(env, command,
           chdir: realpath,
           out: [log_path, 'a'],
           err: [:child, :out],
@@ -73,10 +69,29 @@ module Prax
           close_others: true
         )
         wait_for_process
+
+        Prax.logger.debug "Application '#{app_name}' is ready on unix:#{socket_path}"
+      end
+
+      def env
+        { 'PATH' => ENV['ORIG_PATH'] }
+      end
+
+      def command
+        cmd = if gemfile?
+                'bundle exec'
+              else
+                'ruby'
+              end
+        "exec #{cmd} #{Config.racker_path} --server #{socket_path}"
       end
 
       def path
         @path ||= File.join(Config.host_root, app_name)
+      end
+
+      def gemfile?
+        File.exists?(File.join(realpath, 'Gemfile'))
       end
 
       def wait_for_process

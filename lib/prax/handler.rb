@@ -25,12 +25,14 @@ module Prax
       render :cant_start_app, status: 500
     rescue NoSuchApp
       render :no_such_app, status: 404
+    rescue Timeout::Error
+      render :timeout, status: 500
     ensure
       socket.close unless socket.closed?
     end
 
     def request
-      @request ||= Request.new(socket)
+      @request ||= Request.new(socket, ssl)
     end
 
     def response

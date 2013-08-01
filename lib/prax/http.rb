@@ -13,6 +13,7 @@ module Prax
 
     def header(name)
       headers.each { |header, value| return value if header.upcase == name.upcase }
+      return nil
     end
 
     def content_length
