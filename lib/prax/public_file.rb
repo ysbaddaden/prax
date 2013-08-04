@@ -10,10 +10,10 @@ module Prax
 
     def content_type(file)
       if defined?(MIME::Types)
-        MIME::Types.type_for(File.basename(file)).first.content_type
-      else
-        DEFAULT_CONTENT_TYPE
+        types = MIME::Types.type_for(File.basename(file))
+        return types.first.content_type if types.any?
       end
+      DEFAULT_CONTENT_TYPE
     end
   end
 
