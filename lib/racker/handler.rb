@@ -1,66 +1,112 @@
 require 'rack/utils'
-require 'racker/logger'
-require 'racker/parser'
+require 'prax/request'
+require 'prax/render'
 
 module Racker
+
   class Handler
-    attr_accessor :app, :socket, :env, :code, :headers, :body
+    include Prax::Render
+    attr_reader :app, :socket, :code, :headers, :body
 
     def initialize(app, socket)
       @app, @socket = app, socket
-      @code = @headers = @body = nil
     end
 
-    def handle_connection
-      @env = Racker::Parser.new(socket).to_env
-      call
-      reply
-    rescue Errno::EPIPE, Errno::EIO, Errno::ECONNRESET
+    def handle
+      @code, @headers, @body = catch_error { app.call(env) }
+      write_response
+    rescue Errno::EPIPE, Errno::EIO, Errno::ECONNRESET, IOError
     ensure
-      close
+      finalize
     end
 
-    def call
-      @code, @headers, @body = app.call(env)
-    rescue => exception
-      render_exception(exception)
-      raise
+    def request
+      @request ||= Prax::Request.new(socket, false)
     end
 
-    def reply
-      socket.flush
-      socket.write("#{env["HTTP_VERSION"]} #{code} #{http_status(code)}\r\n")
-      headers["Connection"] = "close"
-      headers.each { |key, value| socket.write("#{key}: #{value}\r\n") }
-      socket.write("\r\n")
-      body.each { |b| socket.write(b) }
-    end
-
-    def close
+    def finalize
       unless socket.closed?
         socket.flush
         socket.close
       end
       body.close if body.respond_to?(:close)
-      env["rack.input"].close if env and env["rack.input"]
+      env['rack.input'].close if @env && env['rack.input']
+    end
+
+    def env
+      @env ||= request_to_env
     end
 
     private
-      def http_status(code)
-        Rack::Utils::HTTP_STATUS_CODES[code]
+      def catch_error
+        begin
+          yield
+        rescue => exception
+          render_error(exception)
+          raise
+        end
       end
 
-      def render_exception(exception)
+      def write_response
+        status = Rack::Utils::HTTP_STATUS_CODES[code]
+        socket.write "#{env['HTTP_VERSION']} #{code} #{status}\r\n"
+
+        headers.each { |key, value| socket.write "#{key}: #{value}\r\n" }
+        socket.write "Connection: close\r\n"
+        socket.write "\r\n"
+
+        body.each { |b| socket.write b }
+      end
+
+      def request_to_env
+        {
+          'rack.version' => [1, 1],
+          'rack.multithread' => true,
+          'rack.multiprocess' => false,
+          'rack.run_once' => false,
+          'rack.errors' => STDERR,
+          'rack.logger' => Racker.logger,
+          'rack.url_scheme' => 'http',
+          'rack.input' => request.body_as_rewindable_input,
+          'HTTP_VERSION' => request.http_version,
+          'REMOTE_ADDR' => socket.peeraddr[2],
+          'SERVER_SOFTWARE'=> 'racker 0.1.0',
+          'SERVER_PROTOCOL' => request.http_version,
+          'SERVER_NAME' => request.host,
+          'SERVER_PORT' => request.port,
+          'SCRIPT_NAME' => '',
+          'REQUEST_METHOD' => request.method,
+          'REQUEST_URI' => request.uri,
+          'REQUEST_PATH' => request.path_info,
+          'PATH_INFO' => request.path_info,
+          'QUERY_STRING' => request.query_string,
+        }.merge headers_to_env
+      end
+
+      def headers_to_env
+        request.headers.inject({}) do |acc, ( header, value )|
+          case name = header.upcase.gsub('-', '_')
+          when 'CONTENT_TYPE'
+            acc['CONTENT_TYPE'] = value
+          when 'CONTENT_LENGTH'
+            acc['CONTENT_LENGTH'] = value.to_i
+          else
+            acc["HTTP_#{name}"] = value
+          end
+          acc
+        end
+      end
+
+      def render_error(exception)
+        status = Rack::Utils::HTTP_STATUS_CODES[500]
+        socket.write "#{env["HTTP_VERSION"]} 500 #{status}\r\n" +
+                     "Connection: close\r\n" +
+                     "Content-Type: text/plain\r\n" +
+                     "X-Racker-Exception: 1\r\n" +
+                     "\r\n" +
+                     exception.class.name + ": " + exception.message + "\n\n" +
+                     exception.backtrace.join("\n") + "\n"
         socket.flush
-        socket.write([
-          "#{env["HTTP_VERSION"]} 500 #{http_status(500)}",
-          "Connection: close",
-          "Content-Type: text/plain",
-          "X-Racker-Exception: 1"
-        ].join("\r\n"))
-        socket.write("\r\n\r\n")
-        socket.write(exception.class.name + ": " + exception.message + "\n\n")
-        exception.backtrace.each { |line| socket.write(line + "\n") }
       end
   end
 end

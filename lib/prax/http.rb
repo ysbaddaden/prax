@@ -16,6 +16,10 @@ module Prax
       return nil
     end
 
+    def header?(name)
+      !header(name).nil?
+    end
+
     def content_length
       @content_length ||= header('Content-Length').to_i
     end

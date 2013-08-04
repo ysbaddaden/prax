@@ -18,8 +18,8 @@ module Prax
       if file.exists?
         file.stream_to(socket)
       else
-        request.proxy_to(app.socket)  #  socket => app.socket
-        response.proxy_to(socket)     #  socket <= app.socket
+        request.proxy_to(connection)  #  socket => connection
+        response.proxy_to(socket)     #  socket <= connection
       end
     rescue CantStartApp
       render :cant_start_app, status: 500
@@ -36,7 +36,11 @@ module Prax
     end
 
     def response
-      @response ||= Response.new(app.socket)
+      @response ||= Response.new(connection)
+    end
+
+    def connection
+      @connection ||= app.socket
     end
 
     def app

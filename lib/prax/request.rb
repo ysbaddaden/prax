@@ -1,3 +1,4 @@
+require 'tempfile'
 require 'prax/http'
 require 'prax/request/host'
 
@@ -39,12 +40,61 @@ module Prax
       )
     end
 
+    def query_string
+      parse_query_string unless @query_string
+      @query_string
+    end
+
+    def path_info
+      parse_query_string unless @path_info
+      @path_info
+    end
+
+    def body_as_rewindable_input
+      if content_length > (1024 * (80 + 32))
+        body_as_tempfile
+      elsif content_length > 0
+        StringIO.new(socket.read(content_length))
+      else
+        StringIO.new('')
+      end
+    end
+
     def host
       @host ||= Host.new(header('Host').split(':').first)
+    end
+
+    def port
+      @port ||= begin
+                  h = header('Host')
+                  h.include?(':') ? h.split(':').last.to_i : (ssl ? 443 : 80)
+                end
     end
 
     def xip_host
       $1 if host =~ XIP_RE
     end
+
+    private
+      def parse_query_string
+        if idx = uri.rindex('?')
+          @path_info = uri[0...idx]
+          @query_string = uri[(idx + 1)..-1]
+        else
+          @path_info = uri
+          @query_string = ''
+        end
+      end
+
+      def body_as_tempfile
+        tempfile = Tempfile.new('RackerInputBody')
+        tempfile.chmod(000)
+        tempfile.set_encoding('ASCII-8BIT') if tempfile.respond_to?(:set_encoding)
+        tempfile.binmode
+        File.unlink(tempfile.path)
+        IO.copy_stream(socket, tempfile, content_length)
+        tempfile.rewind
+        tempfile
+      end
   end
 end

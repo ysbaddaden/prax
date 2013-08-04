@@ -17,10 +17,10 @@ module Prax
     end
 
     def proxy_to(io)
-      io.write "#{@status_line}\r\n"
+      io.write @status_line
       headers.each { |header, value| io.write "#{header}: #{value}\r\n" }
       io.write "\r\n"
-      IO.copy_stream socket, io, content_length
+      IO.copy_stream socket, io #, header?('Content-Length') ? content_length : nil
       io.flush
     rescue Errno::EPIPE, Errno::ECONNRESET
     end

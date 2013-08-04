@@ -1,30 +1,27 @@
-#! /usr/bin/env ruby
-$:.unshift File.expand_path("../../lib", File.realpath(__FILE__))
+#!/usr/bin/env bash
+set -e
 
-require "optparse"
-require "racker/server"
-
-options = {
-  :server => "0.0.0.0:9292"
+resolve_link() {
+  $(type -p greadlink readlink | head -1) "$1"
 }
 
-cli_parser = OptionParser.new do |opt|
-  opt.banner = "Usage: racker [OPTIONS]"
-  opt.separator ""
-  opt.separator "Options:"
+abs_dirname() {
+  local cwd="$(pwd)"
+  local path="$1"
 
-  opt.on("-s SERVER", "--server SERVER", "Either host:port or /path/to/socket.sock") do |server|
-    options[:server] = server
-  end
+  while [ -n "$path" ]; do
+    cd "${path%/*}"
+    local name="${path##*/}"
+    path="$(resolve_link "$name" || true)"
+  done
 
-  opt.on("-p PATH", "--pid PATH", "Path to PID file") do |path|
-    options[:pid] = path
-  end
+  pwd
+  cd "$cwd"
+}
 
-  opt.on("-l PATH", "--log PATH", "Path to logger file") do |path|
-    options[:log] = path
-  end
-end
-cli_parser.parse!
+[ -f $HOME/.praxconfig ] && source $HOME/.praxconfig
+[ -f .praxrc ] && source .praxrc
 
-Racker::Server.run(options)
+prax_path="$(abs_dirname "$0")"
+exec "ruby" "$prax_path/../lib/racker/command.rb" $*
+
