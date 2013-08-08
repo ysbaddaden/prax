@@ -61,6 +61,9 @@ module Prax
 
           begin
             work(check)
+          rescue => exception
+            log_error(exception)
+            raise
           ensure
             cleanup!
           end
@@ -88,6 +91,11 @@ module Prax
           threads.delete(Thread.current)
           threads << spawn unless @_stopping or threads.size >= size
         end
+      end
+
+      def log_error(exception)
+        Prax.logger.error exception.class.name + ":" + exception.message + "\n  " + exception.backtrace.join("\n  ")
+        Prax.logger.info "Respawning failed worker"
       end
   end
 end

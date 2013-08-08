@@ -1,5 +1,6 @@
 require "socket"
 require 'prax/application'
+require 'prax/monitor'
 
 module Prax
   module Spawner
@@ -8,16 +9,24 @@ module Prax
     @mutex = Mutex.new
     @apps = []
 
+    @monitor = Monitor.new
+    @monitor.run
+
     def get(app_name)
       @mutex.synchronize do
         app = @apps.find { |_app| _app.realpath == realpath(app_name) }
-        app ||= spawn(app_name)
+        app ||= spawn(app_name) unless app
+        @monitor.requested(app)
+        app
       end
     end
 
     def stop
       @mutex.synchronize do
-        @apps.pop.tap { |app| app.stop } until @apps.empty?
+        @apps.pop.tap do |app|
+          app.stop
+          @monitor.pop(app)
+        end until @apps.empty?
       end
     end
 
@@ -28,6 +37,7 @@ module Prax
 
       def spawn(app_name)
         @apps << app = Application.new(app_name)
+        @monitor << app
         app.start
         app
       rescue

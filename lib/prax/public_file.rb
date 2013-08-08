@@ -37,6 +37,7 @@ module Prax
                  "Connection: close\r\n\r\n"
         IO.copy_stream file, io
       end
+    rescue Errno::ECONNRESET
     end
 
     def file_path

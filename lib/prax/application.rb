@@ -5,6 +5,7 @@ module Prax
     include Timeout
 
     attr_reader :app_name, :pid
+    alias name app_name
 
     def initialize(app_name)
       @app_name = app_name.to_s
@@ -25,8 +26,10 @@ module Prax
       @socket = @pid = nil
     end
 
-    # FIXME: don't choke on a stalled socket (Errno::ECONNREFUSED)!
     def socket
+      UNIXSocket.new(socket_path)
+    rescue Errno::ENOENT
+      force_restart
       UNIXSocket.new(socket_path)
     end
 
@@ -57,6 +60,12 @@ module Prax
     end
 
     private
+      def force_restart
+        Prax.logger.info "Forcing restart of #{app_name} (#{realpath})"
+        kill
+        spawn
+      end
+
       def spawn
         Prax.logger.info "Spawning application '#{app_name}' [#{realpath}]"
         Prax.logger.debug command

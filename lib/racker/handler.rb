@@ -51,11 +51,14 @@ module Racker
         status = Rack::Utils::HTTP_STATUS_CODES[code]
         socket.write "#{env['HTTP_VERSION']} #{code} #{status}\r\n"
 
-        headers.each { |key, value| socket.write "#{key}: #{value}\r\n" }
-        socket.write "Connection: close\r\n"
+        response_headers.each { |key, value| socket.write "#{key}: #{value}\r\n" }
         socket.write "\r\n"
 
         body.each { |b| socket.write b }
+      end
+
+      def response_headers
+        headers.merge 'Connection' => 'close'
       end
 
       def request_to_env

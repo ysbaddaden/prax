@@ -38,6 +38,12 @@ module Prax
         @threads_count ||= (ENV["PRAX_THREADS"] || 16).to_i
       end
 
+      # Time after which an inactive app may be killed, in minutes. Defaults to
+      # 10 minutes.
+      def ttl
+        @ttl ||= (ENV['PRAX_TTL'] || 10) * 60
+      end
+
       def racker_path
         File.expand_path('../../../bin/racker', __FILE__)
       end

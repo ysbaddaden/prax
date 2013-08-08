@@ -4,22 +4,25 @@ require "erb"
 module Prax
   # FIXME: find a better name than Render!
   module Render
-    def render(template, options)
-      tpl  = ERB.new(File.read(template_path(template)))
-      code = options[:code]
-      html = tpl.result(binding)
-      socket.write "HTTP/1.1 #{code} #{Rack::Utils::HTTP_STATUS_CODES[code]}\r\n" +
+    def render(template_name, options)
+      code, status = options[:code], Rack::Utils::HTTP_STATUS_CODES[code]
+      socket.write "HTTP/1.1 #{code} #{status}\r\n" +
                    "Content-Type: text/html\r\n" +
                    "Content-Length: #{html.bytesize}\r\n" +
                    "Connection: close\r\n" +
                    "\r\n" +
-                   html
+                   render_to_string(template_name)
       socket.close
     rescue Errno::EPIPE, Errno::ECONNRESET
     end
 
-    def template_path(template)
-      File.expand_path("../../../templates/#{template}.erb", __FILE__)
+    def render_to_string(template_name)
+      tpl = ERB.new(File.read(template_path(template_name)))
+      tpl.result(binding)
+    end
+
+    def template_path(template_name)
+      File.expand_path("../../../templates/#{template_name}.erb", __FILE__)
     end
   end
 end

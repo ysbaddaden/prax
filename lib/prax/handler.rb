@@ -13,6 +13,7 @@ module Prax
       @socket, @ssl = socket, ssl
     end
 
+    # IMPROVE: use callable middleware instead?
     def handle
       file = PublicFile.new(request, app_name)
       if file.exists?

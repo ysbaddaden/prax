@@ -16,6 +16,7 @@ module Prax
 
     def parse_request
       line = socket.gets
+
       if line and line.strip =~ %r{^([A-Z]+) (.+) (HTTP/\d\.\d)$}
         @method, @uri, @http_version = $1, $2, $3
         parse_http_headers
@@ -66,9 +67,9 @@ module Prax
 
     def port
       @port ||= begin
-                  h = header('Host')
-                  h.include?(':') ? h.split(':').last.to_i : (ssl ? 443 : 80)
-                end
+        host = header('Host')
+        host.include?(':') ? host.split(':').last.to_i : (ssl ? 443 : 80)
+      end
     end
 
     def xip_host
