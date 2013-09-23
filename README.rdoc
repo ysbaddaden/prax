@@ -1,4 +1,4 @@
-= Prax
+ Prax
 
 A pure ruby alternative to Pow!!
 
@@ -46,9 +46,9 @@ extension.
   $ cd prax/
   $ ./bin/prax install
 
-And you're done! You only need to link your apps using:
-
-  $ ./bin/prax link ~/Work/myapp
+And you're done! You only need to link your apps by going to your rails root path and calling link:
+  $ cd ~/Work/myapp
+  $ ./bin/prax link 
 
 Or install manually:
 
@@ -72,7 +72,7 @@ different domains.
   $ mkdir ~/.prax
   $ ln -sf ~/Work/myapp ~/.prax/
 
-Eventually start <tt>bin/prax</tt> to run Prax, point your browser to
+Eventually <tt>bin/prax start</tt> to run Prax, point your browser to
 <tt>http://myapp.dev/</tt> and wait for your Rack app to spawn.
 
 ==== Slowness
