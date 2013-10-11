@@ -28,7 +28,7 @@ module Prax
 
     def socket
       UNIXSocket.new(socket_path)
-    rescue Errno::ENOENT
+    rescue Errno::ENOENT, Errno::ECONNREFUSED
       force_restart
       UNIXSocket.new(socket_path)
     end
@@ -63,6 +63,7 @@ module Prax
       def force_restart
         Prax.logger.info "Forcing restart of #{app_name} (#{realpath})"
         kill
+        clean_stalled_socket
         spawn
       end
 
@@ -113,6 +114,12 @@ module Prax
         Process.getpgid(@pid)
       rescue Errno::ESRCH
         false
+      end
+
+      def clean_stalled_socket
+        return unless File.exists?(socket_path)
+        Prax.logger.warn("Cleaning stalled socket: #{socket_path}")
+        File.unlink(socket_path)
       end
   end
 end
