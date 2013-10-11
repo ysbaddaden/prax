@@ -76,6 +76,19 @@ module Prax
         xip_host(str).split(".").last
       end
 
+      def find_app(segments)
+        segments = segments.dup
+        until segments.empty?
+          test_name = segments.join('.')
+          Prax.logger.warn("checking for app at #{test_name}")
+          if configured_app?(test_name)
+            Prax.logger.warn("found app at #{test_name}")
+            return test_name
+          end
+          segments.shift
+        end
+      end
+
       private
         def xip_host(str)
           host = str.split(":").first
