@@ -80,11 +80,7 @@ module Prax
         segments = segments.dup
         until segments.empty?
           test_name = segments.join('.')
-          Prax.logger.warn("checking for app at #{test_name}")
-          if configured_app?(test_name)
-            Prax.logger.warn("found app at #{test_name}")
-            return test_name
-          end
+          return test_name if configured_app?(test_name)
           segments.shift
         end
       end
