@@ -72,8 +72,8 @@ module Prax
         !xip_host(str).nil?
       end
 
-      def xip_app_name(str)
-        xip_host(str).split(".").last
+      def xip_segments(str)
+        xip_host(str).split(".")
       end
 
       def find_app(segments)
