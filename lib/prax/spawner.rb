@@ -12,10 +12,11 @@ module Prax
     @monitor = Monitor.new
     @monitor.run
 
-    def get(app_name)
+    def get(app_segments)
       @mutex.synchronize do
-        app = @apps.find { |_app| _app.realpath == realpath(app_name) }
-        app ||= spawn(app_name) unless app
+        app = Application.find(app_segments)
+        spawn(app) unless running?(app)
+
         @monitor.requested(app)
         app
       end
@@ -31,13 +32,13 @@ module Prax
     end
 
     private
-
-      def realpath(app_name)
-        File.realpath(File.join(Config.host_root, app_name.to_s))
+      def running?(app)
+        @apps.any? { |a| a.realpath == app.realpath }
       end
 
-      def spawn(app_name)
-        @apps << app = Application.new(app_name)
+      def spawn(app)
+        app.assert_configured!
+        @apps << app
         @monitor << app
         app.start unless app.port_forwarding?
         app

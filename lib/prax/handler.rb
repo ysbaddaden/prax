@@ -44,16 +44,16 @@ module Prax
     end
 
     def app
-      @app ||= Spawner.get(app_name)
+      @app ||= Spawner.get(app_segments)
     end
 
-    def app_name
-      @app_name ||= if request.host.ip?
+    def app_segments
+      @app_segments ||= if request.host.ip?
         :default
       elsif request.host.xip?
-        request.xip_host.split('.').last || :default
+        request.xip_host.split('.') || :default
       else
-        request.host.split('.').slice(-2) || :default
+        request.host.split('.')[0..-2] || :default
       end
     end
   end

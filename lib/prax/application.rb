@@ -7,8 +7,23 @@ module Prax
     attr_reader :app_name, :pid, :port
     alias name app_name
 
+    def self.find(segments)
+      segments = segments.dup
+
+      while segments.any?
+        app = Application.new(segments.join('.'))
+        return app if app.configured?
+        segments.shift
+      end
+
+      nil
+    end
+
     def initialize(app_name)
       @app_name = app_name.to_s
+    end
+
+    def assert_configured!
       raise NoSuchApp.new unless configured?
     end
 
@@ -78,6 +93,10 @@ module Prax
 
     def realpath
       @realpath ||= File.realpath(path)
+    end
+
+    def subdomain_of?(segments)
+      segments.join('.').end_with?(app_name)
     end
 
     private
