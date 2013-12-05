@@ -72,8 +72,17 @@ module Prax
         !xip_host(str).nil?
       end
 
-      def xip_app_name(str)
-        xip_host(str).split(".").last
+      def xip_segments(str)
+        xip_host(str).split(".")
+      end
+
+      def find_app(segments)
+        segments = segments.dup
+        until segments.empty?
+          test_name = segments.join('.')
+          return test_name if configured_app?(test_name)
+          segments.shift
+        end
       end
 
       private

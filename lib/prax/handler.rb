@@ -35,11 +35,17 @@ module Prax
 
     def app_name
       @app_name ||= lambda {
-        host, app_name = @request_headers["host"], parse_host
+        host = @request_headers["host"]
 
         unless Config.ip?(host)
-          return Config.xip_app_name(host) if Config.xip?(host)
-          return app_name if Config.configured_app?(app_name)
+          app_segments = if Config.xip?(host)
+            Config.xip_segments(host)
+          else
+            parse_host(host)
+          end
+
+          app_name = Config.find_app(app_segments)
+          return app_name if app_name
         end
 
         return :default if Config.configured_default_app?
@@ -129,10 +135,10 @@ module Prax
     rescue Errno::EPIPE, Errno::ECONNRESET
     end
 
-    def parse_host
-      ary = @request_headers["host"].split(".")
+    def parse_host(host)
+      ary = host.split('.')
       ary.pop # extension + eventual :port
-      ary.pop # app_name
+      ary # app name segments
     end
 
     def render(template, options = {})
