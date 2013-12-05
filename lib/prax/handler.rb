@@ -14,7 +14,7 @@ module Prax
     end
 
     def handle
-      file = PublicFile.new(request, app_name)
+      file = PublicFile.new(request, app)
       if file.exists?
         file.stream_to(socket)
       else
