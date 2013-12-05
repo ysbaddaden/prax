@@ -19,10 +19,10 @@ module Prax
 
   class PublicFile
     include ContentType
-    attr_reader :request, :app_name
+    attr_reader :request, :app
 
-    def initialize(request, app_name)
-      @request, @app_name = request, app_name
+    def initialize(request, app)
+      @request, @app = request, app
     end
 
     def exists?
@@ -51,7 +51,7 @@ module Prax
     end
 
     def raw_file_path
-      @raw_file_path ||= File.join(Config.host_root, app_name, 'public', *sanitized_uri)
+      @raw_file_path ||= File.join(app.realpath, 'public', *sanitized_uri)
     end
 
     def sanitized_uri
