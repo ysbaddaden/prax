@@ -13,14 +13,13 @@ module Prax
       @socket, @ssl = socket, ssl
     end
 
-    # IMPROVE: use callable middleware instead?
     def handle
       file = PublicFile.new(request, app_name)
       if file.exists?
         file.stream_to(socket)
       else
-        request.proxy_to(connection)  #  socket => connection
-        response.proxy_to(socket)     #  socket <= connection
+        request.proxy_to(connection)  # socket => connection
+        response.proxy_to(socket)     # socket <= connection
       end
     rescue CantStartApp
       render :cant_start_app, status: 500

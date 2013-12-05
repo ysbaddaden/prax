@@ -31,6 +31,7 @@ module Prax
     end
 
     private
+
       def realpath(app_name)
         File.realpath(File.join(Config.host_root, app_name.to_s))
       end
@@ -38,10 +39,10 @@ module Prax
       def spawn(app_name)
         @apps << app = Application.new(app_name)
         @monitor << app
-        app.start
+        app.start unless app.port_forwarding?
         app
       rescue
-        app.kill
+        app.kill unless app.port_forwarding?
         raise
       end
   end

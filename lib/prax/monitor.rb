@@ -47,7 +47,7 @@ module Prax
 
     def kill(app)
       Prax.logger.info "Killing #{app.name}: expired TTL"
-      app.kill
+      app.kill unless app.port_forwarding?
       pop(app)
     end
   end

@@ -4,7 +4,7 @@ module Prax
   class Application
     include Timeout
 
-    attr_reader :app_name, :pid
+    attr_reader :app_name, :pid, :port
     alias name app_name
 
     def initialize(app_name)
@@ -23,14 +23,18 @@ module Prax
       Process.wait(@pid)
     rescue Errno::ECHILD
     ensure
-      @socket = @pid = nil
+      @socket = @pid = @port = nil
     end
 
     def socket
-      UNIXSocket.new(socket_path)
-    rescue Errno::ENOENT, Errno::ECONNREFUSED
-      force_restart
-      UNIXSocket.new(socket_path)
+      return TCPSocket.new('localhost', @port) if port_forwarding?
+
+      begin
+        UNIXSocket.new(socket_path)
+      rescue Errno::ENOENT, Errno::ECONNREFUSED
+        force_restart
+        UNIXSocket.new(socket_path)
+      end
     end
 
     def started?
@@ -44,7 +48,24 @@ module Prax
     end
 
     def configured?
-      File.exists?(path) and File.directory?(realpath)
+      if File.exists?(path)
+        if File.symlink?(path)
+          # rack app
+          return File.directory?(realpath)
+        else
+          # port forwarding
+          port = File.read(path).strip.to_i
+          if port > 0
+            @port = port
+            return true
+          end
+        end
+      end
+      return false
+    end
+
+    def port_forwarding?
+      !!@port
     end
 
     def socket_path
@@ -60,6 +81,7 @@ module Prax
     end
 
     private
+
       def force_restart
         Prax.logger.info "Forcing restart of #{app_name} (#{realpath})"
         kill
