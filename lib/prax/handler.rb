@@ -47,6 +47,10 @@ module Prax
       @app ||= Spawner.get(app_segments)
     end
 
+    def app_name
+      app.app_name
+    end
+
     def app_segments
       @app_segments ||= if request.host.ip?
         :default

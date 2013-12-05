@@ -95,10 +95,6 @@ module Prax
       @realpath ||= File.realpath(path)
     end
 
-    def subdomain_of?(segments)
-      segments.join('.').end_with?(app_name)
-    end
-
     private
 
       def force_restart
