@@ -4,6 +4,11 @@
   </head>
   <body>
     <h1>Can't start application <q><%= @app_name %></q></h1>
-    <p>Please look at <code><%= @spawner.log_path %></code> for details</p>
+    <p>Please look at <code><%= @app.log_path %></code> for details</p>
+    <% unless error.nil? %>
+      <code>
+        <%= error.message %>
+      </code>
+    <% end %>
   </body>
 </html>

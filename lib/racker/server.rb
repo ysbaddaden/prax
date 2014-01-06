@@ -64,6 +64,9 @@ module Racker
         Racker.logger.debug("Building Rack app at #{config_path}")
         app, _ = Rack::Builder.parse_file(config_path)
         app
+      rescue => err
+        Racker.logger.error("Error parsing config.ru: #{err}")
+        nil
       end
 
       def handle_options(options)
