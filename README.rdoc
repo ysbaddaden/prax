@@ -36,7 +36,7 @@ ruby engines. It has been tested on:
 
 Please note that Ruby 1.8.7 and Rubinius in 1.8 mode also require the `sfl`
 (spawn for legacy) gem, because Ruby 1.8 doesn't support `Process.spawn` which
-was introduced in Ruby 1.9.
+was introduced in Ruby 1.9.  If you're using Bundler, add it to your Gemfile.
 
 Jruby in 1.8 mode isn't supported, because `sfl` requires `fork` which isn't
 available on all platforms (not even GNU/Linux). Also, Jruby 1.6.8 just doesn't
