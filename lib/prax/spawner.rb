@@ -39,8 +39,13 @@ module Prax
         args = ['rbenv', 'exec']
         args << 'ruby' unless gemfile?
       elsif rvm?
-        ruby_version = File.exists?(File.join(realpath, ".ruby-version")) ? File.read(File.join(realpath, ".ruby-version")) : 'default'
-        args = ['rvm', ruby_version, 'do']
+        ruby_version_path = File.join(realpath, ".ruby-version")
+        ruby_version = File.exists?(ruby_version_path) ? File.read(ruby_version_path).strip : 'default'
+
+        ruby_gemset_path = File.join(realpath, ".ruby-gemset")
+        ruby_gemset = File.exists?(ruby_gemset_path) ? File.read(ruby_gemset_path).strip : 'default'
+
+        args = ['rvm', "#{ruby_version}@#{ruby_gemset}", 'do']
         args << 'ruby' unless gemfile?
       end
 
