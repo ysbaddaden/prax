@@ -3,6 +3,7 @@ require 'prax/application'
 require 'prax/monitor'
 
 module Prax
+  # FIXME: remove the app from @apps when it's killed (eg: ttl expired in monitor).
   module Spawner
     extend self
 
@@ -15,7 +16,13 @@ module Prax
     def get(app_name)
       @mutex.synchronize do
         app = @apps.find { |_app| _app.realpath == realpath(app_name) }
-        app ||= spawn(app_name) unless app
+
+        if app
+          app.kill if app.restart?
+        else
+          app = spawn(app_name)
+        end
+
         @monitor.requested(app)
         app
       end

@@ -39,6 +39,7 @@ module Prax
 
     def requested(app)
       @requests[app.name] = Time.now.utc
+      push(app) unless apps.include?(app)
     end
 
     def expired?(app)

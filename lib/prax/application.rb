@@ -13,12 +13,13 @@ module Prax
     end
 
     def start
-      kill if restart?
+      #kill if restart?
       spawn unless started?
     end
 
     def kill(type = :TERM)
       return unless @pid
+      Prax.logger.debug("Killing #{app_name} (#{@pid})...")
       Process.kill(type.to_s, @pid)
       Process.wait(@pid)
     rescue Errno::ECHILD
