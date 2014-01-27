@@ -7,6 +7,12 @@ Calling <tt>myapp.dev</tt> and <tt>subdomain.myapp.dev</tt> with no
 configuration is simpler than editing your hosts file, starting your
 applications manually on port 3000, etc.
 
+NOTE: a full rewrite of Prax is available in the unstable branch and comes with
+a few more features than available in the current master branch. You are
+encouraged to try it out —it may be more compatible with the different
+Ruby version managers, and has an autokill monitor to kill the apps after a TLL,
+among other things.
+
 == Why a pure-ruby alternative?
 
 My GNU/Linux fork of [Pow](http://pow.cx/) just broke on me badly, and I
