@@ -76,6 +76,10 @@ module Prax
       $1 if host =~ XIP_RE
     end
 
+    def remote_addr
+      socket.is_a?(::UNIXSocket) ? '127.0.0.1' : socket.peeraddr[2]
+    end
+
     private
       def parse_query_string
         if idx = uri.rindex('?')

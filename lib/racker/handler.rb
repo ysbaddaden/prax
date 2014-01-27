@@ -72,7 +72,7 @@ module Racker
           'rack.url_scheme' => 'http',
           'rack.input' => request.body_as_rewindable_input,
           'HTTP_VERSION' => request.http_version,
-          'REMOTE_ADDR' => socket.peeraddr[2],
+          'REMOTE_ADDR' => request.remote_addr,
           'SERVER_SOFTWARE'=> 'racker 0.1.0',
           'SERVER_PROTOCOL' => request.http_version,
           'SERVER_NAME' => request.host,
