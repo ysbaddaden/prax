@@ -12,7 +12,6 @@ module Racker
 
     def to_env
       default_env
-      parse_remote_addr
       parse_request_line
       parse_query_string
       parse_headers
@@ -33,11 +32,6 @@ module Racker
         @env["rack.errors"] = STDERR
         @env["rack.logger"] = Racker.logger
         @env["rack.url_scheme"] = "http"
-      end
-
-      def parse_remote_addr
-        _, _, host = socket.peeraddr
-        @env["REMOTE_ADDR"] = host
       end
 
       def parse_request_line
@@ -66,6 +60,7 @@ module Racker
           if line.strip =~ /^([^:]*):\s*(.*)$/
             value, key = $2, $1.upcase.gsub("-", "_")
             case key
+            when "REMOTE_ADDR"    then @env["REMOTE_ADDR"]    = value
             when "CONTENT_TYPE"   then @env["CONTENT_TYPE"]   = value
             when "CONTENT_LENGTH" then @env["CONTENT_LENGTH"] = value.to_i
             else @env["HTTP_#{key}"] = value

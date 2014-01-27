@@ -79,6 +79,10 @@ module Prax
 
       if line and line.strip =~ %r{^([A-Z]+) (.+) (HTTP/\d\.\d)$}
         @request << line
+
+        # remote address
+        @request << "Remote-Addr: #{@input.peeraddr[3]}\r\n"
+
         @http_method  = $1
         @request_uri  = $2
         @http_version = $3
