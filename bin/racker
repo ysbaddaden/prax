@@ -19,7 +19,14 @@ abs_dirname() {
   cd "$cwd"
 }
 
+load_env() {
+  cat $1 | egrep -v '^([\s#]|$)' | sed 's/^/export /g' > /tmp/$$.praxenv
+  source /tmp/$$.praxenv
+  rm /tmp/$$.praxenv
+}
+
 [ -f $HOME/.praxconfig ] && source $HOME/.praxconfig
+[ -f .env ] && load_env .env
 [ -f .praxrc ] && source .praxrc
 
 prax_path="$(abs_dirname "$0")"
