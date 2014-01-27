@@ -23,18 +23,9 @@ installed if you are a Ruby Web developer.
 Prax has been developed with MRI Ruby 1.9.3, but should be compatible with most
 ruby engines. It has been tested on:
 
-  - Ruby 1.8.7
-  - Ruby 1.9.3
-  - Rubinius 2.0.0 (HEAD)
-  - JRuby 1.7.0 (1.9 mode)
-
-Please note that Ruby 1.8.7 and Rubinius in 1.8 mode also require the `sfl`
-(spawn for legacy) gem, because Ruby 1.8 doesn't support `Process.spawn` which
-was introduced in Ruby 1.9.
-
-Jruby in 1.8 mode isn't supported, because `sfl` requires `fork` which isn't
-available on all platforms (not even GNU/Linux). Also, Jruby 1.6.8 just doesn't
-work with Prax, neither in 1.8 nor 1.9 modes.
+  - Ruby 1.9.3+
+  - Rubinius 2.0+ (1.9 mode)
+  - JRuby 1.7+ (1.9 mode)
 
 == Installing on GNU/Linux
 
@@ -42,13 +33,15 @@ First clone the repository, install the port forwarding script and NSSwitch
 extension.
 
   $ git clone git://github.com/ysbaddaden/prax.git
-
   $ cd prax/
+  $ git checkout unstable
   $ ./bin/prax install
+  $ ln -sf $PWD/bin/prax /usr/local/bin
 
 And you're done! You only need to link your apps using:
 
-  $ ./bin/prax link ~/Work/myapp
+  $ cd ~/Work/myapp
+  $ prax link
 
 Or install manually:
 
@@ -60,6 +53,8 @@ Or install manually:
   $ cd prax/ext/
   $ make
   $ sudo make install
+
+  $ ln -sf $PWD/bin/prax /usr/local/bin
 
 Edit <tt>/etc/nsswitch.conf</tt> and add +prax+ to the +hosts+ line, then
 restart your browser, otherwise it won't use the newly configured prax
@@ -82,14 +77,14 @@ of 5 seconds, this is because of the DNS resolution: NSSwitch tries a real DNS
 resolution before checking the prax extension. This usually creates an overhead
 of less than half a second, but sometimes takes 5 seconds on my Ubuntu 12.04.
 
-You may try to move the `prax` NSSwitch extension before the `dns` one, so it
+You may try to move the +prax+ NSSwitch extension before the +dns+ one, so it
 looks like this:
 
   hosts: files mdns4_minimal [NOTFOUND=return] prax dns mdns4
 
 This will dramatically speed up the DNS resolution of *.dev domains, and it
-should never hang anymore. BUT please be aware that it may cause problems in
-regular DNS resolutions!
+should never hang anymore, BUT please be aware that it may cause problems in
+regular DNS resolutions (it works correctly for me).
 
 === Mac OS X
 
@@ -97,16 +92,17 @@ Mac OS X isn't supported yet. Feel free to contribute!
 
 == Features
 
-This is a work in progress, and Prax is missing some features to be on par
-with Pow. Mostly on the configuration side of your development machine. Yet
-it's already capable to start the HTTP server, spawn your apps, proxy
-requests, and more.
+This is an ever going work in progress, thought Prax isn't missing much things
+to be on par with Pow! The current features have been implemented:
 
 - HTTP Server
 - HTTP Proxy
-- Rack Handler (Racker)
-- Rack Application spawn / restart / always restart
+- HTTP Port Forwarding
 - SSL support (if certs and keys are generated)
+- Rack Handler (Racker)
+- Rack Application spawn, restart, always restart and autokill
+- Export ENV vars from a myapp/.env file
+- Source ~/.praxconfig and myapp/.praxrc bash scripts
 - {xip.io}[http://xip.io/] support
 - GNU/Linux:
   - NSSwitch DNS resolver (resolves <tt>*.dev</tt> domains to <tt>127.0.0.1</tt>)
@@ -115,16 +111,17 @@ requests, and more.
 
 === TODO
 
-- commands for the prax script:
-  - prax always_restart
+- Documentation
 - Mac OS X:
   - firewall rule
   - DNS resolver
   - install script
+- Commands for the prax script:
+  - prax always_restart
 
 == Credits
 
 - Julien Portalier <julien@portalier.com>
-- Sam Stephenson, Nick Quaranto, 37signals for the sub comamnd
+- Sam Stephenson, Nick Quaranto, 37signals for the sub command and Pow!
 - pyromaniac for the initial NSSwitch extension
 
