@@ -67,7 +67,7 @@ different domains.
   $ mkdir ~/.prax
   $ ln -sf ~/Work/myapp ~/.prax/
 
-Eventually start <tt>bin/prax</tt> to run Prax, point your browser to
+Eventually run <tt>prax start</tt> to run Prax, point your browser to
 <tt>http://myapp.dev/</tt> and wait for your Rack app to spawn.
 
 ==== Slowness
