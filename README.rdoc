@@ -7,15 +7,16 @@ Calling <tt>myapp.dev</tt> and <tt>subdomain.myapp.dev</tt> with no
 configuration is simpler than editing your hosts file, starting your
 applications manually on port 3000, etc.
 
-NOTE: a full rewrite of Prax is available in the unstable branch and comes with
-a few more features than available in the current master branch. You are
-encouraged to try it out —it may be more compatible with the different
-Ruby version managers, and has an autokill monitor to kill the apps after a TLL,
-among other things.
+NOTE: a full rewrite of Prax is available in the
+{unstable branch}[https://github.com/ysbaddaden/prax/tree/unstable]
+and comes with a few more features than available in the current master
+branch. You are encouraged to try it out —it may be more compatible with
+the different Ruby version managers, and has an autokill monitor to kill
+the apps after a TLL, among other things.
 
 == Why a pure-ruby alternative?
 
-My GNU/Linux fork of [Pow](http://pow.cx/) just broke on me badly, and I
+My GNU/Linux fork of {Pow}[http://pow.cx/] just broke on me badly, and I
 couldn't read, less write the coffeescript it's written in. I thus decided to
 try writing an alternative in Ruby. Good for me, because I now have a viable
 alternative, and learned a lot about TCP and UNIX sockets, the HTTP protocol,
@@ -55,7 +56,7 @@ NSSwitch extension.
 
 And you're done! You only need to link your apps by going to your rails root path and calling link:
   $ cd ~/Work/myapp
-  $ prax link 
+  $ prax link
 
 If you want the prax server to automatically start, simply add the following to your .bash_profile or .profile:
 
