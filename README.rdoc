@@ -1,4 +1,4 @@
- Prax
+= Prax
 
 A pure ruby alternative to Pow!!
 
@@ -35,17 +35,18 @@ ruby engines. It has been tested on:
   - Rubinius 2.0.0 (HEAD)
   - JRuby 1.7.0 (1.9 mode)
 
-Please note that Ruby 1.8.7 and Rubinius in 1.8 mode also require the `sfl`
-(spawn for legacy) gem, because Ruby 1.8 doesn't support `Process.spawn` which
-was introduced in Ruby 1.9.  If you're using Bundler, add it to your Gemfile.
+Please note that Ruby 1.8.7 and Rubinius in 1.8 mode also require the +sfl+
+(spawn for legacy) gem, because Ruby 1.8 doesn't support <tt>Process.spawn</tt>
+which was introduced in Ruby 1.9. If you're using Bundler, add it to your
+Gemfile.
 
-Jruby in 1.8 mode isn't supported, because `sfl` requires `fork` which isn't
+Jruby in 1.8 mode isn't supported, because +sfl+ requires +fork+ which isn't
 available on all platforms (not even GNU/Linux). Also, Jruby 1.6.8 just doesn't
 work with Prax, neither in 1.8 nor 1.9 modes.
 
 == Installing on GNU/Linux
 
-First clone the repository (it's suggested you put it somewhere like /opt),
+First clone the repository (it's suggested you put it somewhere like <tt>/opt</tt>),
 and run the installer which will install the port forwarding script and
 NSSwitch extension.
 
@@ -54,11 +55,14 @@ NSSwitch extension.
   $ cd /opt/prax/
   $ ./bin/prax install
 
-And you're done! You only need to link your apps by going to your rails root path and calling link:
+And you're done! You only need to link your apps by going to your rails root path
+and calling link:
+
   $ cd ~/Work/myapp
   $ prax link
 
-If you want the prax server to automatically start, simply add the following to your .bash_profile or .profile:
+If you want the prax server to automatically start, simply add the following to
+your <tt>.bash_profile</tt> or <tt>.profile</tt>:
 
   prax start
 
@@ -90,18 +94,17 @@ different domains.
 Point your browser to <tt>http://myapp.dev/</tt> and wait for your Rack app to
 spawn.
 
-==== Slowness
+==== Known bug
 
-If you notice regular web browsing or any kind of DNS resolution being slower
-than usual, this might be due to the prax NSSwitch extension.
-
-You may try to move the `prax` NSSwitch extension _after_ the `dns` one, so it
-looks like this (in /etc/nsswitch.conf):
+The NSSwitch extension may cause some instability in the software stack, like
+a crashing browser, or some software not resolving domains anymore. You may
+want to reconfigure the NSSswitch by moving the +prax+ NSSwitch extension
+after the +dns+ one, so it looks like this (in <tt>/etc/nsswitch.conf</tt>):
 
   hosts: files mdns4_minimal [NOTFOUND=return] dns prax mdns4
 
-Which should solve the problem, BUT might cause prax itself to resolve .dev domains
-a few seconds slower.
+Which should solve the problem, but might cause prax itself to resolve
+<tt>.dev</tt> domains with a regular delay (around 5 seconds).
 
 === Mac OS X
 
