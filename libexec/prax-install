@@ -27,7 +27,11 @@ if [ ! -d $HOSTS ]; then
     mkdir $HOSTS
 fi
 
-# prax start --background
+echo "Symlinking prax into your PATH"
+sudo ln -s $PRAX_ROOT/bin/prax /usr/local/bin/prax
+
+echo "Starting prax server"
+prax start
 
 echo "Prax is now ready. First restart your browser (for the NSSwitch extension"
 echo "to be used). Then link your apps to it:"
