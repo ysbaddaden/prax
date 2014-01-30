@@ -92,19 +92,16 @@ spawn.
 
 ==== Slowness
 
-If you experience some regular slowness, where Prax seems to hang for periods
-of 5 seconds, this is because of the DNS resolution: NSSwitch tries a real DNS
-resolution before checking the prax extension. This usually creates an overhead
-of less than half a second, but sometimes takes 5 seconds on my Ubuntu 12.04.
+If you notice regular web browsing or any kind of DNS resolution being slower
+than usual, this might be due to the prax NSSwitch extension.
 
-You may try to move the `prax` NSSwitch extension before the `dns` one, so it
-looks like this:
+You may try to move the `prax` NSSwitch extension _after_ the `dns` one, so it
+looks like this (in /etc/nsswitch.conf):
 
-  hosts: files mdns4_minimal [NOTFOUND=return] prax dns mdns4
+  hosts: files mdns4_minimal [NOTFOUND=return] dns prax mdns4
 
-This will dramatically speed up the DNS resolution of *.dev domains, and it
-should never hang anymore. BUT please be aware that it may cause problems in
-regular DNS resolutions!
+Which should solve the problem, BUT might cause prax itself to resolve .dev domains
+a few seconds slower.
 
 === Mac OS X
 
