@@ -9,7 +9,7 @@ HOSTS="$HOME/.prax"
 
 cd $EXT
 echo "Installing NSSwitch extension (to resolve .dev domains)"
-make
+sudo make
 sudo make install
 
 echo 'Adding "prax" to the hosts line of /etc/nsswitch.conf'
