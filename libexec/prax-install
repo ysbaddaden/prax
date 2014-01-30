@@ -9,7 +9,7 @@ HOSTS="$HOME/.prax"
 
 cd $EXT
 echo "Installing NSSwitch extension (to resolve .dev domains)"
-make
+sudo make
 sudo make install
 
 echo 'Adding "prax" to the hosts line of /etc/nsswitch.conf'
@@ -27,7 +27,11 @@ if [ ! -d $HOSTS ]; then
     mkdir $HOSTS
 fi
 
-# prax start --background
+echo "Symlinking prax into /usr/local/bin"
+sudo ln -s $PRAX_ROOT/bin/prax /usr/local/bin/prax
+
+echo "Starting prax server"
+prax start
 
 echo "Prax is now ready. First restart your browser (for the NSSwitch extension"
 echo "to be used). Then link your apps to it:"

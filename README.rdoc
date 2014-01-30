@@ -29,28 +29,33 @@ ruby engines. It has been tested on:
 
 == Installing on GNU/Linux
 
-First clone the repository, install the port forwarding script and NSSwitch
-extension.
+First clone the repository (it's suggested you put it somewhere like /opt),
+and run the installer which will install the port forwarding script and
+NSSwitch extension.
 
-  $ git clone git://github.com/ysbaddaden/prax.git
-  $ cd prax/
-  $ git checkout unstable
+  $ sudo git clone git://github.com/ysbaddaden/prax.git /opt/prax
+
+  $ cd /opt/prax/
   $ ./bin/prax install
   $ ln -sf $PWD/bin/prax /usr/local/bin
 
-And you're done! You only need to link your apps using:
+And you're done! You only need to link your apps by going to your rails root path and calling link:
 
   $ cd ~/Work/myapp
   $ prax link
 
-Or install manually:
+If you want the prax server to automatically start, simply add the following to your .bash_profile or .profile:
 
+  prax start
+
+Or install manually (from cloned prax directory):
+
+  $ sudo ln -s bin/prax /usr/local/bin/prax
   $ sudo cp install/initd /etc/init.d/prax
   $ sudo chmod +x /etc/init.d/prax
   $ sudo update-rc.d prax defaults
-  $ sudo /etc/init.d/prax start
 
-  $ cd prax/ext/
+  $ cd ext/
   $ make
   $ sudo make install
 
@@ -67,8 +72,11 @@ different domains.
   $ mkdir ~/.prax
   $ ln -sf ~/Work/myapp ~/.prax/
 
-Eventually run <tt>prax start</tt> to run Prax, point your browser to
-<tt>http://myapp.dev/</tt> and wait for your Rack app to spawn.
+  $ sudo /etc/init.d/prax start
+  $ prax start
+
+Point your browser to <tt>http://myapp.dev/</tt> and wait for your Rack app to
+spawn.
 
 ==== Slowness
 

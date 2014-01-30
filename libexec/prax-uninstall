@@ -28,5 +28,8 @@ if [ -d $HOSTS ]; then
     rm -rf $HOSTS
 fi
 
-echo "Prax has been uninstalled. You may need to restart your browser."
+echo "Removing prax symlink from /usr/local/bin"
+sudo rm /usr/local/bin/prax
 
+echo "Prax has been uninstalled. You may need to restart your browser."
+echo "You might also want to remove the prax installation directory at $PRAX_ROOT"
