@@ -7,6 +7,10 @@ module Prax
     attr_reader :app_name, :pid, :port
     alias name app_name
 
+    def self.exists?(app_name)
+      File.exists?(File.join(Config.host_root, app_name))
+    end
+
     def initialize(app_name)
       @app_name = app_name.to_s
       raise NoSuchApp.new unless configured?
@@ -45,12 +49,12 @@ module Prax
     def restart?
       return true unless started?
       restart = File.join(realpath, 'tmp', 'restart.txt')
-      File.exists?(restart) and File.stat(socket_path).mtime < File.stat(restart).mtime
+      File.exists?(restart) && File.stat(socket_path).mtime < File.stat(restart).mtime
     end
 
     def configured?
       if File.exists?(path)
-        if File.symlink?(path)
+        if File.symlink?(path) || File.directory?(path)
           # rack app
           return File.directory?(realpath)
         else
@@ -111,11 +115,7 @@ module Prax
       end
 
       def command
-        cmd = if gemfile?
-                'bundle exec'
-              else
-                'ruby'
-              end
+        cmd = gemfile? ? 'bundle exec' : ''
         "exec #{cmd} #{Config.racker_path} --server #{socket_path}"
       end
 
@@ -129,7 +129,7 @@ module Prax
 
       def wait_for_process
         timeout(30, CantStartApp) do
-          sleep 0.01 while process_exists? and !started?
+          sleep 0.01 while process_exists? && !started?
         end
       end
 

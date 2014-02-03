@@ -13,6 +13,9 @@ module Prax
     @monitor = Monitor.new
     @monitor.run
 
+    def find(app_name)
+    end
+
     def get(app_name)
       @mutex.synchronize do
         app = @apps.find { |_app| _app.realpath == realpath(app_name) }
@@ -49,7 +52,7 @@ module Prax
         app.start unless app.port_forwarding?
         app
       rescue
-        app.kill unless app.port_forwarding?
+        app.kill if app && !app.port_forwarding?
         raise
       end
   end
