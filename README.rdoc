@@ -1,13 +1,13 @@
 = Prax
 
-A pure ruby alternative to Pow!!
+A pure Ruby alternative to Pow!!
 
 Aka a Rack application spawner and proxy for simpler local development.
 Calling <tt>myapp.dev</tt> and <tt>subdomain.myapp.dev</tt> with no
 configuration is simpler than editing your hosts file, starting your
 applications manually on port 3000, etc.
 
-== Why a pure-ruby alternative?
+== Why?
 
 My GNU/Linux fork of [Pow](http://pow.cx/) just broke on me badly, and I
 couldn't read, less write the coffeescript it's written in. I thus decided to
@@ -20,63 +20,45 @@ installed if you are a Ruby Web developer.
 
 === Rubies
 
-Prax has been developed with MRI Ruby 1.9.3, but should be compatible with most
-ruby engines. It has been tested on:
+Prax has been developed with MRI Ruby 1.9.3 and newer, but should be
+compatible with most Ruby engines like Rubinius 2+ and JRuby 1.7+ in 1.9
+modes.
 
-  - Ruby 1.9.3+
-  - Rubinius 2.0+ (1.9 mode)
-  - JRuby 1.7+ (1.9 mode)
+Ruby 1.8 is deprecated, and no longer supported.
 
 == Installing on GNU/Linux
 
-First clone the repository (it's suggested you put it somewhere like /opt),
-and run the installer which will install the port forwarding script and
-NSSwitch extension.
+First clone the repository somewhere (like <tt>/opt</tt> or
+<tt>/usr/local/lib</tt>), and run the installer which will install the port
+forwarding script and NSSwitch extension:
 
-  $ sudo git clone git://github.com/ysbaddaden/prax.git /opt/prax
+  $ git clone git://github.com/ysbaddaden/prax.git /opt/prax
+  $ cd /opt/prax/ && ./bin/prax install
 
-  $ cd /opt/prax/
-  $ ./bin/prax install
-  $ ln -sf $PWD/bin/prax /usr/local/bin
-
-And you're done! You only need to link your apps by going to your rails root path and calling link:
+Now link your applications:
 
   $ cd ~/Work/myapp
   $ prax link
 
-If you want the prax server to automatically start, simply add the following to your .bash_profile or .profile:
+Point your browser to <tt>http://myapp.dev/</tt> and wait for your Rack
+application to spawn.
 
-  prax start
+To install Prax manually, or to review the installation process, please look at
+the {prax-install}[https://github.com/ysbaddaden/prax/blob/master/libexec/prax-install]
+script.
 
-Or install manually (from cloned prax directory):
+==== Start Prax automatically
 
-  $ sudo ln -s bin/prax /usr/local/bin/prax
-  $ sudo cp install/initd /etc/init.d/prax
-  $ sudo chmod +x /etc/init.d/prax
-  $ sudo update-rc.d prax defaults
+You may want to create a
+{prax.desktop}[https://github.com/ysbaddaden/prax/blob/master/install/prax.desktop]
+file in <tt>~/.config/autostart</tt> so that Prax will be started automatically
+when GNOME starts for example. Please see with your desktop environment which
+solution works best.
 
-  $ cd ext/
-  $ make
-  $ sudo make install
-
-  $ ln -sf $PWD/bin/prax /usr/local/bin
-
-Edit <tt>/etc/nsswitch.conf</tt> and add +prax+ to the +hosts+ line, then
-restart your browser, otherwise it won't use the newly configured prax
-resolver.
-
-Create the <tt>~/.prax</tt> directory and link your apps to it. You may
-link the same folder multiple times as different names to serve it from
-different domains.
-
-  $ mkdir ~/.prax
-  $ ln -sf ~/Work/myapp ~/.prax/
-
-  $ sudo /etc/init.d/prax start
-  $ prax start
-
-Point your browser to <tt>http://myapp.dev/</tt> and wait for your Rack app to
-spawn.
+If you don't use X, you may add a <tt>prax start</tt> line to your
+<tt>~/.bashrc</tt> for example, but we aware that it will restart Prax (and all
+Rack instances) everytime you log in. That could be fixed with a
+<tt>--no-restart</tt> flag and a +status+ command (contributions welcome).
 
 ==== Slowness
 
@@ -126,6 +108,8 @@ to be on par with Pow! The current features have been implemented:
   - install script
 - Commands for the prax script:
   - prax always_restart
+  - prax status
+  - prax start --no-restart
 
 == Credits
 
