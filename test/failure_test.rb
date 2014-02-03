@@ -21,6 +21,15 @@ describe "crashes" do
     end
   end
 
+  describe "config.ru doesn't run anything" do
+    before { File.unlink log_path('wont-run') rescue nil }
+
+    it "reports failure" do
+      assert_match "Can't start application", Net::HTTP.get(URI('http://wont-run.dev:20557/'))
+      assert_match "missing run or map statement", log('wont-run')
+    end
+  end
+
   def log(app_name)
     File.read log_path(app_name)
   end
