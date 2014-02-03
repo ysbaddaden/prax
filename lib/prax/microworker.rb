@@ -94,8 +94,8 @@ module Prax
       end
 
       def log_error(exception)
-        Prax.logger.error exception.class.name + ":" + exception.message + "\n  " + exception.backtrace.join("\n  ")
-        Prax.logger.info "Respawning failed worker"
+        logger.error exception.class.name + ": " + exception.message + "\n  " + exception.backtrace.join("\n  ")
+        logger.info "Respawning failed worker"
       end
   end
 end

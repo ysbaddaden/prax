@@ -5,7 +5,7 @@ module Prax
   # FIXME: find a better name than Render!
   module Render
     def render(template_name, options)
-      code, status = options[:code], Rack::Utils::HTTP_STATUS_CODES[code]
+      code, status = options[:status], Rack::Utils::HTTP_STATUS_CODES[options[:status]]
       html = render_to_string(template_name)
 
       socket.write "HTTP/1.1 #{code} #{status}\r\n" +

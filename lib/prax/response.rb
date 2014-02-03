@@ -14,6 +14,8 @@ module Prax
 
     def parse_response
       timeout(60) { parse_http_headers if @status_line = socket.gets }
+    rescue
+      raise CantStartApp.new
     end
 
     def proxy_to(io)

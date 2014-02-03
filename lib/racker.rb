@@ -28,6 +28,10 @@ module Racker
     def config_path
       @config_path ||= File.join(Dir.getwd, 'config.ru')
     end
+
+    def logger
+      Racker.logger
+    end
   end
 
   class Server < Prax::MicroServer

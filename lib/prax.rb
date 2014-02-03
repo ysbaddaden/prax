@@ -18,6 +18,10 @@ module Prax
     def perform(socket, ssl = nil)
       Handler.new(socket, ssl).handle
     end
+
+    def logger
+      Prax.logger
+    end
   end
 
   class Server < MicroServer
