@@ -73,7 +73,7 @@ module Prax
     end
 
     def xip_host
-      $1 if host =~ XIP_RE
+      "#{$1}.dev" if host =~ XIP_RE
     end
 
     def remote_addr
