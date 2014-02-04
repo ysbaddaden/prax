@@ -51,7 +51,9 @@ module Racker
         status = Rack::Utils::HTTP_STATUS_CODES[code]
         socket.write "#{env['HTTP_VERSION']} #{code} #{status}\r\n"
 
-        response_headers.each { |key, value| socket.write "#{key}: #{value}\r\n" }
+        response_headers.each do |key, value|
+          value.split(/\n/).each { |v| socket.write "#{key}: #{v}\r\n" }
+        end
         socket.write "\r\n"
 
         body.each { |b| socket.write b }

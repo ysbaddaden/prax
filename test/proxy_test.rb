@@ -55,4 +55,9 @@ describe "Proxy" do
     assert_equal response, Net::HTTP.get(URI('http://forward.dev:20557/'))
     t1.join
   end
+
+  it "returns multiple Set-Cookie headers" do
+    response = Net::HTTP.get_response(URI('http://cookies.dev:20557/'))
+    assert_equal ['first=123', 'second=456'], response.get_fields('Set-Cookie')
+  end
 end
