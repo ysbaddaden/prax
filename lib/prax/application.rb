@@ -17,12 +17,11 @@ module Prax
     end
 
     def start
-      #kill if restart?
       spawn unless started?
     end
 
     def kill(type = :TERM)
-      return unless @pid
+      return unless @pid || port_forwarding?
       Prax.logger.debug("Killing #{app_name} (#{@pid})...")
       Process.kill(type.to_s, @pid)
       Process.wait(@pid)
@@ -47,6 +46,7 @@ module Prax
     end
 
     def restart?
+      return false if port_forwarding?
       return true unless started?
       restart = File.join(realpath, 'tmp', 'restart.txt')
       File.exists?(restart) && File.stat(socket_path).mtime < File.stat(restart).mtime

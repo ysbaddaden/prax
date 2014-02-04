@@ -28,13 +28,32 @@ class Minitest::Spec
   end
 
   before do
-    _, out, _, @thr = Open3.popen3(prax_env, prax_cmd)
+    _, out, err, @thr = Open3.popen3(prax_env, prax_cmd)
     while line = out.gets
       break if line =~ /Prax is ready/
     end
+
+    Thread.new do
+      while line = out.gets
+        #puts line
+      end
+    end
+
+    Thread.new do
+      while line = err.gets
+        #puts line
+      end
+    end
   end
 
-  after { Process.kill(@thr[:pid]) rescue nil }
+  after do
+    begin
+      Process.kill('TERM', @thr[:pid])
+      sleep 0.1
+      Process.kill('KILL', @thr[:pid])
+    rescue Errno::ESRCH
+    end
+  end
 
   #def client(type, hostname, port = nil, &block)
   #  case type
