@@ -13,9 +13,6 @@ module Prax
     @monitor = Monitor.new
     @monitor.run
 
-    def find(app_name)
-    end
-
     def get(app_name)
       @mutex.synchronize do
         app = @apps.find { |_app| _app.realpath == realpath(app_name) }
@@ -31,13 +28,15 @@ module Prax
       end
     end
 
+    # FIXME: can't synchronize threads when process is exiting, but we need
+    #   applications to be killed.
     def stop
-      @mutex.synchronize do
+      #@mutex.synchronize do
         @apps.pop.tap do |app|
-          app.stop
-          @monitor.pop(app)
+          app.kill(:TERM, false)
+          @monitor.pop(app) rescue ThreadError
         end until @apps.empty?
-      end
+      #end
     end
 
     private

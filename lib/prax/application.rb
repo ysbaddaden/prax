@@ -20,11 +20,11 @@ module Prax
       spawn unless started?
     end
 
-    def kill(type = :TERM)
-      return unless @pid || port_forwarding?
+    def kill(type = :TERM, wait = false)
+      return if port_forwarding? || !@pid
       Prax.logger.debug("Killing #{app_name} (#{@pid})...")
       Process.kill(type.to_s, @pid)
-      Process.wait(@pid)
+      Process.wait(@pid) if wait
     rescue Errno::ECHILD
     ensure
       @socket = @pid = @port = nil

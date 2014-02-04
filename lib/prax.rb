@@ -40,14 +40,19 @@ module Prax
       servers = @listeners.map { |server| ":#{server.addr[1]}" }
       Prax.logger.info("Prax is ready to receive connections on #{servers.join(' and ')}.")
     end
+
+    def stopped
+      Spawner.stop
+    end
   end
 
   def self.run(options = {})
     @server = Server.new
     @daemon = options[:daemon]
 
-    %w{INT TERM QUIT}.each { |signal| Signal.trap(signal) { exit } }
-    Signal.trap('EXIT') { stop }
+    %w{INT TERM QUIT EXIT}.each do |signal|
+      Signal.trap(signal) { stop }
+    end
 
     @server.add_tcp_listener(Config.http_port)
     @server.add_ssl_listener(Config.https_port)

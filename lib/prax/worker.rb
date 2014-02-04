@@ -16,6 +16,8 @@ module Prax
       @@mutex.synchronize do
         @pool ||= self.class.worker_class.new(self.class.worker_size)
       end
+    rescue ThreadError
+      # FIXME: raised when process exits
     end
 
     def serve(*args)
@@ -24,7 +26,7 @@ module Prax
 
     def stop(sync = false)
       super
-      pool.stop(sync)
+      pool.stop(sync) if pool.respond_to?(:stop)
     end
   end
 end
