@@ -2,15 +2,11 @@ ENV['PRAX_HOST_ROOT'] = File.expand_path('../hosts', __FILE__)
 ENV['PRAX_HTTP_PORT'] = '20557'
 ENV['PRAX_HTTPS_PORT'] = '20556'
 
-gem 'minitest', '~> 4.0'
-require 'minitest/autorun'
-require 'minitest/spec'
-require 'minitest/pride'
+require 'bundler'
+Bundler.require(:test)
+
 require 'timeout'
 require 'socket'
-
-gem 'minitest-colorize'
-require 'minitest-colorize'
 
 $:.unshift File.expand_path("../../lib", File.realpath(__FILE__))
 Thread.abort_on_exception = true
