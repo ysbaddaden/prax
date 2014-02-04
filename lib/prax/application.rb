@@ -102,9 +102,9 @@ module Prax
 
       def spawn
         Prax.logger.info "Spawning application '#{app_name}' [#{realpath}]"
-        Prax.logger.debug command
+        Prax.logger.debug command.inspect
 
-        @pid = Process.spawn(env, command,
+        @pid = Process.spawn(env, *command,
           chdir: realpath,
           out: [log_path, 'a'],
           err: [:child, :out],
@@ -121,8 +121,8 @@ module Prax
       end
 
       def command
-        cmd = gemfile? ? 'bundle exec' : ''
-        "exec #{cmd} #{Config.racker_path} --server #{socket_path}"
+        cmd = [Config.racker_path, "--server", socket_path]
+        gemfile? ? %w(bundle exec) + cmd : cmd
       end
 
       def path
