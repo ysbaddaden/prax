@@ -121,8 +121,7 @@ module Prax
       end
 
       def command
-        cmd = [Config.racker_path, "--server", socket_path]
-        gemfile? ? %w(bundle exec) + cmd : cmd
+        @command ||= [Config.racker_path, "--server", socket_path]
       end
 
       def path
