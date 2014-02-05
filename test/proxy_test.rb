@@ -60,4 +60,8 @@ describe "Proxy" do
     response = Net::HTTP.get_response(URI('http://cookies.dev:20557/'))
     assert_equal ['first=123', 'second=456'], response.get_fields('Set-Cookie')
   end
+
+  it "supports bundler with special gems" do
+    assert_equal '1.0', Net::HTTP.get(URI('http://bundler.dev:20557/'))
+  end
 end
