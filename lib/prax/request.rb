@@ -5,6 +5,14 @@ require 'prax/request/host'
 module Prax
   XIP_RE = /^(.*?)\.?\d+.\d+\.\d+\.\d+\.xip\.io$/
 
+  PROXY_HEADERS = %w(
+    Connection
+    X-Forwarded-For
+    X-Forwarded-Host
+    X-Forwarded-Proto
+    X-Forwarded-Server
+  )
+
   class Request
     include HTTP
     attr_reader :socket, :ssl, :method, :http_version, :uri
@@ -32,13 +40,13 @@ module Prax
     end
 
     def proxy_headers
-      self.headers.dup.merge(
-        'Connection' => 'close',
-        'X-Forwarded-For' => socket.peeraddr[2],
-        'X-Forwarded-Host' => host,
-        'X-Forwarded-Proto' => ssl ? 'https' : 'http',
-        'X-Forwarded-Server' => socket.addr[2]
-      )
+      headers.reject { |header, _| PROXY_HEADERS.include?(header) } + [
+        ['Connection', 'close'],
+        ['X-Forwarded-For', socket.peeraddr[2]],
+        ['X-Forwarded-Host', host],
+        ['X-Forwarded-Proto', ssl ? 'https' : 'http'],
+        ['X-Forwarded-Server', socket.addr[2]]
+      ]
     end
 
     def query_string

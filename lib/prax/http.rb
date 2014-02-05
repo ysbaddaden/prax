@@ -2,13 +2,13 @@ module Prax
   module HTTP
     def parse_http_headers
       while line = socket.gets
-        headers[$1] = $2 if line.strip =~ /^([^:]+):\s*(.*)$/
+        headers << [$1, $2] if line.strip =~ /^([^:]+):\s*(.*)$/
         break if line.strip.empty?
       end
     end
 
     def headers
-      @headers ||= {}
+      @headers ||= []
     end
 
     def header(name)
