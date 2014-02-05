@@ -11,3 +11,4 @@ test/ssl/*.crt
 test/ssl/*.csr
 test/ssl/*.key
 test/hosts/_*
+build

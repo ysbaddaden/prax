@@ -1,0 +1,4 @@
+#! /bin/sh
+prax stop
+/etc/init.d/prax stop
+
