@@ -10,4 +10,4 @@ ssl/*.key
 test/ssl/*.crt
 test/ssl/*.csr
 test/ssl/*.key
-
+test/hosts/_*

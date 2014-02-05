@@ -28,7 +28,9 @@ load_env() {
 [ -f $HOME/.praxconfig ] && source $HOME/.praxconfig
 [ -f .env ] && load_env .env
 [ -f .praxrc ] && source .praxrc
+[ -f Gemfile ] && bundle_exec="bundle exec"
 
 prax_path="$(abs_dirname "$0")"
-exec "ruby" "$prax_path/../lib/racker/command.rb" $*
+echo $bundle_exec ruby "$prax_path/../lib/racker/command.rb" $*
+exec $bundle_exec ruby "$prax_path/../lib/racker/command.rb" $*
 
