@@ -76,6 +76,16 @@ This will dramatically speed up the DNS resolution of *.dev domains, and it
 should never hang anymore, BUT please be aware that it may cause problems in
 regular DNS resolutions (it works correctly for me).
 
+==== Thread-safety
+
+Unlike pow, which uses the Node.js single-thread evented model to run its apps,
+prax uses multiple Ruby threads per app to serve requests. Because of this, problems
+will arise if your app is not threadsafe. If this affects you, the current
+workaround is to make prax only use a single thread to service each app by adding
+the following in your `~/.praxconfig`:
+
+  export PRAX_APP_THREADS=1
+
 === Mac OS X
 
 Mac OS X isn't supported yet. Feel free to contribute!
