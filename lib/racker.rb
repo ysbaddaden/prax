@@ -3,6 +3,7 @@ require 'rack/builder'
 require 'prax/microserver'
 require 'prax/worker'
 require 'prax/logger'
+require 'prax/config'
 require 'racker/handler'
 
 module Racker
@@ -38,7 +39,7 @@ module Racker
     include Prax::Worker
 
     self.worker_class = Pool
-    self.worker_size = 4
+    self.worker_size = Prax::Config.worker_threads_count
 
     def started
       servers = @listeners.map do |server|
