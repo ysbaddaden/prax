@@ -117,7 +117,7 @@ module Prax
       end
 
       def env
-        { 'PATH' => ENV['ORIG_PATH'], 'PRAX_DEBUG' => ENV['PRAX_DEBUG'] }
+        { 'PATH' => ENV['ORIG_PATH'], 'PRAX_DEBUG' => ENV['PRAX_DEBUG'], 'HOME' => ENV['HOME'] }
       end
 
       def command
