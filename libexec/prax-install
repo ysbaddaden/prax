@@ -13,7 +13,7 @@ sudo make
 sudo make install
 
 echo 'Adding "prax" to the hosts line of /etc/nsswitch.conf'
-sudo sed -i -e '/\bprax\b/ !s/^hosts:.*/& prax/' /etc/nsswitch.conf
+sudo sed -i -r -e '/\bprax\b/ !s/^hosts:(.+)dns/hosts:\1prax dns/' /etc/nsswitch.conf
 
 cd $PRAX_ROOT
 echo "Installing Prax firewall rule"
