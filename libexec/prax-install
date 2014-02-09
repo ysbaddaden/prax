@@ -16,6 +16,7 @@ echo 'Adding "prax" to the hosts line of /etc/nsswitch.conf'
 sudo sed -i -r -e '/\bprax\b/ !s/^hosts:(.+)dns/hosts:\1prax dns/' /etc/nsswitch.conf
 
 cd $PRAX_ROOT
+[[ `which bundle` ]] && bundle install
 echo "Installing Prax firewall rule"
 sudo cp "$INSTALL/initd" "/etc/init.d/prax"
 sudo chmod +x "/etc/init.d/prax"
