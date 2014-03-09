@@ -62,10 +62,8 @@ module Prax
     def body_as_rewindable_input
       if content_length > (1024 * (80 + 32))
         body_as_tempfile
-      elsif content_length > 0
-        StringIO.new(socket.read(content_length))
       else
-        StringIO.new('')
+        body_as_string_io
       end
     end
 
@@ -108,6 +106,16 @@ module Prax
         IO.copy_stream(socket, tempfile, content_length)
         tempfile.rewind
         tempfile
+      end
+
+      def body_as_string_io
+        body_string = if content_length > 0
+          socket.read(content_length)
+        else
+          ''
+        end
+
+        StringIO.new(body_string).set_encoding 'ASCII-8BIT'
       end
   end
 end
