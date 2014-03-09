@@ -78,7 +78,7 @@ module Racker
           'SERVER_SOFTWARE'=> 'racker 0.1.0',
           'SERVER_PROTOCOL' => request.http_version,
           'SERVER_NAME' => request.host,
-          'SERVER_PORT' => request.port,
+          'SERVER_PORT' => request.port.to_s,
           'SCRIPT_NAME' => '',
           'REQUEST_METHOD' => request.method,
           'REQUEST_URI' => request.uri,
