@@ -39,8 +39,7 @@ module Prax
         args = ['rbenv', 'exec']
         args << 'ruby' unless gemfile?
       elsif rvm?
-        ruby_version = File.exists?(File.join(realpath, ".ruby-version")) ? File.read(File.join(realpath, ".ruby-version")) : 'default'
-        args = ['rvm', ruby_version, 'do']
+        args = ['rvm', rvm_gemset, 'do']
         args << 'ruby' unless gemfile?
       end
 
@@ -114,6 +113,13 @@ module Prax
     # Returns true if rvm is found.
     def rvm?
       `which rvm` != ''
+    end
+
+    def rvm_gemset
+      ruby_version = File.exists?(File.join(realpath, ".ruby-version")) ? File.read(File.join(realpath, ".ruby-version")) : 'default'
+      ruby_gemset = File.exists?(File.join(realpath, ".ruby-gemset")) ? File.read(File.join(realpath, ".ruby-gemset")) : 'default'
+
+      "#{ruby_version}@#{ruby_gemset}".gsub("\n", "")
     end
 
     # Path to the Rack config file.
