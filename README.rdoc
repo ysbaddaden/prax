@@ -94,6 +94,15 @@ different domains.
 Point your browser to <tt>http://myapp.dev/</tt> and wait for your Rack app to
 spawn.
 
+=== Custom Configuration
+You can modify the default behavior by creating a <tt>~/.praxconfig</tt> file. 
+
+These are the defaults:
+
+  PRAX_ROOT=/opt/prax/libexec
+  PRAX_HOSTS=~/.prax
+  PRAX_DEBUG=false
+
 === Known bug
 
 The NSSwitch extension may cause some instability in the software stack, like
