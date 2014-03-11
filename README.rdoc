@@ -94,7 +94,7 @@ different domains.
 Point your browser to <tt>http://myapp.dev/</tt> and wait for your Rack app to
 spawn.
 
-==== Known bug
+=== Known bug
 
 The NSSwitch extension may cause some instability in the software stack, like
 a crashing browser, or some software not resolving domains anymore. You may
@@ -106,7 +106,7 @@ after the +dns+ one, so it looks like this (in <tt>/etc/nsswitch.conf</tt>):
 Which should solve the problem, but might cause prax itself to resolve
 <tt>.dev</tt> domains with a regular delay (around 5 seconds).
 
-=== Mac OS X
+== Mac OS X
 
 Mac OS X isn't supported yet. Feel free to contribute!
 
