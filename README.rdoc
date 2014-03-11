@@ -47,6 +47,15 @@ To install Prax manually, or to review the installation process, please look at
 the {prax-install}[https://github.com/ysbaddaden/prax/blob/master/libexec/prax-install]
 script.
 
+=== Custom Configuration
+You can modify the default behavior by creating a <tt>~/.praxconfig</tt> file. 
+
+These are the defaults:
+
+  PRAX_ROOT=/opt/prax/libexec
+  PRAX_HOSTS=~/.prax
+  PRAX_DEBUG=false
+
 === Start Prax automatically
 
 You may want to create a
