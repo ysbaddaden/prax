@@ -47,7 +47,7 @@ To install Prax manually, or to review the installation process, please look at
 the {prax-install}[https://github.com/ysbaddaden/prax/blob/master/libexec/prax-install]
 script.
 
-==== Start Prax automatically
+=== Start Prax automatically
 
 You may want to create a
 {prax.desktop}[https://github.com/ysbaddaden/prax/blob/master/install/prax.desktop]
@@ -60,7 +60,7 @@ If you don't use X, you may add a <tt>prax start</tt> line to your
 Rack instances) everytime you log in. That could be fixed with a
 <tt>--no-restart</tt> flag and a +status+ command (contributions welcome).
 
-==== Slowness
+=== Slowness
 
 If you experience some regular slowness, where Prax seems to hang for periods
 of 5 seconds, this is because of the DNS resolution: NSSwitch tries a real DNS
@@ -76,7 +76,7 @@ This will dramatically speed up the DNS resolution of *.dev domains, and it
 should never hang anymore, BUT please be aware that it may cause problems in
 regular DNS resolutions (it works correctly for me).
 
-=== Mac OS X
+== Mac OS X
 
 Mac OS X isn't supported yet. Feel free to contribute!
 
