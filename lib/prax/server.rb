@@ -13,6 +13,7 @@ module Prax
   module SSL
     def ssl_crt; File.join(ROOT, "ssl", "server.crt"); end
     def ssl_key; File.join(ROOT, "ssl", "server.key"); end
+    def ca_crt; File.join(ROOT, "ssl", "ca.crt"); end
 
     def ssl_configured?
       File.exists?(ssl_crt) and File.exists?(ssl_key)
@@ -43,7 +44,6 @@ module Prax
       Prax.logger.info("HTTP server ready on port #{Config.http_port}")
 
       spawn_ssl_server if ssl_configured?
-      Prax.logger.info("HTTPS server ready on port #{Config.https_port}")
 
       #servers.each { |server| Prax.logger.debug(server.addr.inspect) }
     end
@@ -53,7 +53,12 @@ module Prax
       ctx      = OpenSSL::SSL::SSLContext.new
       ctx.cert = OpenSSL::X509::Certificate.new(File.read(ssl_crt))
       ctx.key  = OpenSSL::PKey::RSA.new(File.read(ssl_key))
+      if File.exists?(ca_crt)
+        ctx.extra_chain_cert = [OpenSSL::X509::Certificate.new(File.read(ca_crt))]
+        ctx.client_ca = [OpenSSL::X509::Certificate.new(File.read(ca_crt))]
+      end
       servers << OpenSSL::SSL::SSLServer.new(TCPServer.new(Config.https_port), ctx)
+      Prax.logger.info("HTTPS server ready on port #{Config.https_port}")
     end
 
     def spawn_workers
