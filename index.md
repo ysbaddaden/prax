@@ -27,10 +27,9 @@ Ruby and the Rack gem installed. sudo privilege is required to install the
 NSSwitch extension, to configure /etc/nsswitch.conf and install the iptables
 script:
 
-    $ git clone git://github.com/ysbaddaden/prax.git
-    $ cd prax/
-    $ bin/prax install
-    $ bin/prax start
+    $ sudo git clone git://github.com/ysbaddaden/prax.git /opt/prax
+    $ cd /opt/prax/
+    $ ./bin/prax install
 
 ([Review the install script](https://github.com/ysbaddaden/prax/blob/master/libexec/prax-install)).
 
