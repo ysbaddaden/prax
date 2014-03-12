@@ -94,6 +94,34 @@ different domains.
 Point your browser to <tt>http://myapp.dev/</tt> and wait for your Rack app to
 spawn.
 
+=== HTTPS
+
+To start an HTTPS server, you need to have an SSL certificate file and an RSA/DSA key file.
+
+The key file and a self-signed certificate can be genterated automatically by running 
+the <tt>generate.rb</tt> script. Since this certificate is only being used for local 
+development, you can just accept the defaults for all the prompts.
+
+  $ cd /opt/prax/ssl; bash ./generate.sh
+
+Optionally you can use your own certificate by copying the file to:
+
+  $ cp <path_to_crt_file> /opt/prax/ssl/server.crt
+  $ cp <path_to_key_file> /opt/prax/ssl/server.key
+
+If you also require an intermediate or bundle certificate file, you can add that too:
+  $ cp <path_to_bundle_file> /opt/prax/ssl/ca.pem
+
+Next (re)start prax: 
+
+ $ prax start
+
+**This will result in a security warning because the browser cannot validate it 
+against a local, trusted issuer certificate.** For development, this should not be of much 
+concert and you can add an exception for this in your browser.
+
+Now you can point your browser to <tt>https://myapp.dev/</tt> and test the app via SSL.
+
 === Custom Configuration
 You can modify the default behavior by creating a <tt>~/.praxconfig</tt> file. 
 
