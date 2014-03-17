@@ -51,13 +51,15 @@ script.
 
 To start an HTTPS server, you need to have an SSL certificate file and an RSA/DSA key file.
 
-The key file and a self-signed certificate can be genterated automatically by running 
-the <tt>generate.rb</tt> script. Since this certificate is only being used for local 
-development, you can just accept the defaults for all the prompts.
+The key file and a self-signed certificate can be genterated automatically during prax installation. THey can be re-generated if needed by deleting the <tt>server.*</tt> files in <tt>/opt/prax/ssl/</tt> then running 
+the <tt>generate.rb</tt> script. 
 
-  $ cd /opt/prax/ssl; bash ./generate.sh
+  $ cd /opt/prax/ssl; rm server.*; bash ./generate.sh
 
-Optionally you can use your own certificate by copying the file to:
+Since this certificate is only being used for local 
+development, we just skip most of the prompts.
+
+Optionally you can use your own certificate by copying the files to:
 
   $ cp <path_to_crt_file> /opt/prax/ssl/server.crt
   $ cp <path_to_key_file> /opt/prax/ssl/server.key
