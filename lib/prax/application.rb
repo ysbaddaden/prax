@@ -40,7 +40,7 @@ module Prax
       if port_forwarding?
         begin
           return TCPSocket.new('localhost', @port)
-        rescue Errno::ECONNREFUSED
+        rescue Errno::ECONNREFUSED, Errno::ECONNRESET
           raise PortForwardingConnectionError.new
         end
       end
