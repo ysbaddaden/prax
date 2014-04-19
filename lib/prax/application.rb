@@ -37,7 +37,13 @@ module Prax
     end
 
     def socket
-      return TCPSocket.new('localhost', @port) if port_forwarding?
+      if port_forwarding?
+        begin
+          return TCPSocket.new('localhost', @port)
+        rescue Errno::ECONNREFUSED, Errno::ECONNRESET
+          raise PortForwardingConnectionError.new
+        end
+      end
 
       begin
         UNIXSocket.new(socket_path)
@@ -117,7 +123,7 @@ module Prax
       end
 
       def env
-        { 'PATH' => ENV['ORIG_PATH'], 'PRAX_DEBUG' => ENV['PRAX_DEBUG'] }
+        { 'PATH' => ENV['ORIG_PATH'], 'PRAX_DEBUG' => ENV['PRAX_DEBUG'], 'HOME' => ENV['HOME'] }
       end
 
       def command
@@ -139,7 +145,7 @@ module Prax
       end
 
       def process_exists?
-        Process.getpgid(@pid)
+        @pid ? Process.getpgid(@pid) : nil
       rescue Errno::ESRCH
         false
       end

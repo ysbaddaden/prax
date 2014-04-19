@@ -25,6 +25,8 @@ module Prax
       render :cant_start_app, status: 500
     rescue NoSuchApp
       render :no_such_app, status: 404
+    rescue PortForwardingConnectionError
+      render :port_forwarding_connection_error, status: 500
     rescue Timeout::Error
       render :timeout, status: 500
     ensure

@@ -8,6 +8,6 @@ unless foreground
 end
 
 require 'prax'
-Thread.abort_on_exception = Prax::Config.debug?
+#Thread.abort_on_exception = Prax::Config.debug?
 Prax.run(daemon: !foreground)
 

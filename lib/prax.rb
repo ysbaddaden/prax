@@ -13,6 +13,7 @@ module Prax
   class Error < StandardError; end
   class NoSuchApp < Error; end
   class CantStartApp < Error; end
+  class PortForwardingConnectionError < Error; end
 
   class Pool < MicroWorker
     def perform(socket, ssl = nil)

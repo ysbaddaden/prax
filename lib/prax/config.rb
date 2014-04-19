@@ -38,6 +38,10 @@ module Prax
         @threads_count ||= (ENV["PRAX_THREADS"] || 16).to_i
       end
 
+      def worker_threads_count
+        @worker_threads_count ||= (ENV["PRAX_APP_THREADS"] || 4).to_i
+      end
+
       # Time after which an inactive app may be killed, in minutes. Defaults to
       # 10 minutes.
       def ttl
