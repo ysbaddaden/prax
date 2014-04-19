@@ -7,11 +7,14 @@ DOCDIR=$(PREFIX)/opt/prax/doc
 #GNOME_AUTOSTART=$(PREFIX)/usr/share/gnome/autostart
 VERSION=`cat ../VERSION`
 
+DEBIAN_DEPENDENCIES="-d 'ruby-interpreter (>= 1.9.3)' -d 'ruby-rack'"
+FEDORA_DEPENDENCIES="-d 'ruby' -d 'rubygem-rack'"
+
 all:
 	cd ext && make
 
 install: all
-	mkdir -p $(LIBDIR) $(INITD) $(PRAXDIR) $(BINDIR) $(DOCDIR)
+	mkdir -p $(LIBDIR) $(INITD) $(PRAXDIR) $(BINDIR) $(DOCDIR) #$(GNOME_AUTOSTART)
 	cp -r bin libexec lib templates $(PRAXDIR)
 	cp install/initd $(INITD)/prax
 	cp ext/libnss_prax.so.2 $(LIBDIR)
@@ -23,7 +26,7 @@ install: all
 	chmod -R 0644 `find $(PRAXDIR)/lib $(PRAXDIR)/templates $(PRAXDIR)/doc -type f`
 
 package: install
-	cd build && fpm -s dir -t $(TARGET) -n "prax" -v $(VERSION) -d 'ruby-interpreter' \
+	cd build && fpm -s dir -t $(TARGET) -n "prax" -v $(VERSION) $(DEPENDENCIES) \
 		--maintainer julien@portalier.com --url http://ysbaddaden/github.io/prax\
 		--description "Rack Proxy Server" --vendor "" \
 		--license "MIT License" --category devel \
@@ -31,10 +34,10 @@ package: install
 		etc lib opt usr
 
 deb:
-	TARGET=deb make package
+	TARGET=deb DEPENDENCIES=$(DEBIAN_DEPENDENCIES) make package
 
 rpm:
-	TARGET=rpm make package
+	TARGET=rpm DEPENDENCIES=$(FEDORA_DEPENDENCIES) make package
 
 clean:
 	rm -rf build
