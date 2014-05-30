@@ -22,7 +22,11 @@ module Prax
         response.proxy_to(socket)     # socket <= connection
       end
     rescue CantStartApp
-      render :cant_start_app, status: 500
+      if app.port
+        render :port_forwarding_connection_error, status: 500
+      else
+        render :cant_start_app, status: 500
+      end
     rescue NoSuchApp
       render :no_such_app, status: 404
     rescue PortForwardingConnectionError

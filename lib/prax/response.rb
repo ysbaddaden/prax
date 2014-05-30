@@ -15,6 +15,7 @@ module Prax
     def parse_response
       timeout(60) { parse_http_headers if @status_line = socket.gets }
     rescue
+      # NOTE: it may fail because the port-forwarded app isn't reachable
       raise CantStartApp.new
     end
 
