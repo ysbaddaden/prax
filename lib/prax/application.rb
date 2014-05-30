@@ -113,7 +113,7 @@ module Prax
         @pid = Process.spawn(env, *command,
           chdir: realpath,
           out: [log_path, 'a'],
-          err: [:child, :out],
+          err: :out,
           unsetenv_others: true,
           close_others: true
         )
