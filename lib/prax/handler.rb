@@ -69,6 +69,7 @@ module Prax
         app_name = segments[index...-1].join('.')
         return app_name if Application.exists?(app_name)
       end
+      nil
     end
   end
 end
