@@ -22,7 +22,7 @@ module Prax
     attr_reader :request, :app_name
 
     def initialize(request, app_name)
-      @request, @app_name = request, app_name
+      @request, @app_name = request, app_name.to_s
     end
 
     def exists?
