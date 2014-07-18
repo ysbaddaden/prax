@@ -1,22 +1,15 @@
 = Prax
 
-A pure ruby alternative to Pow!!
+A pure Ruby alternative to Pow!!
 
 Aka a Rack application spawner and proxy for simpler local development.
 Calling <tt>myapp.dev</tt> and <tt>subdomain.myapp.dev</tt> with no
 configuration is simpler than editing your hosts file, starting your
 applications manually on port 3000, etc.
 
-NOTE: a full rewrite of Prax is available in the
-{unstable branch}[https://github.com/ysbaddaden/prax/tree/unstable]
-and comes with a few more features than available in the current master
-branch. You are encouraged to try it out —it may be more compatible with
-the different Ruby version managers, and has an autokill monitor to kill
-the apps after a TLL, among other things.
+== Why?
 
-== Why a pure-ruby alternative?
-
-My GNU/Linux fork of {Pow}[http://pow.cx/] just broke on me badly, and I
+My GNU/Linux fork of [Pow](http://pow.cx/) just broke on me badly, and I
 couldn't read, less write the coffeescript it's written in. I thus decided to
 try writing an alternative in Ruby. Good for me, because I now have a viable
 alternative, and learned a lot about TCP and UNIX sockets, the HTTP protocol,
@@ -27,138 +20,79 @@ installed if you are a Ruby Web developer.
 
 === Rubies
 
-Prax has been developed with MRI Ruby 1.9.3, but should be compatible with most
-ruby engines. It has been tested on:
+Prax has been developed with MRI Ruby 1.9.3 and newer, but should be
+compatible with most Ruby engines like Rubinius 2+ and JRuby 1.7+ in 1.9
+modes.
 
-  - Ruby 1.8.7
-  - Ruby 1.9.3
-  - Rubinius 2.0.0 (HEAD)
-  - JRuby 1.7.0 (1.9 mode)
-
-Please note that Ruby 1.8.7 and Rubinius in 1.8 mode also require the +sfl+
-(spawn for legacy) gem, because Ruby 1.8 doesn't support <tt>Process.spawn</tt>
-which was introduced in Ruby 1.9. If you're using Bundler, add it to your
-Gemfile.
-
-Jruby in 1.8 mode isn't supported, because +sfl+ requires +fork+ which isn't
-available on all platforms (not even GNU/Linux). Also, Jruby 1.6.8 just doesn't
-work with Prax, neither in 1.8 nor 1.9 modes.
+Ruby 1.8 is deprecated, and no longer supported.
 
 == Installing on GNU/Linux
 
-First clone the repository (it's suggested you put it somewhere like <tt>/opt</tt>),
-and run the installer which will install the port forwarding script and
-NSSwitch extension.
+First clone the repository somewhere (like <tt>/opt</tt> or
+<tt>/usr/local/lib</tt>), and run the installer which will install the port
+forwarding script and NSSwitch extension:
 
-  $ sudo git clone git://github.com/ysbaddaden/prax.git /opt/prax
+  $ git clone git://github.com/ysbaddaden/prax.git /opt/prax
+  $ cd /opt/prax/ && ./bin/prax install
 
-  $ cd /opt/prax/
-  $ ./bin/prax install
-
-And you're done! You only need to link your apps by going to your rails root path
-and calling link:
+Now link your applications:
 
   $ cd ~/Work/myapp
   $ prax link
 
-If you want the prax server to automatically start, simply add the following to
-your <tt>.bash_profile</tt> or <tt>.profile</tt>:
+Point your browser to <tt>http://myapp.dev/</tt> and wait for your Rack
+application to spawn.
 
-  prax start
+To install Prax manually, or to review the installation process, please look at
+the {prax-install}[https://github.com/ysbaddaden/prax/blob/master/libexec/prax-install]
+script.
 
-Or install manually (from cloned prax directory):
+==== Start Prax automatically
 
-  $ sudo ln -s bin/prax /usr/local/bin/prax
-  $ sudo cp install/initd /etc/init.d/prax
-  $ sudo chmod +x /etc/init.d/prax
-  $ sudo update-rc.d prax defaults
+You may want to create a
+{prax.desktop}[https://github.com/ysbaddaden/prax/blob/master/install/prax.desktop]
+file in <tt>~/.config/autostart</tt> so that Prax will be started automatically
+when GNOME starts for example. Please see with your desktop environment which
+solution works best.
 
-  $ cd ext/
-  $ make
-  $ sudo make install
+If you don't use X, you may add a <tt>prax start</tt> line to your
+<tt>~/.bashrc</tt> for example, but we aware that it will restart Prax (and all
+Rack instances) everytime you log in. That could be fixed with a
+<tt>--no-restart</tt> flag and a +status+ command (contributions welcome).
 
-Edit <tt>/etc/nsswitch.conf</tt> and add +prax+ to the +hosts+ line, then
-restart your browser, otherwise it won't use the newly configured prax
-resolver.
+==== Slowness
 
-Create the <tt>~/.prax</tt> directory and link your apps to it. You may
-link the same folder multiple times as different names to serve it from
-different domains.
+If you experience some regular slowness, where Prax seems to hang for periods
+of 5 seconds, this is because of the DNS resolution: NSSwitch tries a real DNS
+resolution before checking the prax extension. This usually creates an overhead
+of less than half a second, but sometimes takes 5 seconds on my Ubuntu 12.04.
 
-  $ mkdir ~/.prax
-  $ ln -sf ~/Work/myapp ~/.prax/
+You may try to move the +prax+ NSSwitch extension before the +dns+ one, so it
+looks like this:
 
-  $ sudo /etc/init.d/prax start
-  $ prax start
+  hosts: files mdns4_minimal [NOTFOUND=return] prax dns mdns4
 
-Point your browser to <tt>http://myapp.dev/</tt> and wait for your Rack app to
-spawn.
+This will dramatically speed up the DNS resolution of *.dev domains, and it
+should never hang anymore, BUT please be aware that it may cause problems in
+regular DNS resolutions (it works correctly for me).
 
-=== HTTPS
-
-To start an HTTPS server, you need to have an SSL certificate file and an RSA/DSA key file.
-
-The key file and a self-signed certificate can be genterated automatically by running 
-the <tt>generate.rb</tt> script. Since this certificate is only being used for local 
-development, you can just accept the defaults for all the prompts.
-
-  $ cd /opt/prax/ssl; bash ./generate.sh
-
-Optionally you can use your own certificate by copying the file to:
-
-  $ cp <path_to_crt_file> /opt/prax/ssl/server.crt
-  $ cp <path_to_key_file> /opt/prax/ssl/server.key
-
-If you also require an intermediate or bundle certificate file, you can add that too:
-  $ cp <path_to_bundle_file> /opt/prax/ssl/ca.pem
-
-Next (re)start prax: 
-
- $ prax start
-
-**This will result in a security warning because the browser cannot validate it 
-against a local, trusted issuer certificate.** For development, this should not be of much 
-concert and you can add an exception for this in your browser.
-
-Now you can point your browser to <tt>https://myapp.dev/</tt> and test the app via SSL.
-
-=== Custom Configuration
-You can modify the default behavior by creating a <tt>~/.praxconfig</tt> file. 
-
-These are the defaults:
-
-  PRAX_ROOT=/opt/prax/libexec
-  PRAX_HOSTS=~/.prax
-  PRAX_DEBUG=false
-
-=== Known bug
-
-The NSSwitch extension may cause some instability in the software stack, like
-a crashing browser, or some software not resolving domains anymore. You may
-want to reconfigure the NSSswitch by moving the +prax+ NSSwitch extension
-after the +dns+ one, so it looks like this (in <tt>/etc/nsswitch.conf</tt>):
-
-  hosts: files mdns4_minimal [NOTFOUND=return] dns prax mdns4
-
-Which should solve the problem, but might cause prax itself to resolve
-<tt>.dev</tt> domains with a regular delay (around 5 seconds).
-
-== Mac OS X
+=== Mac OS X
 
 Mac OS X isn't supported yet. Feel free to contribute!
 
 == Features
 
-This is a work in progress, and Prax is missing some features to be on par
-with Pow. Mostly on the configuration side of your development machine. Yet
-it's already capable to start the HTTP server, spawn your apps, proxy
-requests, and more.
+This is an ever going work in progress, thought Prax isn't missing much things
+to be on par with Pow! The current features have been implemented:
 
 - HTTP Server
 - HTTP Proxy
-- Rack Handler (Racker)
-- Rack Application spawn / restart / always restart
+- HTTP Port Forwarding
 - SSL support (if certs and keys are generated)
+- Rack Handler (Racker)
+- Rack Application spawn, restart, always restart and autokill
+- Export ENV vars from a myapp/.env file
+- Source ~/.praxconfig and myapp/.praxrc bash scripts
 - {xip.io}[http://xip.io/] support
 - GNU/Linux:
   - NSSwitch DNS resolver (resolves <tt>*.dev</tt> domains to <tt>127.0.0.1</tt>)
@@ -167,16 +101,18 @@ requests, and more.
 
 === TODO
 
-- commands for the prax script:
-  - prax always_restart
+- Documentation
 - Mac OS X:
   - firewall rule
   - DNS resolver
   - install script
+- Commands for the prax script:
+  - prax always_restart
+  - prax status
+  - prax start --no-restart
 
 == Credits
 
 - Julien Portalier <julien@portalier.com>
-- Sam Stephenson, Nick Quaranto, 37signals for the sub comamnd
+- Sam Stephenson, Nick Quaranto, 37signals for the sub command and Pow!
 - pyromaniac for the initial NSSwitch extension
-

@@ -1,12 +1,13 @@
 #! /usr/bin/env ruby
-require File.expand_path("../ruby18", __FILE__) if RUBY_VERSION < "1.9"
-$:.unshift File.expand_path("../..", File.realpath(__FILE__))
+$:.unshift File.expand_path('../..', File.realpath(__FILE__))
+foreground = ARGV.include?('-f') || ARGV.include?('--foreground')
 
-unless ARGV.include?('-f') or ARGV.include?('--foreground')
+unless foreground
   puts "Starting prax in the background."
   Process.daemon
 end
 
-require "prax/server"
-Prax::Server.run
+require 'prax'
+#Thread.abort_on_exception = Prax::Config.debug?
+Prax.run(daemon: !foreground)
 

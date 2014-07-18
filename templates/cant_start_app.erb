@@ -1,9 +1,9 @@
 <html>
   <head>
-    <title>Can't start application <%= @app_name %></title>
+    <title>Can't start application <%= app.name %></title>
   </head>
   <body>
-    <h1>Can't start application <q><%= @app_name %></q></h1>
-    <p>Please look at <code><%= @spawner.log_path %></code> for details</p>
+    <h1>Can't start application <q><%= app.name %></q></h1>
+    <p>Please look at <code><%= app.log_path %></code> for details</p>
   </body>
 </html>

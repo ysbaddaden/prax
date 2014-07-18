@@ -13,11 +13,6 @@ module Prax
         @log_root ||= ENV["PRAX_LOG_ROOT"] || root("_logs")
       end
 
-      # Directory where pids are stored. Defaults to `$HOME/.prax/_pids`
-      def pid_root
-        @pid_root ||= ENV["PRAX_PID_ROOT"] || root("_pids")
-      end
-
       # Directory where sockets are stored. Defaults to `$HOME/.prax/_sockets`
       def socket_root
         @socket_root ||= ENV["PRAX_SOCKET_ROOT"] || root("_sockets")
@@ -40,57 +35,28 @@ module Prax
       end
 
       def threads_count
-        @threads_count ||= (ENV["PRAX_THREADS"] || 4).to_i
+        @threads_count ||= (ENV["PRAX_THREADS"] || 16).to_i
       end
 
-      # Returns true if a given app is available (a link in host_root that leads
-      # to a real directory.
-      def configured_app?(app_name)
-        path = File.join(host_root, app_name.to_s)
-        File.exists?(path) and File.directory?(File.realpath(path))
+      def worker_threads_count
+        @worker_threads_count ||= (ENV["PRAX_APP_THREADS"] || 4).to_i
       end
 
-      # Returns true if a default app is available.
-      def configured_default_app?
-        configured_app?(:default)
+      # Time after which an inactive app may be killed, in minutes. Defaults to
+      # 10 minutes.
+      def ttl
+        @ttl ||= (ENV['PRAX_TTL'] || 10).to_i * 60
+      end
+
+      def racker_path
+        File.expand_path('../../../bin/racker', __FILE__)
       end
 
       def debug?
         !!ENV["PRAX_DEBUG"]
       end
 
-      def thread?
-        !debug?
-      end
-
-      def ip?(str)
-        host = str.split(":").first
-        !(IPAddr.new(host) rescue nil).nil?
-      end
-
-      def xip?(str)
-        !xip_host(str).nil?
-      end
-
-      def xip_segments(str)
-        xip_host(str).split(".")
-      end
-
-      def find_app(segments)
-        segments = segments.dup
-        until segments.empty?
-          test_name = segments.join('.')
-          return test_name if configured_app?(test_name)
-          segments.shift
-        end
-      end
-
       private
-        def xip_host(str)
-          host = str.split(":").first
-          $1 if host =~ /^(.*?)\.?\d+.\d+\.\d+\.\d+\.xip\.io$/
-        end
-
         def root(dirname)
           path = File.join(host_root, dirname)
           Dir.mkdir(path) unless File.exists?(path)

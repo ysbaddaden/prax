@@ -2,39 +2,26 @@ require "prax/config"
 require "logger"
 
 module Prax
-  class MultiIO
-    def initialize(*targets)
-      @targets = targets
+  module Logger
+    def self.included(klass)
+      klass.extend ClassMethods
     end
 
-    def write(*args)
-      @targets.each { |target| target.write(*args) unless target.closed? }
-    rescue
-    end
+    module ClassMethods
+      def logger
+        @logger ||= begin
+          io = @daemon ? File.open(File.join(Config.log_root, 'prax.log'), 'a') : STDOUT
+          io.sync = true if io.respond_to?(:sync)
+          logger = ::Logger.new(io)
+          logger.level = Config.debug? ? ::Logger::DEBUG : ::Logger::INFO
+          logger
+        end
+      end
 
-    def close
-      @target.each(&:close) unless target.closed?
-    rescue
+      def logger=(logger)
+        @logger = logger
+      end
     end
-  end
-
-  class Logger < ::Logger
-    def initialize(*args)
-      super
-      @level = Config.debug? ? DEBUG : INFO
-    end
-  end
-
-  def self.logger
-    @logger ||= begin
-      #$stdout.sync = true
-      log = File.open(File.join(Config.log_root, "prax.log"), "a")
-      Prax::Logger.new(MultiIO.new($stdout, log))
-    end
-  end
-
-  def self.logger=(logger)
-    @logger = logger
   end
 end
 

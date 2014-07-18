@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=0.1.0
+Encoding=UTF-8
+Name=Prax
+Type=Application
+Exec=~/.local/bin/prax start
+Terminal=false
+Icon=prax
+Comment=Prax Rack server.
+NoDisplay=false
+Categories=Development;

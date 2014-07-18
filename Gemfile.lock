@@ -1,0 +1,22 @@
+GIT
+  remote: git://github.com/ysbaddaden/minitest-colorize.git
+  revision: 81f2dd6aee81c83debc31572608fa89d6d9e1a19
+  specs:
+    minitest-colorize (0.0.6.pre)
+      minitest (>= 5.2)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    minitest (5.2.2)
+    rack (1.5.2)
+    rake (10.1.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  minitest
+  minitest-colorize!
+  rack
+  rake
