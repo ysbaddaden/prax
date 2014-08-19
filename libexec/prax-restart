@@ -5,7 +5,7 @@
 
 set -e
 
-. $PRAX_ROOT/libexec/shared.sh
+. "$PRAX_ROOT/libexec/shared.sh"
 ensure_rack_app "$PWD"
 
 mkdir -p tmp
