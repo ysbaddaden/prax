@@ -6,6 +6,6 @@ set -e
 name=$(basename "$PWD")
 log="$PRAX_HOSTS/_logs/$name.log"
 
-if [ -f $log ]; then
-  exec tail $log $*
+if [ -f "$log" ]; then
+  exec tail "$log" $*
 fi

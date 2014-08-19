@@ -25,7 +25,7 @@ load_env() {
   rm /tmp/$$.praxenv
 }
 
-[ -f $HOME/.praxconfig ] && source $HOME/.praxconfig
+[ -f "$HOME/.praxconfig" ] && source "$HOME/.praxconfig"
 [ -f .env ] && load_env .env
 [ -f .praxrc ] && source .praxrc
 [ -f Gemfile ] && bundle_exec="bundle exec"

@@ -10,22 +10,22 @@ HOSTS="$HOME/.prax"
 echo "Stopping prax"
 prax stop
 
-cd $EXT
+cd "$EXT"
 echo "Uninstalling NSSwitch extension (to resolve .dev domains)"
 sudo make uninstall
 
 echo 'Removing "prax" from the hosts line of /etc/nsswitch.conf'
 sudo sed -i 's/ prax//' /etc/nsswitch.conf
 
-cd $PRAX_ROOT
+cd "$PRAX_ROOT"
 echo "Uninstalling Prax firewall rule"
 sudo /etc/init.d/prax stop
 sudo rm -f /etc/init.d/prax
 sudo update-rc.d -f prax remove
 
 echo "Removing ~/.prax directory"
-if [ -d $HOSTS ]; then
-  rm -rf $HOSTS
+if [ -d "$HOSTS" ]; then
+  rm -rf "$HOSTS"
 fi
 
 echo "Removing prax symlink from /usr/local/bin"
