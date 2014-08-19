@@ -1,6 +1,8 @@
 #! /usr/bin/env bash
+
 # Usage: prax list
 # Summary: Lists all linked hosts in ~/.prax
+
 set -e
 
 for host in $PRAX_HOSTS/* ; do

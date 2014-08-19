@@ -1,6 +1,8 @@
 #! /usr/bin/env bash
+
 # Usage: prax log [tail options]
 # Summary: Tails the Prax log for the current Rack app
+
 set -e
 
 name=$(basename "$PWD")

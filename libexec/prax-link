@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 # Usage: prax link [name]
 # Summary: Link a Rack application to ~/.prax
 # Help: This command will link a Rack application into ~/.prax
@@ -14,6 +15,7 @@
 #
 # For now only Rack applications with a config.ru file can be installed, this
 # command will complain until it can find such a file.
+
 set -e
 
 . $PRAX_ROOT/libexec/shared.sh

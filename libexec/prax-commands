@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 # Usage: prax commands
 # Summary: List all prax commands
 # Help: This command is mostly used for autocompletion in various shells, and for `prax help`.

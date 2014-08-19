@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
+
 # Usage: prax restart [always|never]
 # Summary: Restart the current Rack application
+
 set -e
 
 . $PRAX_ROOT/libexec/shared.sh

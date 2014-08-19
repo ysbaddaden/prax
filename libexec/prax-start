@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
+
 # Usage: prax start
 # Summary: Start Prax proxy server
+
 set -e
 
 # Loads user config (if present)

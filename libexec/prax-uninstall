@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
+
 # Usage: prax uninstall
 # Summary: Uninstalls Prax proxy server (requires sudo privilege)
+
 set -e
 
 EXT="$PRAX_ROOT/ext"

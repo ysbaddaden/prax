@@ -1,6 +1,8 @@
 #! /usr/bin/env bash
+
 # Usage: prax cleanup
 # Summary: Removes all invalid links in ~/.prax
+
 set -e
 
 for host in $PRAX_HOSTS/* ; do
