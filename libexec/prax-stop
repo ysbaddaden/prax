@@ -5,4 +5,3 @@ set -e
 
 PID=`ps x | awk -F " " "{ if ( \\$5 == \\"ruby\\" && \\$6 == \\"$PRAX_ROOT/lib/prax/command.rb\\" ) print \\$1 }"`
 [ "$PID" == "" ] || kill $PID
-

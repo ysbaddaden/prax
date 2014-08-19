@@ -24,7 +24,7 @@ sudo /etc/init.d/prax start
 
 echo "Creating ~/.prax directory"
 if [ ! -d $HOSTS ]; then
-    mkdir $HOSTS
+  mkdir $HOSTS
 fi
 
 echo "Symlinking prax into /usr/local/bin"
@@ -39,4 +39,3 @@ echo
 echo "  $ ln -sf ~/Work/myapp ~/.prax/"
 echo
 echo "Eventually point your browser to http://myapp.dev/"
-

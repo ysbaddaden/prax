@@ -25,7 +25,7 @@ sudo update-rc.d -f prax remove
 
 echo "Removing ~/.prax directory"
 if [ -d $HOSTS ]; then
-    rm -rf $HOSTS
+  rm -rf $HOSTS
 fi
 
 echo "Removing prax symlink from /usr/local/bin"

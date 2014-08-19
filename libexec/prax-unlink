@@ -8,11 +8,10 @@
 set -e
 
 if [ -z "$1" ]; then
-    name=`basename "$PWD"`
+  name=`basename "$PWD"`
 else
-    name=$1
+  name=$1
 fi
 
 echo "rm -f $PRAX_HOSTS/$name"
 rm -f $PRAX_HOSTS/$name
-
