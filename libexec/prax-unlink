@@ -8,7 +8,7 @@
 set -e
 
 if [ -z "$1" ]; then
-    name=`basename $PWD`
+    name=`basename "$PWD"`
 else
     name=$1
 fi

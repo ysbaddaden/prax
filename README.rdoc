@@ -9,7 +9,7 @@ applications manually on port 3000, etc.
 
 == Why?
 
-My GNU/Linux fork of [Pow](http://pow.cx/) just broke on me badly, and I
+My GNU/Linux fork of Pow[http://pow.cx/] just broke on me badly, and I
 couldn't read, less write the coffeescript it's written in. I thus decided to
 try writing an alternative in Ruby. Good for me, because I now have a viable
 alternative, and learned a lot about TCP and UNIX sockets, the HTTP protocol,
