@@ -25,7 +25,7 @@ sudo update-rc.d prax defaults
 sudo /etc/init.d/prax start
 
 echo "Creating ~/.prax directory"
-if [ ! -d "$HOSTS" ]; then
+if [[ ! -d "$HOSTS" ]]; then
   mkdir "$HOSTS"
 fi
 

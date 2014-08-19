@@ -6,9 +6,9 @@
 set -e
 
 for host in $PRAX_HOSTS/* ; do
-  if [ -L "$host" ]; then
+  if [[ -L "$host" ]]; then
     path=`readlink "$host"`
-    if [ "$PWD" == "$path" ]; then
+    if [[ "$PWD" == "$path" ]]; then
       echo -n "*"
     fi
     echo "`basename "$host"` '$path'"

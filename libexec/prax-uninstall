@@ -26,7 +26,7 @@ sudo rm -f /etc/init.d/prax
 sudo update-rc.d -f prax remove
 
 echo "Removing ~/.prax directory"
-if [ -d "$HOSTS" ]; then
+if [[ -d "$HOSTS" ]]; then
   rm -rf "$HOSTS"
 fi
 

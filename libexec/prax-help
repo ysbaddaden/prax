@@ -10,13 +10,13 @@ print_summaries() {
 
   for command in $(prax-commands); do
     local file="$(command_path "$command")"
-    if [ ! -h "$file" ]; then
+    if [[ ! -h "$file" ]]; then
       local summary="$(summary "$file")"
-      if [ -n "$summary" ]; then
+      if [[ -n "$summary" ]]; then
         commands["${#commands[@]}"]="$command"
         summaries["${#summaries[@]}"]="$summary"
 
-        if [ "${#command}" -gt "$longest_command" ]; then
+        if [[ "${#command}" -gt "$longest_command" ]]; then
           longest_command="${#command}"
         fi
       fi
@@ -37,11 +37,11 @@ print_help() {
   local file="$1"
   local usage="$(usage "$file")"
 
-  if [ -n "$usage" ]; then
+  if [[ -n "$usage" ]]; then
     echo "$usage"
 
     local help="$(help "$file")"
-    [ -n "$help" ] && echo && echo "$help"
+    [[ -n "$help" ]] && echo && echo "$help"
   else
     echo "Sorry, this command isn't documented yet."
   fi
@@ -67,7 +67,7 @@ truncate() {
   local max_length="$1"
   local string="$2"
 
-  if [ "${#string}" -gt "$max_length" ]; then
+  if [[ "${#string}" -gt "$max_length" ]]; then
     local length=$(( $max_length - 3 ))
     echo "${string:0:$length}..."
   else
@@ -76,7 +76,7 @@ truncate() {
 }
 
 # Provide prax completions
-if [ "$1" = "--complete" ]; then
+if [[ "$1" = "--complete" ]]; then
   exec "prax-commands"
   exit
 fi
@@ -93,7 +93,7 @@ See 'prax help <command>' for information on a specific command."
 *)
   file="$(command_path "$command")"
 
-  if [ -n "$file" ]; then
+  if [[ -n "$file" ]]; then
     print_help "$file"
   else
     echo "prax: no such command \`$command'" >&2

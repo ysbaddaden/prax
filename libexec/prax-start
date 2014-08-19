@@ -6,7 +6,7 @@
 set -e
 
 # Loads user config (if present)
-[ -f "$HOME/.praxconfig" ] && source "$HOME/.praxconfig"
+[[ -f "$HOME/.praxconfig" ]] && source "$HOME/.praxconfig"
 
 # kills any running instance
 prax stop

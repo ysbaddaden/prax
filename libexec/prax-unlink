@@ -9,7 +9,7 @@
 
 set -e
 
-if [ -z "$1" ]; then
+if [[ -z "$1" ]]; then
   name=`basename "$PWD"`
 else
   name="$1"

@@ -8,16 +8,16 @@
 set -e
 
 # Provide prax completions
-if [ "$1" = "--complete" ]; then
+if [[ "$1" = "--complete" ]]; then
   echo --sh
   echo --no-sh
   exit
 fi
 
-if [ "$1" = "--sh" ]; then
+if [[ "$1" = "--sh" ]]; then
   sh=1
   shift
-elif [ "$1" = "--no-sh" ]; then
+elif [[ "$1" = "--no-sh" ]]; then
   nosh=1
   shift
 fi
@@ -27,12 +27,12 @@ shopt -s nullglob
 { for path in ${PATH//:/$'\n'}; do
     for command in "${path}/prax-"*; do
       command="${command##*prax-}"
-      if [ -n "$sh" ]; then
-        if [ ${command:0:3} = "sh-" ]; then
+      if [[ -n "$sh" ]]; then
+        if [[ ${command:0:3} = "sh-" ]]; then
           echo ${command##sh-}
         fi
-      elif [ -n "$nosh" ]; then
-        if [ ${command:0:3} != "sh-" ]; then
+      elif [[ -n "$nosh" ]]; then
+        if [[ ${command:0:3} != "sh-" ]]; then
           echo ${command##sh-}
         fi
       else
