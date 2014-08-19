@@ -34,4 +34,3 @@ load_env() {
 prax_path="$(abs_dirname "$0")"
 echo $bundle_exec ruby "$prax_path/../lib/racker/command.rb" $*
 exec $bundle_exec ruby "$prax_path/../lib/racker/command.rb" $*
-

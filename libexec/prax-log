@@ -9,6 +9,5 @@ name=$(basename "$PWD")
 log="$PRAX_HOSTS/_logs/$name.log"
 
 if [ -f $log ]; then
-    exec tail $log $*
+  exec tail $log $*
 fi
-

@@ -22,18 +22,17 @@ set -e
 ensure_rack_app "$PWD"
 
 if [ -z "$1" ]; then
-    name=`basename "$PWD"`
+  name=`basename "$PWD"`
 else
-    name=$1
+  name=$1
 fi
 
 dest="$PRAX_HOSTS/$name"
 
 if [ -L $dest ] ; then
-    echo "rm -f $dest"
-    rm -f $dest
+  echo "rm -f $dest"
+  rm -f $dest
 fi
 
 echo "ln -s '$PWD' $dest"
 ln -s "$PWD" $dest
-

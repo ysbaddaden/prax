@@ -8,7 +8,6 @@ set -e
 # Loads user config (if present)
 [ -f $HOME/.praxconfig ] && source $HOME/.praxconfig
 
-
 # kills any running instance
 prax stop
 
@@ -18,4 +17,3 @@ export ORIG_PATH=$PATH
 # starts instance
 cd $PRAX_ROOT
 exec "ruby" "$PRAX_ROOT/lib/prax/command.rb" $*
-

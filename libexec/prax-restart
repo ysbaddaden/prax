@@ -12,17 +12,16 @@ mkdir -p tmp
 
 case $1 in
 always)
-    echo "touch tmp/always_restart.txt"
-    touch tmp/always_restart.txt
-    ;;
+  echo "touch tmp/always_restart.txt"
+  touch tmp/always_restart.txt
+  ;;
 never)
-    echo "rm -f tmp/restart.txt"
-    rm -f tmp/restart.txt
-    echo "rm -f tmp/always_restart.txt"
-    rm -f tmp/always_restart.txt
-    ;;
+  echo "rm -f tmp/restart.txt"
+  rm -f tmp/restart.txt
+  echo "rm -f tmp/always_restart.txt"
+  rm -f tmp/always_restart.txt
+  ;;
 *)
-    echo "touch tmp/restart.txt"
-    touch tmp/restart.txt
+  echo "touch tmp/restart.txt"
+  touch tmp/restart.txt
 esac
-
