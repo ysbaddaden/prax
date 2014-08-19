@@ -1,12 +1,13 @@
 #! /usr/bin/env bash
+
 # Usage: prax log [tail options]
 # Summary: Tails the Prax log for the current Rack app
+
 set -e
 
 name=$(basename "$PWD")
 log="$PRAX_HOSTS/_logs/$name.log"
 
-if [ -f $log ]; then
-    exec tail $log $*
+if [[ -f "$log" ]]; then
+  exec tail "$log" $*
 fi
-

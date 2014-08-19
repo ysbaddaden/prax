@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 set -e
 
 resolve_link() {
@@ -9,7 +10,7 @@ abs_dirname() {
   local cwd="$(pwd)"
   local path="$1"
 
-  while [ -n "$path" ]; do
+  while [[ -n "$path" ]]; do
     cd "${path%/*}"
     local name="${path##*/}"
     path="$(resolve_link "$name" || true)"
@@ -25,12 +26,11 @@ load_env() {
   rm /tmp/$$.praxenv
 }
 
-[ -f $HOME/.praxconfig ] && source $HOME/.praxconfig
-[ -f .env ] && load_env .env
-[ -f .praxrc ] && source .praxrc
-[ -f Gemfile ] && bundle_exec="bundle exec"
+[[ -f "$HOME/.praxconfig" ]] && source "$HOME/.praxconfig"
+[[ -f .env ]] && load_env .env
+[[ -f .praxrc ]] && source .praxrc
+[[ -f Gemfile ]] && bundle_exec="bundle exec"
 
 prax_path="$(abs_dirname "$0")"
 echo $bundle_exec ruby "$prax_path/../lib/racker/command.rb" $*
 exec $bundle_exec ruby "$prax_path/../lib/racker/command.rb" $*
-

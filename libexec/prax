@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 set -e
 
 resolve_link() {
@@ -9,7 +10,7 @@ abs_dirname() {
   local cwd="$(pwd)"
   local path="$1"
 
-  while [ -n "$path" ]; do
+  while [[ -n "$path" ]]; do
     cd "${path%/*}"
     local name="${path##*/}"
     path="$(resolve_link "$name" || true)"
@@ -31,7 +32,7 @@ case "$command" in
   ;;
 * )
   command_path="$(command -v "prax-$command" || true)"
-  if [ ! -x "$command_path" ]; then
+  if [[ ! -x "$command_path" ]]; then
     echo "prax: no such command \`$command'" >&2
     exit 1
   fi
