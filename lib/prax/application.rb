@@ -60,6 +60,8 @@ module Prax
     def restart?
       return false if port_forwarding?
       return true unless started?
+      return true if File.exists?(File.join(realpath, 'tmp', 'always_restart.txt'))
+
       restart = File.join(realpath, 'tmp', 'restart.txt')
       File.exists?(restart) && File.stat(socket_path).mtime < File.stat(restart).mtime
     end
