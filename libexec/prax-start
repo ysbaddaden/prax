@@ -4,16 +4,14 @@
 set -e
 
 # Loads user config (if present)
-[ -f $HOME/.praxconfig ] && source $HOME/.praxconfig
-
+[ -f "$HOME/.praxconfig" ] && source "$HOME/.praxconfig"
 
 # kills any running instance
 prax stop
 
 # keeps a copy of original path (to spawn ruby sub-processes)
-export ORIG_PATH=$PATH
+export ORIG_PATH="$PATH"
 
 # starts instance
-cd $PRAX_ROOT
+cd "$PRAX_ROOT"
 exec "ruby" "$PRAX_ROOT/lib/prax/command.rb" $*
-

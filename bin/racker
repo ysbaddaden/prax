@@ -25,7 +25,7 @@ load_env() {
   rm /tmp/$$.praxenv
 }
 
-[ -f $HOME/.praxconfig ] && source $HOME/.praxconfig
+[ -f "$HOME/.praxconfig" ] && source "$HOME/.praxconfig"
 DOTENV_CHECK=`bundle list | grep dotenv`
 [ -f .env -a -z "$DOTENV_CHECK" ] && load_env .env
 [ -f .praxrc ] && source .praxrc
@@ -34,4 +34,3 @@ DOTENV_CHECK=`bundle list | grep dotenv`
 prax_path="$(abs_dirname "$0")"
 echo $bundle_exec ruby "$prax_path/../lib/racker/command.rb" $*
 exec $bundle_exec ruby "$prax_path/../lib/racker/command.rb" $*
-

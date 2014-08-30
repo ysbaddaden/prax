@@ -4,12 +4,11 @@
 set -e
 
 for host in $PRAX_HOSTS/* ; do
-    if [ -L $host ]; then
-        path=`readlink $host`
-        if [ -f `readlink $host` ]; then
-            echo "rm -f $host"
-            rm -f $host
-        fi
+  if [ -L "$host" ]; then
+    path=`readlink "$host"`
+    if [ -f `readlink "$host"` ]; then
+      echo "rm -f $host"
+      rm -f "$host"
     fi
+  fi
 done | sed s,$HOME,~,g
-

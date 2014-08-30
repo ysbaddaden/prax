@@ -16,22 +16,21 @@
 # command will complain until it can find such a file.
 set -e
 
-. $PRAX_ROOT/libexec/shared.sh
+. "$PRAX_ROOT/libexec/shared.sh"
 ensure_rack_app "$PWD"
 
 if [ -z "$1" ]; then
-    name=`basename "$PWD"`
+  name=`basename "$PWD"`
 else
-    name=$1
+  name="$1"
 fi
 
 dest="$PRAX_HOSTS/$name"
 
-if [ -L $dest ] ; then
-    echo "rm -f $dest"
-    rm -f $dest
+if [ -L "$dest" ] ; then
+  echo "rm -f '$dest'"
+  rm -f "$dest"
 fi
 
-echo "ln -s '$PWD' $dest"
-ln -s "$PWD" $dest
-
+echo "ln -s '$PWD' '$dest'"
+ln -s "$PWD" "$dest"

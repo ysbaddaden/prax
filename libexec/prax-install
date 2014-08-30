@@ -7,7 +7,7 @@ EXT="$PRAX_ROOT/ext"
 INSTALL="$PRAX_ROOT/install"
 HOSTS="$HOME/.prax"
 
-cd $EXT
+cd "$EXT"
 echo "Installing NSSwitch extension (to resolve .dev domains)"
 sudo make
 sudo make install
@@ -15,20 +15,20 @@ sudo make install
 echo 'Adding "prax" to the hosts line of /etc/nsswitch.conf'
 sudo sed -i -r -e '/\bprax\b/ !s/^hosts:(.+)\bdns\b/hosts:\1prax dns/' /etc/nsswitch.conf
 
-cd $PRAX_ROOT
+cd "$PRAX_ROOT"
 echo "Installing Prax firewall rule"
-sudo cp "$INSTALL/initd" "/etc/init.d/prax"
-sudo chmod +x "/etc/init.d/prax"
+sudo cp "$INSTALL/initd" /etc/init.d/prax
+sudo chmod +x /etc/init.d/prax
 sudo update-rc.d prax defaults
 sudo /etc/init.d/prax start
 
 echo "Creating ~/.prax directory"
-if [ ! -d $HOSTS ]; then
-    mkdir $HOSTS
+if [ ! -d "$HOSTS" ]; then
+  mkdir "$HOSTS"
 fi
 
 echo "Symlinking prax into /usr/local/bin"
-sudo ln -s $PRAX_ROOT/bin/prax /usr/local/bin/prax
+sudo ln -s "$PRAX_ROOT/bin/prax" /usr/local/bin/prax
 
 echo "Starting prax server"
 prax start
@@ -39,4 +39,3 @@ echo
 echo "  $ ln -sf ~/Work/myapp ~/.prax/"
 echo
 echo "Eventually point your browser to http://myapp.dev/"
-
