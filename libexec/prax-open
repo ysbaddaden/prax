@@ -9,7 +9,7 @@
 #   $ cd ~/work/myapp
 #   $ prax open
 #   open http://myapp.dev
-#   $ prax link othername
+#   $ prax open othername
 #   open http://othername.dev
 set -e
 
@@ -22,5 +22,5 @@ else
   name="$1"
 fi
 
-echo "open http://$name.dev"
+set -x
 xdg-open "http://$name.dev"
