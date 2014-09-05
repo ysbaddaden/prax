@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Usage: prax open [name]
+# Summary: Open a Rack application in browser
+# Help: This command will open a Rack application in browser
+#
+# By default it will use the name of the current directory, but you may specify
+# the name so you can access the same app from different domain names.
+#
+#   $ cd ~/work/myapp
+#   $ prax open
+#   open http://myapp.dev
+#   $ prax open othername
+#   open http://othername.dev
+set -e
+
+. "$PRAX_ROOT/libexec/shared.sh"
+ensure_rack_app "$PWD"
+
+if [ -z "$1" ]; then
+  name=`basename "$PWD"`
+else
+  name="$1"
+fi
+
+set -x
+xdg-open "http://$name.dev"
