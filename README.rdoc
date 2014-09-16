@@ -56,7 +56,7 @@ when GNOME starts for example. Please see with your desktop environment which
 solution works best.
 
 If you don't use X, you may add a <tt>prax start</tt> line to your
-<tt>~/.bashrc</tt> for example, but we aware that it will restart Prax (and all
+<tt>~/.bashrc</tt> for example, but be aware that it will restart Prax (and all
 Rack instances) everytime you log in. That could be fixed with a
 <tt>--no-restart</tt> flag and a +status+ command (contributions welcome).
 
