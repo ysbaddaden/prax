@@ -32,8 +32,9 @@ module Prax
     self.worker_size = Config.threads_count
 
     def initialize
-      @ssl_crt = File.expand_path('../../ssl/server.crt', __FILE__)
-      @ssl_key = File.expand_path('../../ssl/server.key', __FILE__)
+      @ssl_crt_path = File.expand_path('../../ssl/server.crt', __FILE__)
+      @ssl_key_path = File.expand_path('../../ssl/server.key', __FILE__)
+      @ca_crt_path  = File.expand_path('../../ssl/ca.crt', __FILE__)
       super
     end
 

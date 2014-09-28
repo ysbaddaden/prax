@@ -30,6 +30,9 @@ fi
 echo "Symlinking prax into /usr/local/bin"
 sudo ln -s "$PRAX_ROOT/bin/prax" /usr/local/bin/prax
 
+echo "Generating SSL key and certificate"
+./ssl/generate.sh
+
 echo "Starting prax server"
 prax start
 

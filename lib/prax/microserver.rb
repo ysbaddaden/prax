@@ -91,13 +91,23 @@ module Prax
 
       def ssl_context
         OpenSSL::SSL::SSLContext.new.tap do |ctx|
-          ctx.cert = OpenSSL::X509::Certificate.new(File.read(@ssl_crt))
-          ctx.key  = OpenSSL::PKey::RSA.new(File.read(@ssl_key))
+          ctx.cert = OpenSSL::X509::Certificate.new(File.read(@ssl_crt_path))
+          ctx.key  = OpenSSL::PKey::RSA.new(File.read(@ssl_key_path))
+
+          if ca_configured?
+            ca_cert = OpenSSL::X509::Certificate.new(File.read(@ca_crt_path))
+            ctx.extra_chain_cert = [ca_cert]
+            ctx.client_ca = [ca_cert]
+          end
         end
       end
 
       def ssl_configured?
-        @ssl_crt and File.exists?(@ssl_crt) and @ssl_key and File.exists?(@ssl_key)
+        @ssl_crt_path and File.exists?(@ssl_crt_path) and @ssl_key_path and File.exists?(@ssl_key_path)
+      end
+
+      def ca_configured?
+        @ca_crt_path and File.exists?(@ca_crt_path)
       end
   end
 end
