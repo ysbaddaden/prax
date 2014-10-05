@@ -88,6 +88,39 @@ module Prax
       socket.is_a?(::UNIXSocket) ? '127.0.0.1' : socket.peeraddr[2]
     end
 
+    def to_env
+      {
+        'rack.version' => [1, 1],
+        'rack.url_scheme' => ssl ? 'https' : 'http',
+        'rack.input' => body_as_rewindable_input,
+        'HTTP_VERSION' => http_version,
+        'REMOTE_ADDR' => remote_addr,
+        'SERVER_PROTOCOL' => http_version,
+        'SERVER_NAME' => host,
+        'SERVER_PORT' => port,
+        'SCRIPT_NAME' => '',
+        'REQUEST_METHOD' => method,
+        'REQUEST_URI' => uri,
+        'REQUEST_PATH' => path_info,
+        'PATH_INFO' => path_info,
+        'QUERY_STRING' => query_string,
+      }.merge headers_to_env
+    end
+
+    def headers_to_env
+      headers.inject({}) do |acc, ( header, value )|
+        case name = header.upcase.gsub('-', '_')
+        when 'CONTENT_TYPE'
+          acc['CONTENT_TYPE'] = value
+        when 'CONTENT_LENGTH'
+          acc['CONTENT_LENGTH'] = value.to_i
+        else
+          acc["HTTP_#{name}"] = value
+        end
+        acc
+      end
+    end
+
     private
       def parse_query_string
         if idx = uri.rindex('?')

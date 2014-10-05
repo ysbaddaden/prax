@@ -1,24 +1,9 @@
 require 'uri'
-begin
-  require 'mime/types'
-rescue LoadError
-end
+require 'rack/file'
+require 'rack/utils'
 
 module Prax
-  module ContentType
-    DEFAULT_CONTENT_TYPE = 'application/octet-stream'
-
-    def content_type(file)
-      if defined?(MIME::Types)
-        types = MIME::Types.type_for(File.basename(file))
-        return types.first.content_type if types.any?
-      end
-      DEFAULT_CONTENT_TYPE
-    end
-  end
-
   class PublicFile
-    include ContentType
     attr_reader :request, :app_name
 
     def initialize(request, app_name)
@@ -30,24 +15,25 @@ module Prax
     end
 
     def stream_to(io)
-      File.open(file_path, 'rb') do |file|
-        io.write "#{request.http_version} 200 OK\r\n" +
-                 "Content-Type: #{content_type(file)}\r\n" +
-                 "Content-Length: #{file.size}\r\n" +
-                 "Connection: close\r\n\r\n"
-        IO.copy_stream file, io
-      end
+      file = Rack::File.new(nil)
+      file.path = file_path
+      code, headers, body = file.serving(request.to_env)
+
+      headers["Connection"] = "close"
+
+      io.write "#{request.http_version} #{code} #{Rack::Utils::HTTP_STATUS_CODES[code]}\r\n"
+      io.write headers.map { |h, v| "#{h}: #{v}" }.join("\r\n")
+      io.write "\r\n\r\n"
+      body.each { |part| io.write part }
     rescue Errno::ECONNRESET
     end
 
     def file_path
-      @file_path ||= begin
-        if File.directory?(raw_file_path)
-          File.join(raw_file_path, 'index.html')
-        else
-          raw_file_path
-        end
-      end
+      @file_path ||= if File.directory?(raw_file_path)
+                       File.join(raw_file_path, 'index.html')
+                     else
+                       raw_file_path
+                     end
     end
 
     def raw_file_path
@@ -55,8 +41,9 @@ module Prax
     end
 
     def sanitized_uri
-      uri = URI.unescape(URI(request.uri).path)
-      uri.split('/').reject { |part| part.empty? or part == '..' }
+      URI.unescape(URI(request.uri).path)
+        .split('/')
+        .reject { |part| part.empty? or part == '..' }
     end
   end
 end

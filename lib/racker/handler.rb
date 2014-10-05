@@ -64,42 +64,15 @@ module Racker
       end
 
       def request_to_env
-        {
-          'rack.version' => [1, 1],
+        request.to_env.merge(
           'rack.multithread' => true,
           'rack.multiprocess' => false,
           'rack.run_once' => false,
           'rack.errors' => STDERR,
           'rack.logger' => Racker.logger,
           'rack.url_scheme' => 'http',
-          'rack.input' => request.body_as_rewindable_input,
-          'HTTP_VERSION' => request.http_version,
-          'REMOTE_ADDR' => request.remote_addr,
           'SERVER_SOFTWARE'=> 'racker 0.1.0',
-          'SERVER_PROTOCOL' => request.http_version,
-          'SERVER_NAME' => request.host,
-          'SERVER_PORT' => request.port,
-          'SCRIPT_NAME' => '',
-          'REQUEST_METHOD' => request.method,
-          'REQUEST_URI' => request.uri,
-          'REQUEST_PATH' => request.path_info,
-          'PATH_INFO' => request.path_info,
-          'QUERY_STRING' => request.query_string,
-        }.merge headers_to_env
-      end
-
-      def headers_to_env
-        request.headers.inject({}) do |acc, ( header, value )|
-          case name = header.upcase.gsub('-', '_')
-          when 'CONTENT_TYPE'
-            acc['CONTENT_TYPE'] = value
-          when 'CONTENT_LENGTH'
-            acc['CONTENT_LENGTH'] = value.to_i
-          else
-            acc["HTTP_#{name}"] = value
-          end
-          acc
-        end
+        )
       end
 
       def render_error(exception)
