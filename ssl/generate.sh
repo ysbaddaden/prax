@@ -1,6 +1,7 @@
 #! /usr/bin/env sh
 
-SUDO=`touch "test" 2>/dev/null && rm "test" || echo "sudo"`
+FILE="test_require_sudo"
+SUDO=`touch $FILE 2>/dev/null && rm $FILE || echo "sudo"`
 
 if [ ! -e server.key ]; then
   $SUDO openssl genrsa -out server.key 2048
