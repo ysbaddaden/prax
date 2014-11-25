@@ -67,7 +67,7 @@ of 5 seconds, this is because of the DNS resolution: NSSwitch tries a real DNS
 resolution before checking the prax extension. This usually creates an overhead
 of less than half a second, but sometimes takes 5 seconds on my Ubuntu 12.04.
 
-You may try to move the +prax+ NSSwitch extension before the +dns+ one, so it
+You may try editing +/etc/nsswitch.conf+ to move the +prax+ NSSwitch extension before the +dns+ one, so it
 looks like this:
 
   hosts: files mdns4_minimal [NOTFOUND=return] prax dns mdns4
