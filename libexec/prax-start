@@ -15,7 +15,6 @@ done
 export ORIG_PATH="$PATH"
 
 # load user config (if present)
-echo "LOADING USER CONFIG"
 [ -f "$HOME/.praxconfig" ] && source "$HOME/.praxconfig"
 
 # kill any running instance
