@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Usage: prax start
 # Summary: Start Prax proxy server
-set -e
 
 # cleanup RVM from $PATH
 for path in "$HOME/.rvm", "/usr/local/rvm"; do
@@ -10,6 +9,8 @@ for path in "$HOME/.rvm", "/usr/local/rvm"; do
     rvm use system > /dev/null
   fi
 done
+
+set -e
 
 # keep a copy of original path (to spawn ruby sub-processes)
 export ORIG_PATH="$PATH"
