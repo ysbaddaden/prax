@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rack'
+gem 'rack', '~> 1.6.0.beta2'
 
 group :test do
   gem 'rake'

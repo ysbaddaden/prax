@@ -1,4 +1,5 @@
 require 'uri'
+require 'rack'
 require 'rack/file'
 require 'rack/utils'
 
