@@ -16,14 +16,18 @@ NAME=prax
 DESC="Prax Rack server (iptables configuration)."
 HTTP_PORT=20559
 HTTPS_PORT=20558
+DEVICES=$(ifconfig | egrep '^(wlan|eth)[0-9]+' | cut -f1 -d ' ')
 
 case "$1" in
   start)
     if [ `iptables -t nat -L -n | egrep "($HTTP_PORT|$HTTPS_PORT)" | wc -l` -eq 0 ] ; then
       iptables -t nat -A OUTPUT -p tcp -d 127.0.0.1 --dport 80  -j REDIRECT --to-ports $HTTP_PORT
       iptables -t nat -A OUTPUT -p tcp -d 127.0.0.1 --dport 443 -j REDIRECT --to-ports $HTTPS_PORT
-      iptables -t nat -A PREROUTING -p tcp  --dport 80 -j REDIRECT --to-port $HTTP_PORT
-      iptables -t nat -A PREROUTING -p tcp  --dport 443 -j REDIRECT --to-port $HTTPS_PORT
+
+      for device in $DEVICES; do
+        iptables -t nat -A PREROUTING -p tcp -i $device --dport 80  -j REDIRECT --to-port $HTTP_PORT
+        iptables -t nat -A PREROUTING -p tcp -i $device --dport 443 -j REDIRECT --to-port $HTTPS_PORT
+      done
     fi
     ;;
   stop)
@@ -39,5 +43,8 @@ case "$1" in
   restart)
     $0 stop
     $0 start
+    ;;
+  status)
+    iptables -t nat -L -n
     ;;
 esac
