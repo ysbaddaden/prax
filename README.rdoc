@@ -50,7 +50,7 @@ script.
 Prax being written in Ruby, version managers usually have problems to select
 the correct version of Ruby or gemset (for RVM) to run Prax and to run your Rack
 applications. You must
-[configure Prax](https://github.com/ysbaddaden/prax/wiki/Ruby-Version-Managers)
+{configure Prax}[https://github.com/ysbaddaden/prax/wiki/Ruby-Version-Managers]
 to handle your version manager correctly.
 
 === Start Prax automatically
