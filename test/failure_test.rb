@@ -30,13 +30,25 @@ describe "crashes" do
     end
   end
 
-  it "replies with bad request when host header is missing" do
-    begin
-      socket = TCPSocket.new("localhost", 20557)
-      socket.write("GET /test HTTP/1.0\r\n\r\n")
-      assert_match "missing host header", socket.read
-    ensure
-      socket.close
+  describe "host header is missing" do
+    it "determines host from uri" do
+      begin
+        socket = TCPSocket.new("localhost", 20557)
+        socket.write("GET http://example.dev:20557/ HTTP/1.1\r\n\r\n")
+        assert_match "HTTP/1.1 200 OK", socket.read
+      ensure
+        socket.close
+      end
+    end
+
+    it "replies with bad request" do
+      begin
+        socket = TCPSocket.new("localhost", 20557)
+        socket.write("GET /test HTTP/1.0\r\n\r\n")
+        assert_match "missing host header", socket.read
+      ensure
+        socket.close
+      end
     end
   end
 

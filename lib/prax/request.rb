@@ -1,4 +1,5 @@
 require 'tempfile'
+require 'uri'
 require 'prax/http'
 require 'prax/request/host'
 
@@ -71,14 +72,13 @@ module Prax
 
     def host
       @host ||= begin
-                  host = header('Host') or raise BadRequest, "missing host header"
-                  Host.new(host.split(':').first)
+                  Host.new(determine_host.split(':').first)
                 end
     end
 
     def port
       @port ||= begin
-        host = header('Host')
+        host = determine_host
         host.include?(':') ? host.split(':').last.to_i : (ssl ? 443 : 80)
       end
     end
@@ -131,6 +131,11 @@ module Prax
     end
 
     private
+
+      def determine_host
+        header('Host') || URI(uri).host or raise BadRequest, "missing host header"
+      end
+
       def parse_query_string
         if idx = uri.rindex('?')
           @path_info = uri[0...idx]
