@@ -70,7 +70,10 @@ module Prax
     end
 
     def host
-      @host ||= Host.new(header('Host').split(':').first)
+      @host ||= begin
+                  host = header('Host') or raise BadRequest, "missing host header"
+                  Host.new(host.split(':').first)
+                end
     end
 
     def port
@@ -119,6 +122,12 @@ module Prax
         end
         acc
       end
+    end
+
+    def to_s
+      str = "#{method} #{uri} #{http_version}\r\n"
+      headers.each { |header, value| str << "#{header}: #{value}\r\n" }
+      str << "\r\n"
     end
 
     private

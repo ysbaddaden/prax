@@ -31,13 +31,13 @@ class Minitest::Spec
 
     Thread.new do
       while line = out.gets
-        #puts line
+        puts "OUT: #{line}" if ENV["PRAX_DEBUG"]
       end
     end
 
     Thread.new do
       while line = err.gets
-        #puts line
+        puts "ERR: #{line}" if ENV["PRAX_DEBUG"]
       end
     end
   end

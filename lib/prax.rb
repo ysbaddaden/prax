@@ -11,6 +11,7 @@ module Prax
   include Logger
 
   class Error < StandardError; end
+  class BadRequest < Error; end
   class NoSuchApp < Error; end
   class CantStartApp < Error; end
   class PortForwardingConnectionError < Error; end

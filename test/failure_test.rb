@@ -30,6 +30,16 @@ describe "crashes" do
     end
   end
 
+  it "replies with bad request when host header is missing" do
+    begin
+      socket = TCPSocket.new("localhost", 20557)
+      socket.write("GET /test HTTP/1.0\r\n\r\n")
+      assert_match "missing host header", socket.read
+    ensure
+      socket.close
+    end
+  end
+
   def log(app_name)
     File.read log_path(app_name)
   end

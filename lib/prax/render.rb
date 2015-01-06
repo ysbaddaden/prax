@@ -8,7 +8,7 @@ module Prax
       code, status = options[:status], Rack::Utils::HTTP_STATUS_CODES[options[:status]]
       html = render_to_string(template_name)
 
-      socket.write "HTTP/1.1 #{code} #{status}\r\n" +
+      socket.write "#{request.http_version} #{code} #{status}\r\n" +
                    "Content-Type: text/html\r\n" +
                    "Content-Length: #{html.bytesize}\r\n" +
                    "Connection: close\r\n" +
