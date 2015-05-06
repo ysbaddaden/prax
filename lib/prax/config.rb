@@ -37,7 +37,7 @@ module Prax
       # Seconds to wait for a Rack application to return response headers before
       # failing the user request
       def response_timeout
-        @response_timeout ||= (ENC["PRAX_RESPONSE_TIMEOUT"] || 60).to_i
+        @response_timeout ||= (ENV["PRAX_RESPONSE_TIMEOUT"] || 60).to_i
       end
 
       def threads_count
