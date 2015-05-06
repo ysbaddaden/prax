@@ -34,6 +34,12 @@ module Prax
         @https_port ||= (ENV["PRAX_HTTPS_PORT"] || 20558).to_i
       end
 
+      # Seconds to wait for a Rack application to return response headers before
+      # failing the user request
+      def response_timeout
+        @response_timeout ||= (ENC["PRAX_RESPONSE_TIMEOUT"] || 60).to_i
+      end
+
       def threads_count
         @threads_count ||= (ENV["PRAX_THREADS"] || 16).to_i
       end
