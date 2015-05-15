@@ -1,3 +1,4 @@
+require 'prax/config'
 require 'prax/http'
 
 module Prax
@@ -13,7 +14,9 @@ module Prax
     end
 
     def parse_response
-      timeout(60) { parse_http_headers if @status_line = socket.gets }
+      timeout(Config.response_timeout) do
+        parse_http_headers if @status_line = socket.gets
+      end
     rescue
       # NOTE: it may fail because the port-forwarded app isn't reachable
       raise CantStartApp.new
