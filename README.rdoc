@@ -7,6 +7,24 @@ Calling <tt>myapp.dev</tt> and <tt>subdomain.myapp.dev</tt> with no
 configuration is simpler than editing your hosts file, starting your
 applications manually on port 3000, etc.
 
+== Development State
+
+Prax isn't under active development anymore. Most features have been
+implemented and are working (unless there are installation or configuration
+problems). I'm doing my best to maintain Prax as much as I can and to answer
+questions and troubleshoots in the issues[https://github.com/ysbaddaden/prax/issues].
+
+Yet, most of my development efforts have been focused on a port to the
+Crystal programming language, a Ruby-like language that compiles down to
+binary code using LLVM, which should help reduce a bunch of problems related
+to version managers and per-project rubies conflicting with the Ruby that
+Prax runs in —but comes with its own problems like complexity of debugging a
+segfault in release mode.
+
+Please check {Prax (Crystal port)}[https://github.com/ysbaddaden/prax.cr] if
+you are interested or have too much problems installing/configuring the Ruby
+version of Prax.
+
 == Why?
 
 My GNU/Linux fork of Pow[http://pow.cx/] just broke on me badly, and I
