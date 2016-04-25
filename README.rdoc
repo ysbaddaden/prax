@@ -23,7 +23,7 @@ Please check {Prax (Crystal port)}[https://github.com/ysbaddaden/prax.cr]
 
 == Installing (GNU/Linux)
 
-Refer to [INSTALL.md](./INSTALL.md) if you still want to install the
+Refer to [INSTALL.rdoc](./INSTALL.rdoc) if you still want to install the
 original Ruby version of Prax.
 
 == Credits
