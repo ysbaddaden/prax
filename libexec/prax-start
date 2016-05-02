@@ -1,17 +1,26 @@
 #!/usr/bin/env bash
 # Usage: prax start
 # Summary: Start Prax proxy server
+
+# cleanup RVM from $PATH
+for path in "$HOME/.rvm", "/usr/local/rvm"; do
+  if [ -f "$path/scripts/rvm" ]; then
+    source "$path/scripts/rvm"
+    rvm use system > /dev/null
+  fi
+done
+
 set -e
 
-# Loads user config (if present)
-[ -f "$HOME/.praxconfig" ] && source "$HOME/.praxconfig"
-
-# kills any running instance
-prax stop
-
-# keeps a copy of original path (to spawn ruby sub-processes)
+# keep a copy of original path (to spawn ruby sub-processes)
 export ORIG_PATH="$PATH"
 
-# starts instance
+# load user config (if present)
+[ -f "$HOME/.praxconfig" ] && source "$HOME/.praxconfig"
+
+# kill any running instance
+prax stop
+
+# start instance
 cd "$PRAX_ROOT"
 exec "ruby" "$PRAX_ROOT/lib/prax/command.rb" $*
