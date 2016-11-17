@@ -15,10 +15,19 @@ module Prax
       File.exists?(file_path) and !File.directory?(file_path)
     end
 
+    def file_data
+      if Rack::RELEASE < "2.0.0"
+        file = Rack::File.new(nil)
+        file.path = file_path
+        file.serving(request.to_env)
+      else
+        file = Rack::File.new(file_path)
+        file.serving(Rack::Request.new(request.to_env), file_path)
+      end
+    end
+
     def stream_to(io)
-      file = Rack::File.new(nil)
-      file.path = file_path
-      code, headers, body = file.serving(request.to_env)
+      code, headers, body = file_data
 
       headers["Connection"] = "close"
 
