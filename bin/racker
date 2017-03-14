@@ -26,7 +26,8 @@ load_env() {
 }
 
 [ -f "$HOME/.praxconfig" ] && source "$HOME/.praxconfig"
-[ -f .env ] && load_env .env
+DOTENV_CHECK=`bundle list | grep dotenv`
+[ -f .env -a -z "$DOTENV_CHECK" ] && load_env .env
 [ -f .praxrc ] && source .praxrc
 [ -f Gemfile ] && bundle_exec="bundle exec"
 
