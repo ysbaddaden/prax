@@ -16,7 +16,7 @@ NAME=prax
 DESC="Prax Rack server (iptables configuration)."
 HTTP_PORT=20559
 HTTPS_PORT=20558
-DEVICES=$(ifconfig | egrep '^(wlan|eth)[0-9]+' | cut -f1 -d ' ')
+DEVICES=$(ifconfig | egrep '^((wlan|eth)[0-9]+|en[bosxPpa])' | cut -f1 -d ' ')
 
 case "$1" in
   start)
